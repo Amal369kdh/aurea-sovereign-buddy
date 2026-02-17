@@ -12,7 +12,7 @@ import {
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: FolderLock, label: "Mon Dossier", path: "/mon-dossier" },
-  { icon: Users, label: "Hub Social", path: "#" },
+  { icon: Users, label: "Hub Social", path: "/hub-social" },
   { icon: Sparkles, label: "Aya IA", path: "#" },
   { icon: Settings, label: "Réglages", path: "#" },
 ];
