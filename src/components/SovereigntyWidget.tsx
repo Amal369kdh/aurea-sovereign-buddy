@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
+import { useIntegration } from "@/contexts/IntegrationContext";
 
-interface SovereigntyWidgetProps {
-  progress?: number;
-}
-
-const SovereigntyWidget = ({ progress = 42 }: SovereigntyWidgetProps) => {
+const SovereigntyWidget = () => {
+  const { progress } = useIntegration();
   const radius = 80;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -17,7 +15,6 @@ const SovereigntyWidget = ({ progress = 42 }: SovereigntyWidgetProps) => {
       <div className="flex items-center justify-center">
         <div className="relative">
           <svg width="200" height="200" viewBox="0 0 200 200">
-            {/* Track */}
             <circle
               cx="100"
               cy="100"
@@ -27,7 +24,6 @@ const SovereigntyWidget = ({ progress = 42 }: SovereigntyWidgetProps) => {
               strokeWidth="10"
               strokeLinecap="round"
             />
-            {/* Progress */}
             <motion.circle
               cx="100"
               cy="100"
@@ -37,9 +33,8 @@ const SovereigntyWidget = ({ progress = 42 }: SovereigntyWidgetProps) => {
               strokeWidth="10"
               strokeLinecap="round"
               strokeDasharray={circumference}
-              initial={{ strokeDashoffset: circumference }}
               animate={{ strokeDashoffset }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               transform="rotate(-90 100 100)"
             />
             <defs>
@@ -51,10 +46,11 @@ const SovereigntyWidget = ({ progress = 42 }: SovereigntyWidgetProps) => {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <motion.span
+              key={progress}
               className="text-4xl font-extrabold gold-text"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
             >
               {progress}%
             </motion.span>
@@ -65,8 +61,8 @@ const SovereigntyWidget = ({ progress = 42 }: SovereigntyWidgetProps) => {
 
       <div className="mt-6 grid grid-cols-3 gap-3">
         {[
-          { label: "Logement", done: true },
-          { label: "Banque", done: true },
+          { label: "Logement", done: progress >= 30 },
+          { label: "Banque", done: progress >= 20 },
           { label: "Sécu", done: false },
         ].map((item) => (
           <div
