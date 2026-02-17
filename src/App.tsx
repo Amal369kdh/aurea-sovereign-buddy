@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { IntegrationProvider } from "@/contexts/IntegrationContext";
 import Index from "./pages/Index";
 import MonDossier from "./pages/MonDossier";
+import HubSocial from "./pages/HubSocial";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/mon-dossier" element={<MonDossier />} />
+            <Route path="/hub-social" element={<HubSocial />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
