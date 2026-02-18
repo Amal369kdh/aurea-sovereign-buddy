@@ -14,7 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          author_id: string
+          category: Database["public"]["Enums"]["announcement_category"]
+          content: string
+          created_at: string
+          id: string
+          likes_count: number
+        }
+        Insert: {
+          author_id: string
+          category?: Database["public"]["Enums"]["announcement_category"]
+          content: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+        }
+        Update: {
+          author_id?: string
+          category?: Database["public"]["Enums"]["announcement_category"]
+          content?: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+        }
+        Relationships: []
+      }
+      connections: {
+        Row: {
+          created_at: string
+          id: string
+          requester_id: string
+          status: Database["public"]["Enums"]["connection_status"]
+          target_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: Database["public"]["Enums"]["connection_status"]
+          target_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: Database["public"]["Enums"]["connection_status"]
+          target_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_initials: string | null
+          city: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          integration_progress: number
+          interests: string[] | null
+          is_premium: boolean
+          is_verified: boolean
+          university: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_initials?: string | null
+          city?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          integration_progress?: number
+          interests?: string[] | null
+          is_premium?: boolean
+          is_verified?: boolean
+          university?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_initials?: string | null
+          city?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          integration_progress?: number
+          interests?: string[] | null
+          is_premium?: boolean
+          is_verified?: boolean
+          university?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_documents: {
+        Row: {
+          document_id: string
+          id: string
+          owned: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          document_id: string
+          id?: string
+          owned?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          document_id?: string
+          id?: string
+          owned?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_tasks: {
+        Row: {
+          done: boolean
+          id: string
+          phase_id: string
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          done?: boolean
+          id?: string
+          phase_id: string
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          done?: boolean
+          id?: string
+          phase_id?: string
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +169,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      announcement_category: "entraide" | "sorties" | "logement" | "general"
+      connection_status: "pending" | "accepted" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +297,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      announcement_category: ["entraide", "sorties", "logement", "general"],
+      connection_status: ["pending", "accepted", "rejected"],
+    },
   },
 } as const
