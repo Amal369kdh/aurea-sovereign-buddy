@@ -1,6 +1,11 @@
-import { MapPin, ShieldCheck } from "lucide-react";
+import { MapPin, ShieldCheck, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const DashboardHeader = () => {
+  const { user, signOut } = useAuth();
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User";
+  const initials = displayName.slice(0, 2).toUpperCase();
+
   return (
     <header className="flex items-center justify-between px-6 py-5">
       <div>
@@ -17,11 +22,18 @@ const DashboardHeader = () => {
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
           <ShieldCheck className="h-4 w-4" />
-          Témoin vérifié
+          {displayName}
         </div>
         <div className="flex h-10 w-10 items-center justify-center rounded-full gold-gradient text-sm font-bold text-primary-foreground">
-          AS
+          {initials}
         </div>
+        <button
+          onClick={signOut}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-destructive/20 hover:text-destructive cursor-pointer"
+          title="Déconnexion"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
     </header>
   );
