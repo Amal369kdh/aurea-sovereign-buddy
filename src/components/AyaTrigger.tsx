@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import AyaChat from "./AyaChat";
+import AmalChat from "./AmalChat";
 
-const AyaTrigger = () => {
+const AmalTrigger = () => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -13,13 +13,13 @@ const AyaTrigger = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setOpen((v) => !v)}
-        aria-label="Lancer Aya"
+        aria-label="Lancer Amal"
       >
         <Sparkles className="h-6 w-6 text-primary-foreground" />
       </motion.button>
-      <AyaChat open={open} onClose={() => setOpen(false)} />
+      <AmalChat open={open} onClose={() => setOpen(false)} />
     </>
   );
 };
 
-export default AyaTrigger;
+export default AmalTrigger;

@@ -8,7 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import AppSidebar from "@/components/AppSidebar";
 import SecuritySovereign from "@/components/SecuritySovereign";
-import AyaTrigger from "@/components/AyaTrigger";
+import AmalTrigger from "@/components/AyaTrigger";
 
 const Messages = () => {
   const { user } = useAuth();
@@ -56,7 +56,7 @@ const Messages = () => {
           </div>
         </main>
         <SecuritySovereign />
-        <AyaTrigger />
+        <AmalTrigger />
       </div>
     );
   }
@@ -211,7 +211,7 @@ const Messages = () => {
       </main>
 
       <SecuritySovereign />
-      <AyaTrigger />
+      <AmalTrigger />
     </div>
   );
 };

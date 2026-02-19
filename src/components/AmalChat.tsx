@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/aya-chat`;
+const SESSION_KEY = "amal_chat_history";
 
 const SUGGESTIONS = [
   "Quelles aides financières pour un étudiant étranger ?",
@@ -15,12 +16,12 @@ const SUGGESTIONS = [
   "Quelles démarches pour un titre de séjour ?",
 ];
 
-interface AyaChatProps {
+interface AmalChatProps {
   open: boolean;
   onClose: () => void;
 }
 
-type AyaStatus = {
+type AmalStatus = {
   remaining: number;
   is_premium: boolean;
   limit: number;
@@ -28,17 +29,27 @@ type AyaStatus = {
   integration_progress: number;
 } | null;
 
-const AyaChat = ({ open, onClose }: AyaChatProps) => {
+const AmalChat = ({ open, onClose }: AmalChatProps) => {
   const { session } = useAuth();
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>(() => {
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState<AyaStatus>(null);
+  const [status, setStatus] = useState<AmalStatus>(null);
   const [statusLoading, setStatusLoading] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
   const [locked, setLocked] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Persist messages to sessionStorage
+  useEffect(() => {
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages)); } catch {}
+  }, [messages]);
 
   const authHeaders = useCallback(() => ({
     "Content-Type": "application/json",
@@ -60,7 +71,10 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
           setLocked(true);
         } else if (data.remaining !== undefined) {
           setStatus(data);
-          setLimitReached(data.remaining <= 0 && !data.is_premium);
+          // Only lock if limit reached AND we already have messages (user saw response)
+          if (data.remaining <= 0 && !data.is_premium && messages.length > 0) {
+            setLimitReached(true);
+          }
         }
       })
       .catch(() => {})
@@ -87,11 +101,11 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
         const data = await resp.json();
         if (data.error === "limit_reached") {
           setLimitReached(true);
-          throw new Error("Tu as utilisé tes 2 messages gratuits. Passe en Gold pour continuer !");
+          throw new Error("Tu as utilisé tes messages gratuits. Passe en Gold pour continuer avec Amal !");
         }
         if (data.error === "locked") {
           setLocked(true);
-          throw new Error("Complète ta roadmap pour débloquer Aya.");
+          throw new Error("Complète ta roadmap pour débloquer Amal.");
         }
       }
 
@@ -105,7 +119,7 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
       if (rem !== null) {
         const r = parseInt(rem);
         setStatus((prev) => prev ? { ...prev, remaining: r < 0 ? Infinity : r, used: prev.used + 1 } : prev);
-        if (r === 0) setLimitReached(true);
+        // Don't lock immediately — let the user read the streamed response first
       }
 
       const reader = resp.body.getReader();
@@ -150,6 +164,11 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
           }
         }
       }
+
+      // After stream completes, check if this was the last free message
+      if (rem !== null && parseInt(rem) <= 0) {
+        setLimitReached(true);
+      }
     },
     [session, authHeaders]
   );
@@ -176,17 +195,20 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
   const renderLockedScreen = () => (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
       <Lock className="h-10 w-10 text-muted-foreground" />
-      <h3 className="text-sm font-bold text-foreground">Aya est verrouillée</h3>
+      <h3 className="text-sm font-bold text-foreground">Amal est verrouillé</h3>
       <p className="text-xs text-muted-foreground">
         {locked
-          ? `Tu dois atteindre au moins 20% de progression dans ta roadmap pour débloquer Aya. Tu en es à ${status?.integration_progress ?? 0}%.`
-          : "Tu as utilisé tes 2 messages gratuits. Passe en Gold pour un accès illimité à Aya !"}
+          ? `Tu dois atteindre au moins 20% de progression dans ta roadmap pour débloquer Amal. Tu en es à ${status?.integration_progress ?? 0}%.`
+          : "Tu as utilisé tes messages gratuits. Passe en Gold pour un accès illimité à Amal !"}
       </p>
       <button className="mt-2 flex items-center gap-2 rounded-xl gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground">
         <Crown className="h-4 w-4" /> Passer Gold
       </button>
     </div>
   );
+
+  // Show lock screen only if locked by progress OR if limit reached and no active streaming
+  const showLockScreen = locked || (limitReached && !isLoading);
 
   return (
     <AnimatePresence>
@@ -202,7 +224,7 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
           <div className="flex items-center justify-between border-b border-border px-4 py-3 gold-gradient">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary-foreground" />
-              <span className="text-sm font-bold text-primary-foreground">Aya — Coach IA</span>
+              <span className="text-sm font-bold text-primary-foreground">Amal — Coach IA</span>
             </div>
             <div className="flex items-center gap-2">
               {status && !status.is_premium && !locked && (
@@ -220,7 +242,7 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
             <div className="flex flex-1 items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : locked || limitReached ? (
+          ) : showLockScreen && messages.length === 0 ? (
             renderLockedScreen()
           ) : (
             <>
@@ -229,7 +251,7 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
                 {messages.length === 0 && (
                   <div className="space-y-3">
                     <p className="text-xs text-muted-foreground text-center mt-2">
-                      Salut ! Je suis <strong className="gold-text">Aya</strong>, ton assistante. Pose-moi une question ou choisis un sujet 👇
+                      Salut ! Je suis <strong className="gold-text">Amal</strong>, ton assistant. Pose-moi une question ou choisis un sujet 👇
                     </p>
                     <div className="grid grid-cols-1 gap-2">
                       {SUGGESTIONS.map((s) => (
@@ -272,6 +294,18 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
                     </div>
                   </div>
                 )}
+
+                {/* Soft lock banner after messages */}
+                {limitReached && !locked && !isLoading && messages.length > 0 && (
+                  <div className="mt-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-center">
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Tu as utilisé tes {status?.limit ?? 2} messages gratuits avec Amal.
+                    </p>
+                    <button className="flex items-center gap-2 mx-auto rounded-xl gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground">
+                      <Crown className="h-3 w-3" /> Passer Gold pour un accès illimité
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Input */}
@@ -287,13 +321,13 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
                     ref={inputRef}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Pose ta question à Aya..."
-                    className="flex-1 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                    disabled={isLoading}
+                    placeholder={limitReached ? "Passe Gold pour continuer..." : "Pose ta question à Amal..."}
+                    className="flex-1 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none disabled:opacity-50"
+                    disabled={isLoading || limitReached}
                   />
                   <button
                     type="submit"
-                    disabled={isLoading || !input.trim()}
+                    disabled={isLoading || !input.trim() || limitReached}
                     className="flex h-9 w-9 items-center justify-center rounded-xl gold-gradient text-primary-foreground disabled:opacity-40"
                   >
                     <Send className="h-4 w-4" />
@@ -308,4 +342,4 @@ const AyaChat = ({ open, onClose }: AyaChatProps) => {
   );
 };
 
-export default AyaChat;
+export default AmalChat;

@@ -10,7 +10,7 @@ const corsHeaders = {
 const FREE_MESSAGE_LIMIT = 2;
 const MIN_INTEGRATION_PROGRESS = 20; // must have at least 20% progress to unlock Aya
 
-const SYSTEM_PROMPT = `Tu es Aya, l'assistante IA souveraine de la plateforme étudiante. Tu es experte, directe, rationnelle et bienveillante.
+const SYSTEM_PROMPT = `Tu es Amal, l'assistant IA souverain de la plateforme étudiante. Tu es expert, direct, rationnel et bienveillant.
 
 TON RÔLE :
 - Guider les étudiants (notamment étrangers) dans leurs démarches administratives en France
