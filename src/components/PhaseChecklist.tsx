@@ -1,16 +1,60 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Circle, Sparkles, ChevronDown } from "lucide-react";
+import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
 
 const PhaseChecklist = () => {
-  const { phases, toggleTask } = useIntegration();
+  const { phases, toggleTask, isInFrance, setIsInFrance } = useIntegration();
   const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-extrabold text-foreground">Parcours d'intégration</h2>
       <p className="text-sm text-muted-foreground">Coche chaque étape pour augmenter ton Score de Souveraineté.</p>
+
+      {/* Location toggle banner */}
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            {isInFrance ? (
+              <MapPin className="h-5 w-5 text-primary" />
+            ) : (
+              <Plane className="h-5 w-5 text-primary" />
+            )}
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {isInFrance ? "Tu es en France 🇫🇷" : "Pas encore en France ✈️"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {isInFrance
+                  ? "Les procédures pré-arrivée sont masquées"
+                  : "Toutes les procédures sont affichées"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsInFrance(!isInFrance)}
+            className="rounded-xl border border-border bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/80 cursor-pointer"
+          >
+            {isInFrance ? "Afficher pré-arrivée" : "Je suis en France"}
+          </button>
+        </div>
+
+        {/* Warning when switching to "in France" */}
+        {isInFrance && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 border border-amber-500/20 p-3"
+          >
+            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              Les procédures pré-arrivée (visa, Campus France…) sont masquées. 
+              Clique sur "Afficher pré-arrivée" si tu dois encore les compléter.
+            </p>
+          </motion.div>
+        )}
+      </div>
 
       <div className="space-y-3 mt-4">
         {phases.map((phase) => {
@@ -20,7 +64,6 @@ const PhaseChecklist = () => {
 
           return (
             <div key={phase.id} className="rounded-4xl bg-card border border-border overflow-hidden">
-              {/* Phase header */}
               <button
                 onClick={() => setOpenPhase(isOpen ? null : phase.id)}
                 className="flex w-full items-center gap-4 p-5 text-left cursor-pointer transition-colors hover:bg-secondary/30"
@@ -47,7 +90,6 @@ const PhaseChecklist = () => {
                 />
               </button>
 
-              {/* Items */}
               <AnimatePresence>
                 {isOpen && (
                   <motion.div

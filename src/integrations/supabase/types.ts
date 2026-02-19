@@ -304,6 +304,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          arrival_date: string | null
           avatar_initials: string | null
           aya_messages_used: number
           birth_date: string | null
@@ -316,6 +317,7 @@ export type Database = {
           id: string
           integration_progress: number
           interests: string[] | null
+          is_in_france: boolean | null
           is_premium: boolean
           is_verified: boolean
           last_swipe_reset: string
@@ -332,6 +334,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          arrival_date?: string | null
           avatar_initials?: string | null
           aya_messages_used?: number
           birth_date?: string | null
@@ -344,6 +347,7 @@ export type Database = {
           id?: string
           integration_progress?: number
           interests?: string[] | null
+          is_in_france?: boolean | null
           is_premium?: boolean
           is_verified?: boolean
           last_swipe_reset?: string
@@ -360,6 +364,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          arrival_date?: string | null
           avatar_initials?: string | null
           aya_messages_used?: number
           birth_date?: string | null
@@ -372,6 +377,7 @@ export type Database = {
           id?: string
           integration_progress?: number
           interests?: string[] | null
+          is_in_france?: boolean | null
           is_premium?: boolean
           is_verified?: boolean
           last_swipe_reset?: string

@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
   Crown, Globe, MapPin, GraduationCap, Target, Heart,
-  Wallet, ArrowRight, ArrowLeft, Loader2, Check,
+  Wallet, ArrowRight, ArrowLeft, Loader2, Check, Plane, AlertTriangle,
 } from "lucide-react";
 
 const NATIONALITIES = [
   "🇲🇦 Marocaine", "🇹🇳 Tunisienne", "🇩🇿 Algérienne", "🇸🇳 Sénégalaise",
   "🇨🇮 Ivoirienne", "🇨🇲 Camerounaise", "🇬🇦 Gabonaise", "🇨🇬 Congolaise",
   "🇲🇱 Malienne", "🇧🇫 Burkinabè", "🇹🇬 Togolaise", "🇧🇯 Béninoise",
-  "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "Autre",
+  "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "🇫🇷 Française", "Autre",
 ];
 
 const CITIES = [
@@ -22,12 +22,12 @@ const CITIES = [
 ];
 
 const OBJECTIFS = [
-  { id: "diplome", label: "🎓 Obtenir mon diplôme", },
-  { id: "job", label: "💼 Trouver un job/stage", },
-  { id: "reseau", label: "🤝 Développer mon réseau", },
-  { id: "papiers", label: "📄 Régulariser mes papiers", },
-  { id: "logement", label: "🏠 Trouver un logement", },
-  { id: "sante", label: "🏥 M'occuper de ma santé", },
+  { id: "diplome", label: "🎓 Obtenir mon diplôme" },
+  { id: "job", label: "💼 Trouver un job/stage" },
+  { id: "reseau", label: "🤝 Développer mon réseau" },
+  { id: "papiers", label: "📄 Régulariser mes papiers" },
+  { id: "logement", label: "🏠 Trouver un logement" },
+  { id: "sante", label: "🏥 M'occuper de ma santé" },
 ];
 
 const INTERESTS = [
@@ -35,9 +35,9 @@ const INTERESTS = [
   "Cinéma", "Mode", "Fitness", "Photographie", "Gaming", "Art",
 ];
 
-type Step = "nationality" | "city" | "university" | "objectifs" | "interests" | "budget";
+type Step = "nationality" | "location" | "city" | "university" | "objectifs" | "interests" | "budget";
 
-const STEPS: Step[] = ["nationality", "city", "university", "objectifs", "interests", "budget"];
+const STEPS: Step[] = ["nationality", "location", "city", "university", "objectifs", "interests", "budget"];
 
 const Onboarding = () => {
   const { user } = useAuth();
@@ -47,6 +47,7 @@ const Onboarding = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const [nationality, setNationality] = useState("");
+  const [isInFrance, setIsInFrance] = useState<boolean | null>(null);
   const [city, setCity] = useState("");
   const [university, setUniversity] = useState("");
   const [objectifs, setObjectifs] = useState<string[]>([]);
@@ -58,6 +59,7 @@ const Onboarding = () => {
   const canNext = () => {
     switch (currentStep) {
       case "nationality": return nationality.length > 0;
+      case "location": return isInFrance !== null;
       case "city": return city.length > 0;
       case "university": return university.length > 0;
       case "objectifs": return objectifs.length > 0;
@@ -87,6 +89,7 @@ const Onboarding = () => {
         objectifs,
         interests,
         budget_monthly: budgetNum,
+        is_in_france: isInFrance,
         status: "temoin",
       } as any)
       .eq("user_id", user.id);
@@ -141,37 +144,98 @@ const Onboarding = () => {
               <StepLayout icon={<Globe className="h-5 w-5" />} title="Quelle est ta nationalité ?">
                 <div className="grid grid-cols-2 gap-2">
                   {NATIONALITIES.map((n) => (
-                    <button
-                      key={n}
-                      onClick={() => setNationality(n)}
-                      className={`rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all cursor-pointer ${
-                        nationality === n
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {n}
-                    </button>
+                    <ChoiceButton key={n} selected={nationality === n} onClick={() => setNationality(n)} label={n} />
                   ))}
                 </div>
               </StepLayout>
             )}
 
-            {currentStep === "city" && (
-              <StepLayout icon={<MapPin className="h-5 w-5" />} title="Dans quelle ville étudies-tu ?">
-                <div className="grid grid-cols-3 gap-2">
-                  {CITIES.map((c) => (
+            {currentStep === "location" && (
+              <StepLayout icon={<Plane className="h-5 w-5" />} title="Es-tu déjà en France ?">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 gap-3">
                     <button
-                      key={c}
-                      onClick={() => setCity(c)}
-                      className={`rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all cursor-pointer ${
-                        city === c
+                      onClick={() => setIsInFrance(true)}
+                      className={`flex items-center gap-3 rounded-2xl border px-4 py-4 text-sm font-medium transition-all cursor-pointer ${
+                        isInFrance === true
                           ? "border-primary bg-primary/10 text-primary"
                           : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
                       }`}
                     >
-                      {c}
+                      {isInFrance === true && <Check className="h-4 w-4 text-primary" />}
+                      🇫🇷 Oui, je suis déjà en France
                     </button>
+                    <button
+                      onClick={() => setIsInFrance(false)}
+                      className={`flex items-center gap-3 rounded-2xl border px-4 py-4 text-sm font-medium transition-all cursor-pointer ${
+                        isInFrance === false
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      {isInFrance === false && <Check className="h-4 w-4 text-primary" />}
+                      ✈️ Non, je ne suis pas encore arrivé(e)
+                    </button>
+                  </div>
+
+                  {/* Warning when selecting "already in France" */}
+                  {isInFrance === true && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"
+                    >
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                            Attention
+                          </p>
+                          <p className="mt-1 text-xs text-amber-600/80 dark:text-amber-400/80">
+                            En cochant cette option, les procédures pré-arrivée (visa, Campus France, assurance voyage…) 
+                            seront masquées de ton parcours. Si tu n'as pas encore finalisé ces démarches, 
+                            tu risques de louper des étapes importantes. Tu pourras toujours réactiver ces procédures 
+                            depuis ton dossier plus tard.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* Info when not yet in France */}
+                  {isInFrance === false && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="rounded-2xl border border-primary/30 bg-primary/5 p-4"
+                    >
+                      <div className="flex items-start gap-3">
+                        <Plane className="h-5 w-5 shrink-0 text-primary mt-0.5" />
+                        <div>
+                          <p className="text-sm font-semibold text-primary">
+                            Parfait, on t'accompagne dès maintenant !
+                          </p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Tu verras toutes les procédures pré-arrivée en priorité (visa, Campus France, logement…) 
+                            pour que tu sois 100% prêt(e) le jour J. Une fois en France, tu pourras passer 
+                            en mode "sur place" depuis ton dossier.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              </StepLayout>
+            )}
+
+            {currentStep === "city" && (
+              <StepLayout
+                icon={<MapPin className="h-5 w-5" />}
+                title={isInFrance ? "Dans quelle ville étudies-tu ?" : "Dans quelle ville vas-tu étudier ?"}
+              >
+                <div className="grid grid-cols-3 gap-2">
+                  {CITIES.map((c) => (
+                    <ChoiceButton key={c} selected={city === c} onClick={() => setCity(c)} label={c} />
                   ))}
                 </div>
               </StepLayout>
@@ -184,6 +248,7 @@ const Onboarding = () => {
                   placeholder="Ex: Université Grenoble Alpes"
                   value={university}
                   onChange={(e) => setUniversity(e.target.value)}
+                  maxLength={150}
                   className="w-full rounded-2xl border border-border bg-secondary px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                 />
               </StepLayout>
@@ -234,17 +299,7 @@ const Onboarding = () => {
               <StepLayout icon={<Wallet className="h-5 w-5" />} title="Ton budget mensuel estimé ?">
                 <div className="grid grid-cols-2 gap-2">
                   {["300", "500", "700", "1000", "1500", "2000"].map((b) => (
-                    <button
-                      key={b}
-                      onClick={() => setBudget(b)}
-                      className={`rounded-2xl border px-3 py-3 text-sm font-medium transition-all cursor-pointer ${
-                        budget === b
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {b} €/mois
-                    </button>
+                    <ChoiceButton key={b} selected={budget === b} onClick={() => setBudget(b)} label={`${b} €/mois`} />
                   ))}
                 </div>
               </StepLayout>
@@ -281,6 +336,8 @@ const Onboarding = () => {
   );
 };
 
+/* Reusable sub-components */
+
 const StepLayout = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
   <div>
     <div className="mb-4 flex items-center gap-2 text-primary">
@@ -289,6 +346,19 @@ const StepLayout = ({ icon, title, children }: { icon: React.ReactNode; title: s
     </div>
     {children}
   </div>
+);
+
+const ChoiceButton = ({ selected, onClick, label }: { selected: boolean; onClick: () => void; label: string }) => (
+  <button
+    onClick={onClick}
+    className={`rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all cursor-pointer ${
+      selected
+        ? "border-primary bg-primary/10 text-primary"
+        : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
+    }`}
+  >
+    {label}
+  </button>
 );
 
 export default Onboarding;
