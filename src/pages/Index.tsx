@@ -1,6 +1,6 @@
 import DashboardHeader from "@/components/DashboardHeader";
 import SovereigntyWidget from "@/components/SovereigntyWidget";
-import DailyRoadmap from "@/components/DailyRoadmap";
+import BentoGrid from "@/components/BentoGrid";
 import SocialPulse from "@/components/SocialPulse";
 import AyaTrigger from "@/components/AyaTrigger";
 import AppSidebar from "@/components/AppSidebar";
@@ -14,11 +14,15 @@ const Index = () => {
         <DashboardHeader />
 
         <div className="px-6 pb-24">
-          <div className="grid gap-6 lg:grid-cols-2">
+          {/* Sovereignty ring — compact at top */}
+          <div className="mb-6">
             <SovereigntyWidget />
-            <DailyRoadmap />
           </div>
 
+          {/* Bento tiles */}
+          <BentoGrid />
+
+          {/* Social pulse */}
           <div className="mt-6">
             <SocialPulse />
           </div>
