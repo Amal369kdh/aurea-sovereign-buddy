@@ -28,17 +28,27 @@ export interface DatingCandidate {
   objectifs: string[];
 }
 
+export interface DatingMatch {
+  match_id: string;
+  partner_id: string;
+  partner_name: string;
+  partner_initials: string;
+  partner_city: string | null;
+  partner_university: string | null;
+  created_at: string;
+}
+
 export function useDating() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [myProfile, setMyProfile] = useState<DatingProfile | null>(null);
   const [candidates, setCandidates] = useState<DatingCandidate[]>([]);
+  const [matches, setMatches] = useState<DatingMatch[]>([]);
   const [likesReceived, setLikesReceived] = useState<number>(0);
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(true);
 
-  // Fetch my dating profile + premium status
   const fetchMyProfile = useCallback(async () => {
     if (!user) return;
     setProfileLoading(true);
@@ -53,12 +63,10 @@ export function useDating() {
     setProfileLoading(false);
   }, [user]);
 
-  // Fetch candidates (users with active dating profiles, excluding self)
   const fetchCandidates = useCallback(async () => {
     if (!user || !myProfile) return;
     setLoading(true);
 
-    // Get all active dating profiles except mine
     const { data: datingProfiles } = await supabase
       .from("dating_profiles")
       .select("user_id, bio, looking_for")
@@ -74,7 +82,6 @@ export function useDating() {
 
     const userIds = datingProfiles.map((dp) => dp.user_id);
 
-    // Fetch profiles + my likes in parallel
     const [{ data: profiles }, { data: myLikes }, { data: receivedLikes }] = await Promise.all([
       supabase.from("profiles").select("user_id, display_name, avatar_initials, university, city, interests, is_verified, objectifs").in("user_id", userIds),
       supabase.from("dating_likes").select("liked_id").eq("liker_id", user.id),
@@ -106,20 +113,68 @@ export function useDating() {
     setLoading(false);
   }, [user, myProfile]);
 
+  // Fetch matches
+  const fetchMatches = useCallback(async () => {
+    if (!user) return;
+
+    const { data: rawMatches } = await supabase
+      .from("dating_matches")
+      .select("*")
+      .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
+      .order("created_at", { ascending: false });
+
+    if (!rawMatches || rawMatches.length === 0) {
+      setMatches([]);
+      return;
+    }
+
+    const partnerIds = rawMatches.map((m) =>
+      m.user_a === user.id ? m.user_b : m.user_a
+    );
+
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, avatar_initials, city, university")
+      .in("user_id", partnerIds);
+
+    const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
+
+    const mapped: DatingMatch[] = rawMatches.map((m) => {
+      const partnerId = m.user_a === user.id ? m.user_b : m.user_a;
+      const prof = profileMap.get(partnerId);
+      return {
+        match_id: m.id,
+        partner_id: partnerId,
+        partner_name: prof?.display_name || "Anonyme",
+        partner_initials: prof?.avatar_initials || "??",
+        partner_city: prof?.city || null,
+        partner_university: prof?.university || null,
+        created_at: m.created_at,
+      };
+    });
+
+    setMatches(mapped);
+  }, [user]);
+
   useEffect(() => { fetchMyProfile(); }, [fetchMyProfile]);
   useEffect(() => { fetchCandidates(); }, [fetchCandidates]);
+  useEffect(() => { fetchMatches(); }, [fetchMatches]);
 
-  // Realtime for new likes
+  // Realtime for likes + matches
   useEffect(() => {
     if (!user) return;
     const channel = supabase
-      .channel("dating-likes-rt")
+      .channel("dating-rt")
       .on("postgres_changes", { event: "*", schema: "public", table: "dating_likes" }, () => {
         fetchCandidates();
       })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "dating_matches" }, () => {
+        fetchMatches();
+        toast({ title: "💘 Nouveau match !", description: "Quelqu'un t'a aussi liké ! Découvre ton match." });
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [user, fetchCandidates]);
+  }, [user, fetchCandidates, fetchMatches, toast]);
 
   const createDatingProfile = async (data: { bio: string; looking_for: string; show_me: string }) => {
     if (!user) return;
@@ -148,13 +203,13 @@ export function useDating() {
         return;
       }
     }
-    // Optimistic update
     setCandidates((prev) => prev.map((c) => c.user_id === targetUserId ? { ...c, liked_by_me: !currentlyLiked } : c));
   };
 
   return {
     myProfile,
     candidates,
+    matches,
     likesReceived,
     isPremium,
     loading,
