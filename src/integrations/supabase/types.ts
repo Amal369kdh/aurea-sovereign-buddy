@@ -157,6 +157,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_initials: string | null
+          aya_messages_used: number
           birth_date: string | null
           budget_monthly: number | null
           city: string | null
@@ -184,6 +185,7 @@ export type Database = {
         }
         Insert: {
           avatar_initials?: string | null
+          aya_messages_used?: number
           birth_date?: string | null
           budget_monthly?: number | null
           city?: string | null
@@ -211,6 +213,7 @@ export type Database = {
         }
         Update: {
           avatar_initials?: string | null
+          aya_messages_used?: number
           birth_date?: string | null
           budget_monthly?: number | null
           city?: string | null
