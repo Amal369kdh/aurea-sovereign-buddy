@@ -235,7 +235,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
                   <Flag className="h-3.5 w-3.5" />
                 </button>
                 <button className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80 cursor-pointer">
-                  <Sparkles className="h-3.5 w-3.5" /> Aya
+                  <Sparkles className="h-3.5 w-3.5" /> Amal
                 </button>
               </div>
 

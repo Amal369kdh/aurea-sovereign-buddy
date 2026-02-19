@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const FREE_MESSAGE_LIMIT = 2;
-const MIN_INTEGRATION_PROGRESS = 20; // must have at least 20% progress to unlock Aya
+const MIN_INTEGRATION_PROGRESS = 20; // must have at least 20% progress to unlock Amal
 
 const SYSTEM_PROMPT = `Tu es Amal, l'assistant IA souverain de la plateforme étudiante. Tu es expert, direct, rationnel et bienveillant.
 

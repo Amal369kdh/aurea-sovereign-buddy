@@ -15,7 +15,7 @@ const navItems = [
   { icon: FolderLock, label: "Mon Dossier", path: "/mon-dossier" },
   { icon: Users, label: "Hub Social", path: "/hub-social" },
   { icon: MessageCircle, label: "Messages", path: "/messages" },
-  { icon: Sparkles, label: "Aya IA", path: "#" },
+  { icon: Sparkles, label: "Amal IA", path: "#" },
   { icon: Settings, label: "Réglages", path: "#" },
 ];
 
@@ -56,7 +56,7 @@ const AppSidebar = () => {
       <div className="mt-auto rounded-3xl gold-gradient p-4">
         <p className="text-sm font-bold text-primary-foreground">Passe Gold ✨</p>
         <p className="mt-1 text-xs text-primary-foreground/70">
-          Débloque Aya illimitée et le mode rencontre.
+          Débloque Amal illimitée et le mode rencontre.
         </p>
         <button className="mt-3 w-full rounded-xl bg-primary-foreground/20 py-2 text-xs font-bold text-primary-foreground backdrop-blur-sm transition-colors hover:bg-primary-foreground/30">
           Découvrir

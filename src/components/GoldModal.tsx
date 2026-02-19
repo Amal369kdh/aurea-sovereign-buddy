@@ -9,7 +9,7 @@ interface GoldModalProps {
 const perks = [
   { icon: MessageCircle, label: "Messagerie illimitée", desc: "Contacte n'importe quel étudiant vérifié." },
   { icon: ShieldCheck, label: "Accès prioritaire au Hub", desc: "Tes posts sont mis en avant." },
-  { icon: Sparkles, label: "Coach Aya IA sans limite", desc: "Pose toutes tes questions, 24/7." },
+  { icon: Sparkles, label: "Coach Amal IA sans limite", desc: "Pose toutes tes questions, 24/7." },
 ];
 
 const GoldModal = ({ open, onClose }: GoldModalProps) => {
