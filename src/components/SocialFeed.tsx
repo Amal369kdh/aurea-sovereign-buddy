@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp } from "lucide-react";
+import { ShieldCheck, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp } from "lucide-react";
+import LikersPopover from "@/components/LikersPopover";
+import GoldModal from "@/components/GoldModal";
 import { Badge } from "@/components/ui/badge";
 import { useAnnouncements, type AnnouncementCategory } from "@/hooks/useAnnouncements";
 import { formatDistanceToNow } from "date-fns";
@@ -40,6 +42,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
   const [posting, setPosting] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ userId?: string; announcementId?: string } | null>(null);
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [goldOpen, setGoldOpen] = useState(false);
 
   const handlePost = async () => {
     if (!newContent.trim()) return;
@@ -200,14 +203,13 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
 
               {/* Actions */}
               <div className="flex items-center gap-5">
-                <button
-                  onClick={() => toggleLike(post.id, post.liked_by_me)}
-                  className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
-                    post.liked_by_me ? "text-primary font-semibold" : "text-muted-foreground hover:text-primary"
-                  }`}
-                >
-                  <Heart className={`h-4 w-4 ${post.liked_by_me ? "fill-primary" : ""}`} /> {post.likes_count}
-                </button>
+                <LikersPopover
+                  announcementId={post.id}
+                  likesCount={post.likes_count}
+                  likedByMe={post.liked_by_me}
+                  onToggleLike={() => toggleLike(post.id, post.liked_by_me)}
+                  onGoldClick={() => setGoldOpen(true)}
+                />
                 <button
                   onClick={() => {
                     setExpandedComments((prev) => {
@@ -252,6 +254,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
         targetAnnouncementId={reportTarget?.announcementId}
         onClose={() => setReportTarget(null)}
       />
+      <GoldModal open={goldOpen} onClose={() => setGoldOpen(false)} />
     </div>
   );
 };

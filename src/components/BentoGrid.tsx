@@ -108,7 +108,9 @@ const BentoGrid = () => {
       links: [
         { icon: Calculator, label: "Simulateur de budget", sub: "Estime tes dépenses mensuelles", route: "/" },
         { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, Banque…", route: "/mon-dossier" },
-        { icon: Building2, label: "Aides financières", sub: "CROUS, APL, bourses", route: "/" },
+        { icon: Building2, label: "Aides financières", sub: "CROUS, APL, bourses", href: "https://www.messervices.etudiant.gouv.fr" },
+        { icon: ExternalLink, label: "Simulateur APL", sub: "Estime ton aide au logement", href: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation" },
+        { icon: ClipboardCheck, label: "Demande de bourse CROUS", sub: "DSE en ligne", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
       ] as QuickLink[],
     },
     {
@@ -118,8 +120,9 @@ const BentoGrid = () => {
       accentClass: "bg-info/15 text-info",
       className: "lg:col-span-1",
       links: [
-        { icon: Briefcase, label: "Offres vérifiées", sub: "Jobs & alternance près de toi", route: "/" },
-        { icon: GraduationCap, label: "Stages", sub: "Publications validées par les facs", route: "/" },
+        { icon: Briefcase, label: "Jobs étudiants", sub: "Offres vérifiées près de toi", href: "https://www.jobaviz.fr/" },
+        { icon: GraduationCap, label: "Stages & alternance", sub: "Offres validées par les facs", href: "https://www.1jeune1solution.gouv.fr/" },
+        { icon: ExternalLink, label: "Pôle Emploi étudiants", sub: "Accompagnement personnalisé", href: "https://www.francetravail.fr/" },
       ] as QuickLink[],
     },
     {
@@ -129,9 +132,10 @@ const BentoGrid = () => {
       accentClass: "bg-success/15 text-success",
       className: "lg:col-span-1",
       links: [
-        { icon: Phone, label: "Assistante sociale CROUS", sub: "Contact direct", href: "tel:+33476574400" },
+        { icon: Phone, label: "Assistante sociale CROUS", sub: "04 76 57 44 00 — Contact direct", href: "tel:+33476574400" },
         { icon: MapPin, label: "CROUS Grenoble", sub: "351 allée de la Colline, 38400", href: "https://maps.google.com/?q=CROUS+Grenoble" },
-        { icon: BookOpen, label: "Guide réorientation", sub: "Conseils et contacts", route: "/" },
+        { icon: Phone, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit", href: "tel:0800235236" },
+        { icon: BookOpen, label: "Guide réorientation", sub: "Parcoursup, passerelles, conseils", href: "https://www.parcoursup.gouv.fr/" },
       ] as QuickLink[],
     },
     {
@@ -141,9 +145,11 @@ const BentoGrid = () => {
       accentClass: "bg-destructive/15 text-destructive",
       className: "lg:col-span-2",
       links: [
-        { icon: Stethoscope, label: "Médecins conventionnés", sub: "Sans avance de frais (secteur 1)", route: "/" },
-        { icon: MapPin, label: "Centre de santé universitaire", sub: "Gratuit pour les étudiants", href: "https://maps.google.com/?q=Centre+santé+université+Grenoble" },
-        { icon: Phone, label: "Urgences — 15 / 112", sub: "SAMU & urgences européennes", href: "tel:15" },
+        { icon: Stethoscope, label: "Médecins secteur 1", sub: "Sans avance de frais — Annuaire Ameli", href: "https://annuairesante.ameli.fr/" },
+        { icon: MapPin, label: "Centre de santé universitaire", sub: "Gratuit pour étudiants — SSE Grenoble", href: "https://maps.google.com/?q=Service+santé+étudiants+Grenoble" },
+        { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
+        { icon: Phone, label: "SOS Médecins Grenoble", sub: "04 76 44 44 44 — Visites à domicile", href: "tel:+33476444444" },
+        { icon: ExternalLink, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" },
       ] as QuickLink[],
     },
   ];
