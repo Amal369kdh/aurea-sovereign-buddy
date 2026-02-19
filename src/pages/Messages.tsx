@@ -9,6 +9,7 @@ import { fr } from "date-fns/locale";
 import AppSidebar from "@/components/AppSidebar";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AmalTrigger from "@/components/AyaTrigger";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const Messages = () => {
   const { user } = useAuth();
@@ -212,6 +213,7 @@ const Messages = () => {
 
       <SecuritySovereign />
       <AmalTrigger />
+      <MobileBottomNav />
     </div>
   );
 };

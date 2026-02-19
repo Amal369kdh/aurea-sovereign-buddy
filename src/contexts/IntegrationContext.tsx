@@ -211,13 +211,17 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
 
   const setIsInFrance = useCallback(
     (value: boolean) => {
-      setIsInFranceState(value);
-      if (user) {
-        supabase
-          .from("profiles")
-          .update({ is_in_france: value } as any)
-          .eq("user_id", user.id)
-          .then();
+      try {
+        setIsInFranceState(value);
+        if (user) {
+          supabase
+            .from("profiles")
+            .update({ is_in_france: value } as any)
+            .eq("user_id", user.id)
+            .then();
+        }
+      } catch (err) {
+        console.error("Error updating is_in_france:", err);
       }
     },
     [user]

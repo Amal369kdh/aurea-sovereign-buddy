@@ -5,6 +5,8 @@ import SocialPulse from "@/components/SocialPulse";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import WelcomeGuide from "@/components/WelcomeGuide";
 
 const Index = () => {
   return (
@@ -14,7 +16,12 @@ const Index = () => {
       <main className="flex-1 overflow-y-auto">
         <DashboardHeader />
 
-        <div className="px-6 pb-24">
+        <div className="px-6 pb-28">
+          {/* Welcome guide */}
+          <div className="mb-6">
+            <WelcomeGuide />
+          </div>
+
           {/* Sovereignty ring — compact at top */}
           <div className="mb-6">
             <SovereigntyWidget />
@@ -32,6 +39,7 @@ const Index = () => {
 
       <SecuritySovereign />
       <AmalTrigger />
+      <MobileBottomNav />
     </div>
   );
 };
