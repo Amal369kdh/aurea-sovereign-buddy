@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, AlertTriangle } from "lucide-react";
+import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, AlertTriangle, ExternalLink, Info } from "lucide-react";
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
 
@@ -10,7 +10,7 @@ const PhaseChecklist = () => {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-extrabold text-foreground">Parcours d'intégration</h2>
-      <p className="text-sm text-muted-foreground">Coche chaque étape pour augmenter ton Score de Souveraineté.</p>
+      <p className="text-sm text-muted-foreground">Coche chaque étape et suis les liens pour avancer dans tes démarches.</p>
 
       {/* Location toggle banner */}
       <div className="rounded-2xl border border-border bg-card p-4">
@@ -40,7 +40,6 @@ const PhaseChecklist = () => {
           </button>
         </div>
 
-        {/* Warning when switching to "in France" */}
         {isInFrance && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -50,7 +49,7 @@ const PhaseChecklist = () => {
             <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
             <p className="text-xs text-amber-600 dark:text-amber-400">
               Les procédures pré-arrivée (visa, Campus France…) sont masquées. 
-              Clique sur "Afficher pré-arrivée" si tu dois encore les compléter.
+              Clique sur « Afficher pré-arrivée » si tu dois encore les compléter.
             </p>
           </motion.div>
         )}
@@ -101,50 +100,75 @@ const PhaseChecklist = () => {
                   >
                     <div className="border-t border-border px-5 pb-4 pt-2 space-y-2">
                       {phase.items.map((item) => (
-                        <motion.div
-                          key={item.id}
-                          layout
-                          className="group flex items-center gap-3 rounded-2xl px-4 py-3 transition-colors hover:bg-secondary/40 cursor-pointer"
-                          onClick={() => toggleTask(phase.id, item.id)}
-                        >
+                        <div key={item.id} className="rounded-2xl border border-border/50 bg-secondary/20 overflow-hidden">
                           <motion.div
-                            animate={item.done ? { scale: [1, 1.3, 1] } : {}}
-                            transition={{ duration: 0.3 }}
-                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                              item.done
-                                ? "gold-gradient"
-                                : "border-2 border-muted-foreground/30"
-                            }`}
+                            layout
+                            className="group flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-secondary/40"
+                            onClick={() => toggleTask(phase.id, item.id)}
                           >
-                            {item.done ? (
-                              <Check className="h-4 w-4 text-primary-foreground" />
-                            ) : (
-                              <Circle className="h-3 w-3 text-muted-foreground/30" />
+                            <motion.div
+                              animate={item.done ? { scale: [1, 1.3, 1] } : {}}
+                              transition={{ duration: 0.3 }}
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                item.done
+                                  ? "gold-gradient"
+                                  : "border-2 border-muted-foreground/30"
+                              }`}
+                            >
+                              {item.done ? (
+                                <Check className="h-4 w-4 text-primary-foreground" />
+                              ) : (
+                                <Circle className="h-3 w-3 text-muted-foreground/30" />
+                              )}
+                            </motion.div>
+
+                            <span
+                              className={`flex-1 text-sm font-medium transition-colors ${
+                                item.done
+                                  ? "text-muted-foreground line-through"
+                                  : "text-foreground"
+                              }`}
+                            >
+                              {item.label}
+                            </span>
+
+                            {item.hasAya && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                                className="flex items-center gap-1.5 rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
+                              >
+                                <Sparkles className="h-3 w-3" />
+                                Amal
+                              </button>
                             )}
                           </motion.div>
 
-                          <span
-                            className={`flex-1 text-sm font-medium transition-colors ${
-                              item.done
-                                ? "text-muted-foreground line-through"
-                                : "text-foreground"
-                            }`}
-                          >
-                            {item.label}
-                          </span>
-
-                          {item.hasAya && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                              className="flex items-center gap-1.5 rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
-                            >
-                              <Sparkles className="h-3 w-3" />
-                              Demander à Amal
-                            </button>
+                          {/* Tip & Link section */}
+                          {(item.tip || item.link) && (
+                            <div className="px-4 pb-3 pt-0 flex flex-wrap items-center gap-2">
+                              {item.tip && (
+                                <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                                  <Info className="h-3 w-3 shrink-0 mt-0.5" />
+                                  <span>{item.tip}</span>
+                                </div>
+                              )}
+                              {item.link && (
+                                <a
+                                  href={item.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
+                                >
+                                  <ExternalLink className="h-3 w-3" />
+                                  Lien officiel
+                                </a>
+                              )}
+                            </div>
                           )}
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   </motion.div>

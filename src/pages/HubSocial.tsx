@@ -26,7 +26,7 @@ const HubSocial = () => {
         {/* Header */}
         <div className="border-b border-border px-6 py-5">
           <h1 className="text-2xl font-extrabold text-foreground">Hub Social</h1>
-          <p className="text-sm text-muted-foreground">Connecte-toi avec les étudiants de ta ville</p>
+          <p className="text-sm text-muted-foreground">Connecte-toi avec les étudiants de ta ville.</p>
 
           {/* Tabs */}
           <div className="mt-4 flex gap-2">

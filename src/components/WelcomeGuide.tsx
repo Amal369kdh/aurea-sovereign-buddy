@@ -10,8 +10,8 @@ const WelcomeGuide = () => {
   const steps = [
     {
       icon: FolderLock,
-      title: "1. Complète ton dossier",
-      desc: "Coche tes démarches et rassemble tes documents.",
+      title: "1. Complète tes démarches",
+      desc: "Suis ta checklist, coche tes étapes et remplis ton profil étudiant.",
       action: () => navigate("/mon-dossier"),
       cta: "Mon Dossier",
       done: progress > 30,
@@ -27,9 +27,9 @@ const WelcomeGuide = () => {
     {
       icon: Sparkles,
       title: "3. Demande à Amal",
-      desc: "L'IA qui t'aide sur tes procédures administratives.",
+      desc: "Ton assistante IA pour les démarches administratives.",
       action: () => {},
-      cta: "Bientôt",
+      cta: "Ouvrir Amal",
       done: false,
     },
   ];

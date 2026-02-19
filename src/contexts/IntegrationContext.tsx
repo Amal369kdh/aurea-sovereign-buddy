@@ -9,6 +9,10 @@ interface ChecklistItem {
   hasAya?: boolean;
   /** "pre" = only for students not yet in France, "post" = only for those already in France, undefined = for everyone */
   scope?: "pre" | "post";
+  /** Useful link for the task */
+  link?: string;
+  /** Short info or tip about this step */
+  tip?: string;
 }
 
 interface ChecklistPhase {
@@ -16,24 +20,14 @@ interface ChecklistPhase {
   title: string;
   icon: string;
   items: ChecklistItem[];
-  /** "pre" = only for students not yet in France, "post" = only for those already in France, undefined = for everyone */
-  scope?: "pre" | "post";
-}
-
-interface Document {
-  id: string;
-  label: string;
-  owned: boolean;
   scope?: "pre" | "post";
 }
 
 interface IntegrationState {
   phases: ChecklistPhase[];
-  documents: Document[];
   progress: number;
   isInFrance: boolean | null;
   toggleTask: (phaseId: string, itemId: string) => void;
-  toggleDocument: (docId: string) => void;
   setIsInFrance: (value: boolean) => void;
 }
 
@@ -44,9 +38,35 @@ const allPhases: ChecklistPhase[] = [
     icon: "✈️",
     scope: "pre",
     items: [
-      { id: "visa", label: "Demande de Visa", done: false },
-      { id: "campus-france", label: "Procédure Campus France", done: false },
-      { id: "avi", label: "Attestation d'assurance voyage (AVI)", done: false },
+      {
+        id: "visa",
+        label: "Demande de visa étudiant",
+        done: false,
+        hasAya: true,
+        link: "https://france-visas.gouv.fr/",
+        tip: "Commence la demande au moins 3 mois avant ton départ.",
+      },
+      {
+        id: "campus-france",
+        label: "Procédure Campus France",
+        done: false,
+        link: "https://www.campusfrance.org/",
+        tip: "Crée ton dossier sur Études en France et suis les étapes.",
+      },
+      {
+        id: "avi",
+        label: "Assurance voyage internationale",
+        done: false,
+        link: "https://www.acs-ami.com/",
+        tip: "Obligatoire pour le visa — vérifie les montants de couverture.",
+      },
+      {
+        id: "logement-anticipe",
+        label: "Réserver un logement depuis l'étranger",
+        done: false,
+        link: "https://trouverunlogement.lescrous.fr/",
+        tip: "CROUS, Studapart ou résidence étudiante — réserve tôt.",
+      },
     ],
   },
   {
@@ -54,41 +74,119 @@ const allPhases: ChecklistPhase[] = [
     title: "Installation",
     icon: "🏠",
     items: [
-      { id: "logement", label: "Trouver un logement", done: false },
-      { id: "electricite", label: "Ouverture électricité / gaz", done: false, hasAya: true },
-      { id: "banque", label: "Ouverture de compte bancaire", done: false },
+      {
+        id: "logement",
+        label: "Trouver un logement",
+        done: false,
+        hasAya: true,
+        link: "https://trouverunlogement.lescrous.fr/",
+        tip: "CROUS, Studapart, LeBonCoin — commence par les résidences universitaires.",
+      },
+      {
+        id: "electricite",
+        label: "Ouverture électricité / gaz",
+        done: false,
+        hasAya: true,
+        link: "https://www.edf.fr/",
+        tip: "Appelle EDF ou Engie avec ton contrat de bail.",
+      },
+      {
+        id: "banque",
+        label: "Ouverture de compte bancaire",
+        done: false,
+        link: "https://www.boursobank.com/",
+        tip: "Banque en ligne (Bourso, Revolut) ou agence — apporte ton passeport et justificatif de domicile.",
+      },
+      {
+        id: "telephone",
+        label: "Forfait téléphone français",
+        done: false,
+        link: "https://www.free.fr/forfait-mobile/",
+        tip: "Free Mobile à 2€ ou 19,99€ — sans engagement, idéal pour commencer.",
+      },
+      {
+        id: "assurance-habitation",
+        label: "Assurance habitation",
+        done: false,
+        link: "https://www.heyme.care/",
+        tip: "Obligatoire pour le bail — HEYME, LMDE ou MAIF proposent des offres étudiantes.",
+      },
     ],
   },
   {
     id: "legal",
-    title: "Légal",
+    title: "Démarches légales",
     icon: "⚖️",
     items: [
-      { id: "vls-ts", label: "Validation VLS-TS (Titre de séjour)", done: false, hasAya: true, scope: "pre" },
-      { id: "secu", label: "Numéro de Sécurité Sociale", done: false, hasAya: true },
+      {
+        id: "vls-ts",
+        label: "Validation du VLS-TS (titre de séjour)",
+        done: false,
+        hasAya: true,
+        scope: "pre",
+        link: "https://administration-etrangers-en-france.interieur.gouv.fr/",
+        tip: "À faire dans les 3 premiers mois après ton arrivée — paiement de 75€.",
+      },
+      {
+        id: "secu",
+        label: "Numéro de Sécurité Sociale",
+        done: false,
+        hasAya: true,
+        link: "https://etudiant-etranger.ameli.fr/",
+        tip: "Inscris-toi en ligne sur ameli.fr — prévoir 2 à 4 semaines.",
+      },
+      {
+        id: "ofii",
+        label: "Convocation OFII",
+        done: false,
+        scope: "pre",
+        link: "https://www.ofii.fr/",
+        tip: "Tu recevras une convocation après la validation du VLS-TS.",
+      },
     ],
   },
   {
     id: "vie-locale",
-    title: "Vie Locale",
+    title: "Vie quotidienne",
     icon: "🌍",
     items: [
-      { id: "caf", label: "Demande d'aide au logement (CAF)", done: false, hasAya: true },
-      { id: "transport", label: "Carte de transport", done: false },
-      { id: "job", label: "Job étudiant", done: false },
+      {
+        id: "caf",
+        label: "Demande d'aide au logement (CAF)",
+        done: false,
+        hasAya: true,
+        link: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation",
+        tip: "Simule ton APL en ligne puis fais la demande — ça peut réduire ton loyer de 100 à 300€.",
+      },
+      {
+        id: "transport",
+        label: "Carte de transport",
+        done: false,
+        link: "https://www.tag.fr/",
+        tip: "Abonnement étudiant TAG à Grenoble, ou Navigo à Paris — tarifs réduits.",
+      },
+      {
+        id: "medecin",
+        label: "Choisir un médecin traitant",
+        done: false,
+        link: "https://annuairesante.ameli.fr/",
+        tip: "Trouve un médecin secteur 1 (sans dépassement) sur Ameli.",
+      },
+      {
+        id: "job",
+        label: "Trouver un job étudiant",
+        done: false,
+        link: "https://www.jobaviz.fr/",
+        tip: "20h/semaine max avec un visa étudiant — Jobaviz, Indeed, réseau de la fac.",
+      },
+      {
+        id: "sport-culture",
+        label: "Inscription sport / associations",
+        done: false,
+        tip: "Le SUAPS de ta fac propose du sport gratuit — rejoins aussi un BDE ou une asso.",
+      },
     ],
   },
-];
-
-const allDocuments: Document[] = [
-  { id: "passeport", label: "Passeport", owned: false },
-  { id: "admission", label: "Lettre d'admission", owned: false },
-  { id: "bail", label: "Bail / Contrat de logement", owned: false },
-  { id: "rib", label: "RIB Bancaire", owned: false },
-  { id: "assurance", label: "Assurance habitation", owned: false },
-  { id: "acte-naissance", label: "Acte de naissance traduit", owned: false, scope: "pre" },
-  { id: "photo-id", label: "Photos d'identité", owned: false },
-  { id: "certificat-scolarite", label: "Certificat de scolarité", owned: false },
 ];
 
 function filterByScope<T extends { scope?: "pre" | "post" }>(items: T[], isInFrance: boolean | null, showAll: boolean): T[] {
@@ -96,7 +194,7 @@ function filterByScope<T extends { scope?: "pre" | "post" }>(items: T[], isInFra
   return items.filter((item) => {
     if (!item.scope) return true;
     if (isInFrance) return item.scope === "post";
-    return true; // not in France → show everything (pre + shared)
+    return true;
   });
 }
 
@@ -111,13 +209,11 @@ function filterPhaseItems(phases: ChecklistPhase[], isInFrance: boolean | null, 
   })).filter((phase) => phase.items.length > 0);
 }
 
-function calcProgress(phases: ChecklistPhase[], documents: Document[]): number {
+function calcProgress(phases: ChecklistPhase[]): number {
   const allTasks = phases.flatMap((p) => p.items);
   const doneTasks = allTasks.filter((t) => t.done).length;
-  const ownedDocs = documents.filter((d) => d.owned).length;
-  const total = allTasks.length + documents.length;
-  const done = doneTasks + ownedDocs;
-  return total > 0 ? Math.round((done / total) * 100) : 0;
+  const total = allTasks.length;
+  return total > 0 ? Math.round((doneTasks / total) * 100) : 0;
 }
 
 const IntegrationContext = createContext<IntegrationState | null>(null);
@@ -131,20 +227,16 @@ export const useIntegration = () => {
 export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [rawPhases, setRawPhases] = useState(allPhases);
-  const [rawDocuments, setRawDocuments] = useState(allDocuments);
   const [isInFrance, setIsInFranceState] = useState<boolean | null>(null);
 
-  // Load profile is_in_france + tasks + documents
   useEffect(() => {
     if (!user) {
       setRawPhases(allPhases);
-      setRawDocuments(allDocuments);
       setIsInFranceState(null);
       return;
     }
 
     const loadData = async () => {
-      // Load is_in_france from profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("is_in_france")
@@ -155,7 +247,6 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
         setIsInFranceState((profile as any).is_in_france ?? null);
       }
 
-      // Load tasks
       const { data: tasks } = await supabase
         .from("user_tasks")
         .select("phase_id, task_id, done")
@@ -173,41 +264,22 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
           }))
         );
       }
-
-      // Load documents
-      const { data: docs } = await supabase
-        .from("user_documents")
-        .select("document_id, owned")
-        .eq("user_id", user.id);
-
-      if (docs && docs.length > 0) {
-        const docMap = new Map(docs.map((d: any) => [d.document_id, d.owned]));
-        setRawDocuments((prev) =>
-          prev.map((doc) => ({
-            ...doc,
-            owned: docMap.get(doc.id) ?? doc.owned,
-          }))
-        );
-      }
     };
 
     loadData();
   }, [user]);
 
-  // Filtered phases & documents based on is_in_france
   const phases = filterPhaseItems(rawPhases, isInFrance, false);
-  const documents = filterByScope(rawDocuments, isInFrance, false);
 
-  // Update progress in profile
   useEffect(() => {
     if (!user) return;
-    const progress = calcProgress(phases, documents);
+    const progress = calcProgress(phases);
     supabase
       .from("profiles")
       .update({ integration_progress: progress } as any)
       .eq("user_id", user.id)
       .then();
-  }, [phases, documents, user]);
+  }, [phases, user]);
 
   const setIsInFrance = useCallback(
     (value: boolean) => {
@@ -256,32 +328,10 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     [user]
   );
 
-  const toggleDocument = useCallback(
-    (docId: string) => {
-      setRawDocuments((prev) =>
-        prev.map((doc) => {
-          if (doc.id !== docId) return doc;
-          const newOwned = !doc.owned;
-          if (user) {
-            supabase
-              .from("user_documents")
-              .upsert(
-                { user_id: user.id, document_id: docId, owned: newOwned } as any,
-                { onConflict: "user_id,document_id" }
-              )
-              .then();
-          }
-          return { ...doc, owned: newOwned };
-        })
-      );
-    },
-    [user]
-  );
-
-  const progress = calcProgress(phases, documents);
+  const progress = calcProgress(phases);
 
   return (
-    <IntegrationContext.Provider value={{ phases, documents, progress, isInFrance, toggleTask, toggleDocument, setIsInFrance }}>
+    <IntegrationContext.Provider value={{ phases, progress, isInFrance, toggleTask, setIsInFrance }}>
       {children}
     </IntegrationContext.Provider>
   );
