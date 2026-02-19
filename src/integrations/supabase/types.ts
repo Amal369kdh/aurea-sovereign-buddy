@@ -79,6 +79,41 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          announcement_id: string
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          is_solution: boolean
+        }
+        Insert: {
+          announcement_id: string
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_solution?: boolean
+        }
+        Update: {
+          announcement_id?: string
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_solution?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connections: {
         Row: {
           created_at: string
@@ -333,6 +368,86 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solution_conversations: {
+        Row: {
+          announcement_id: string
+          comment_id: string
+          created_at: string
+          helper_id: string
+          helper_msg_count: number
+          id: string
+          post_author_id: string
+          post_author_msg_count: number
+        }
+        Insert: {
+          announcement_id: string
+          comment_id: string
+          created_at?: string
+          helper_id: string
+          helper_msg_count?: number
+          id?: string
+          post_author_id: string
+          post_author_msg_count?: number
+        }
+        Update: {
+          announcement_id?: string
+          comment_id?: string
+          created_at?: string
+          helper_id?: string
+          helper_msg_count?: number
+          id?: string
+          post_author_id?: string
+          post_author_msg_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solution_conversations_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solution_conversations_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: true
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solution_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solution_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "solution_conversations"
             referencedColumns: ["id"]
           },
         ]

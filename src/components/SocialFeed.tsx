@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy } from "lucide-react";
+import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAnnouncements, type AnnouncementCategory } from "@/hooks/useAnnouncements";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import ReportDialog from "@/components/ReportDialog";
+import CommentSection from "@/components/CommentSection";
 
 type Category = AnnouncementCategory | "all";
 
@@ -38,6 +39,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
   const [newCategory, setNewCategory] = useState<AnnouncementCategory>("general");
   const [posting, setPosting] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ userId?: string; announcementId?: string } | null>(null);
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
 
   const handlePost = async () => {
     if (!newContent.trim()) return;
@@ -206,8 +208,19 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
                 >
                   <Heart className={`h-4 w-4 ${post.liked_by_me ? "fill-primary" : ""}`} /> {post.likes_count}
                 </button>
-                <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+                <button
+                  onClick={() => {
+                    setExpandedComments((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(post.id)) next.delete(post.id);
+                      else next.add(post.id);
+                      return next;
+                    });
+                  }}
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer"
+                >
                   <MessageCircle className="h-4 w-4" /> {post.comments_count}
+                  {expandedComments.has(post.id) ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                 </button>
                 <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
                   <Share2 className="h-4 w-4" />
@@ -223,6 +236,11 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
                   <Sparkles className="h-3.5 w-3.5" /> Aya
                 </button>
               </div>
+
+              {/* Comments section */}
+              {expandedComments.has(post.id) && (
+                <CommentSection announcementId={post.id} postAuthorId={post.author_id} />
+              )}
             </motion.div>
           ))}
         </div>
