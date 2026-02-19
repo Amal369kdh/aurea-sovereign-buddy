@@ -7,6 +7,8 @@ interface ChecklistItem {
   label: string;
   done: boolean;
   hasAya?: boolean;
+  /** "pre" = only for students not yet in France, "post" = only for those already in France, undefined = for everyone */
+  scope?: "pre" | "post";
 }
 
 interface ChecklistPhase {
@@ -14,27 +16,33 @@ interface ChecklistPhase {
   title: string;
   icon: string;
   items: ChecklistItem[];
+  /** "pre" = only for students not yet in France, "post" = only for those already in France, undefined = for everyone */
+  scope?: "pre" | "post";
 }
 
 interface Document {
   id: string;
   label: string;
   owned: boolean;
+  scope?: "pre" | "post";
 }
 
 interface IntegrationState {
   phases: ChecklistPhase[];
   documents: Document[];
   progress: number;
+  isInFrance: boolean | null;
   toggleTask: (phaseId: string, itemId: string) => void;
   toggleDocument: (docId: string) => void;
+  setIsInFrance: (value: boolean) => void;
 }
 
-const defaultPhases: ChecklistPhase[] = [
+const allPhases: ChecklistPhase[] = [
   {
     id: "pre-arrival",
     title: "Pré-arrivée",
     icon: "✈️",
+    scope: "pre",
     items: [
       { id: "visa", label: "Demande de Visa", done: false },
       { id: "campus-france", label: "Procédure Campus France", done: false },
@@ -56,7 +64,7 @@ const defaultPhases: ChecklistPhase[] = [
     title: "Légal",
     icon: "⚖️",
     items: [
-      { id: "vls-ts", label: "Validation VLS-TS (Titre de séjour)", done: false, hasAya: true },
+      { id: "vls-ts", label: "Validation VLS-TS (Titre de séjour)", done: false, hasAya: true, scope: "pre" },
       { id: "secu", label: "Numéro de Sécurité Sociale", done: false, hasAya: true },
     ],
   },
@@ -72,16 +80,36 @@ const defaultPhases: ChecklistPhase[] = [
   },
 ];
 
-const defaultDocuments: Document[] = [
+const allDocuments: Document[] = [
   { id: "passeport", label: "Passeport", owned: false },
   { id: "admission", label: "Lettre d'admission", owned: false },
   { id: "bail", label: "Bail / Contrat de logement", owned: false },
   { id: "rib", label: "RIB Bancaire", owned: false },
   { id: "assurance", label: "Assurance habitation", owned: false },
-  { id: "acte-naissance", label: "Acte de naissance traduit", owned: false },
+  { id: "acte-naissance", label: "Acte de naissance traduit", owned: false, scope: "pre" },
   { id: "photo-id", label: "Photos d'identité", owned: false },
   { id: "certificat-scolarite", label: "Certificat de scolarité", owned: false },
 ];
+
+function filterByScope<T extends { scope?: "pre" | "post" }>(items: T[], isInFrance: boolean | null, showAll: boolean): T[] {
+  if (showAll || isInFrance === null) return items;
+  return items.filter((item) => {
+    if (!item.scope) return true;
+    if (isInFrance) return item.scope === "post";
+    return true; // not in France → show everything (pre + shared)
+  });
+}
+
+function filterPhaseItems(phases: ChecklistPhase[], isInFrance: boolean | null, showAll: boolean): ChecklistPhase[] {
+  return filterByScope(phases, isInFrance, showAll).map((phase) => ({
+    ...phase,
+    items: phase.items.filter((item) => {
+      if (showAll || isInFrance === null || !item.scope) return true;
+      if (isInFrance) return item.scope === "post";
+      return true;
+    }),
+  })).filter((phase) => phase.items.length > 0);
+}
 
 function calcProgress(phases: ChecklistPhase[], documents: Document[]): number {
   const allTasks = phases.flatMap((p) => p.items);
@@ -102,18 +130,31 @@ export const useIntegration = () => {
 
 export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
-  const [phases, setPhases] = useState(defaultPhases);
-  const [documents, setDocuments] = useState(defaultDocuments);
+  const [rawPhases, setRawPhases] = useState(allPhases);
+  const [rawDocuments, setRawDocuments] = useState(allDocuments);
+  const [isInFrance, setIsInFranceState] = useState<boolean | null>(null);
 
-  // Load from DB on mount / user change
+  // Load profile is_in_france + tasks + documents
   useEffect(() => {
     if (!user) {
-      setPhases(defaultPhases);
-      setDocuments(defaultDocuments);
+      setRawPhases(allPhases);
+      setRawDocuments(allDocuments);
+      setIsInFranceState(null);
       return;
     }
 
     const loadData = async () => {
+      // Load is_in_france from profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_in_france")
+        .eq("user_id", user.id)
+        .single();
+      
+      if (profile) {
+        setIsInFranceState((profile as any).is_in_france ?? null);
+      }
+
       // Load tasks
       const { data: tasks } = await supabase
         .from("user_tasks")
@@ -122,7 +163,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
 
       if (tasks && tasks.length > 0) {
         const taskMap = new Map(tasks.map((t: any) => [`${t.phase_id}:${t.task_id}`, t.done]));
-        setPhases((prev) =>
+        setRawPhases((prev) =>
           prev.map((phase) => ({
             ...phase,
             items: phase.items.map((item) => ({
@@ -141,7 +182,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
 
       if (docs && docs.length > 0) {
         const docMap = new Map(docs.map((d: any) => [d.document_id, d.owned]));
-        setDocuments((prev) =>
+        setRawDocuments((prev) =>
           prev.map((doc) => ({
             ...doc,
             owned: docMap.get(doc.id) ?? doc.owned,
@@ -152,6 +193,10 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
 
     loadData();
   }, [user]);
+
+  // Filtered phases & documents based on is_in_france
+  const phases = filterPhaseItems(rawPhases, isInFrance, false);
+  const documents = filterByScope(rawDocuments, isInFrance, false);
 
   // Update progress in profile
   useEffect(() => {
@@ -164,9 +209,23 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
       .then();
   }, [phases, documents, user]);
 
+  const setIsInFrance = useCallback(
+    (value: boolean) => {
+      setIsInFranceState(value);
+      if (user) {
+        supabase
+          .from("profiles")
+          .update({ is_in_france: value } as any)
+          .eq("user_id", user.id)
+          .then();
+      }
+    },
+    [user]
+  );
+
   const toggleTask = useCallback(
     (phaseId: string, itemId: string) => {
-      setPhases((prev) =>
+      setRawPhases((prev) =>
         prev.map((phase) =>
           phase.id === phaseId
             ? {
@@ -174,7 +233,6 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
                 items: phase.items.map((item) => {
                   if (item.id !== itemId) return item;
                   const newDone = !item.done;
-                  // Persist to DB
                   if (user) {
                     supabase
                       .from("user_tasks")
@@ -196,7 +254,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleDocument = useCallback(
     (docId: string) => {
-      setDocuments((prev) =>
+      setRawDocuments((prev) =>
         prev.map((doc) => {
           if (doc.id !== docId) return doc;
           const newOwned = !doc.owned;
@@ -219,7 +277,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const progress = calcProgress(phases, documents);
 
   return (
-    <IntegrationContext.Provider value={{ phases, documents, progress, toggleTask, toggleDocument }}>
+    <IntegrationContext.Provider value={{ phases, documents, progress, isInFrance, toggleTask, toggleDocument, setIsInFrance }}>
       {children}
     </IntegrationContext.Provider>
   );
