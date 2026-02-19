@@ -607,6 +607,36 @@ export type Database = {
           },
         ]
       }
+      student_email_verifications: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          student_email: string
+          token: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          student_email: string
+          token: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          student_email?: string
+          token?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       universities: {
         Row: {
           city: string
