@@ -2,3 +2,6 @@ project_id = "ddbfmgqknjggkokyfmzz"
 
 [functions.cleanup-announcements]
 verify_jwt = false
+
+[functions.aya-chat]
+verify_jwt = false
