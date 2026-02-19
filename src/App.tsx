@@ -31,9 +31,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
-        const d = data as any;
-        const isFrench = d?.nationality === "🇫🇷 Française";
-        const incomplete = !d?.nationality || !d?.city || !d?.university || !d?.objectifs || (d.objectifs as string[]).length === 0 || (!isFrench && (d?.is_in_france === null || d?.is_in_france === undefined));
+        if (!data) { setNeedsOnboarding(true); setProfileChecked(true); return; }
+        const isFrench = data.nationality === "🇫🇷 Française";
+        const objectifs = data.objectifs as string[] | null;
+        const incomplete = !data.nationality || !data.city || !data.university || !objectifs || objectifs.length === 0 || (!isFrench && (data.is_in_france === null || data.is_in_france === undefined));
         setNeedsOnboarding(incomplete);
         setProfileChecked(true);
       });

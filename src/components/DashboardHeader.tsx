@@ -1,10 +1,25 @@
 import { MapPin, ShieldCheck, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const DashboardHeader = () => {
   const { user, signOut } = useAuth();
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User";
   const initials = displayName.slice(0, 2).toUpperCase();
+  const [city, setCity] = useState("France");
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("city")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.city) setCity(data.city);
+      });
+  }, [user]);
 
   return (
     <header className="flex items-center justify-between px-6 py-5">
@@ -15,7 +30,7 @@ const DashboardHeader = () => {
         </h1>
         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
           <MapPin className="h-3.5 w-3.5" />
-          <span>Grenoble, France</span>
+          <span>{city}, France</span>
         </div>
       </div>
 

@@ -1,10 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, AlertTriangle, ExternalLink, Info, Lock } from "lucide-react";
+import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
 
 const PhaseChecklist = () => {
-  const { phases, toggleTask, isInFrance, isFrench, setIsInFrance } = useIntegration();
+  const { phases, toggleTask, isInFrance, isFrench, isTemoin, setIsInFrance } = useIntegration();
   const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
 
   return (
@@ -50,7 +50,22 @@ const PhaseChecklist = () => {
               <Info className="h-4 w-4 shrink-0 text-primary mt-0.5" />
               <p className="text-xs text-primary">
                 Les étapes « sur place » sont affichées en aperçu 🔒 pour que tu puisses anticiper. 
-                Elles se débloqueront quand tu passeras en mode « Je suis en France ».
+                Elles se débloqueront quand tu passeras en mode « Je suis en France » et vérifieras ton email étudiant.
+              </p>
+            </motion.div>
+          )}
+
+          {/* Verification notice when in France but not temoin */}
+          {isInFrance && !isTemoin && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 border border-amber-500/20 p-3"
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                Pour débloquer les démarches sur place, vérifie ton email étudiant (.edu, .univ.fr). 
+                Cela protège la communauté et te donne accès à toutes les fonctionnalités.
               </p>
             </motion.div>
           )}
@@ -65,6 +80,13 @@ const PhaseChecklist = () => {
           const allDone = activeItems.length > 0 && doneCount === activeItems.length;
           const isLocked = phase.locked;
 
+          // Determine lock reason for display
+          const lockReason = isLocked
+            ? isInFrance && !isTemoin
+              ? "Vérifie ton email étudiant pour débloquer"
+              : `${phase.items.length} étapes — disponible une fois en France`
+            : null;
+
           return (
             <div key={phase.id} className={`rounded-4xl bg-card border overflow-hidden ${isLocked ? "border-border/50 opacity-75" : "border-border"}`}>
               <button
@@ -77,13 +99,13 @@ const PhaseChecklist = () => {
                     <p className="text-sm font-bold text-foreground">{phase.title}</p>
                     {isLocked && (
                       <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                        <Lock className="h-3 w-3" /> Aperçu
+                        <Lock className="h-3 w-3" /> {isInFrance && !isTemoin ? "🔐 Vérification" : "Aperçu"}
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {isLocked
-                      ? `${phase.items.length} étapes — disponible une fois en France`
+                      ? lockReason
                       : `${doneCount}/${activeItems.length} complétées`}
                   </p>
                 </div>
@@ -182,7 +204,7 @@ const PhaseChecklist = () => {
                                   onClick={(e) => e.stopPropagation()}
                                   className="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
                                 >
-                                  <ExternalLink className="h-3 w-3" /> Lien officiel
+                                  Lien officiel
                                 </a>
                               )}
                             </div>
