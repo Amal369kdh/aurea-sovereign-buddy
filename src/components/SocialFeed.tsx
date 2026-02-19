@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2 } from "lucide-react";
+import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAnnouncements, type AnnouncementCategory } from "@/hooks/useAnnouncements";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import ReportDialog from "@/components/ReportDialog";
 
 type Category = AnnouncementCategory | "all";
 
@@ -36,6 +37,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
   const [newContent, setNewContent] = useState("");
   const [newCategory, setNewCategory] = useState<AnnouncementCategory>("general");
   const [posting, setPosting] = useState(false);
+  const [reportTarget, setReportTarget] = useState<{ userId?: string; announcementId?: string } | null>(null);
 
   const handlePost = async () => {
     if (!newContent.trim()) return;
@@ -182,6 +184,13 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
                 <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
                   <Share2 className="h-4 w-4" />
                 </button>
+                <button
+                  onClick={() => setReportTarget({ announcementId: post.id })}
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-destructive cursor-pointer"
+                  title="Signaler"
+                >
+                  <Flag className="h-3.5 w-3.5" />
+                </button>
                 <button className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80 cursor-pointer">
                   <Sparkles className="h-3.5 w-3.5" /> Aya
                 </button>
@@ -190,6 +199,13 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
           ))}
         </div>
       )}
+
+      <ReportDialog
+        open={!!reportTarget}
+        targetUserId={reportTarget?.userId}
+        targetAnnouncementId={reportTarget?.announcementId}
+        onClose={() => setReportTarget(null)}
+      />
     </div>
   );
 };

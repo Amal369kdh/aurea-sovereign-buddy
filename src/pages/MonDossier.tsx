@@ -2,6 +2,7 @@ import DashboardHeader from "@/components/DashboardHeader";
 import PhaseChecklist from "@/components/PhaseChecklist";
 import AlphaVault from "@/components/AlphaVault";
 import AyaTrigger from "@/components/AyaTrigger";
+import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
 
 const MonDossier = () => {
@@ -15,6 +16,7 @@ const MonDossier = () => {
           <AlphaVault />
         </div>
       </main>
+      <SecuritySovereign />
       <AyaTrigger />
     </div>
   );
