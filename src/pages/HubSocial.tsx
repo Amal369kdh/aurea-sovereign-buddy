@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AppSidebar from "@/components/AppSidebar";
-import AyaTrigger from "@/components/AyaTrigger";
+import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import SocialFeed from "@/components/SocialFeed";
 import DatingGrid from "@/components/DatingGrid";
@@ -60,7 +60,7 @@ const HubSocial = () => {
       </main>
 
       <SecuritySovereign />
-      <AyaTrigger />
+      <AmalTrigger />
       <GoldModal open={goldOpen} onClose={() => setGoldOpen(false)} />
     </div>
   );
