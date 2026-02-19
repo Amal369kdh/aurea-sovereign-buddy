@@ -50,6 +50,7 @@ export type Database = {
           comments_count: number
           content: string
           created_at: string
+          expires_at: string | null
           id: string
           is_pinned: boolean
           likes_count: number
@@ -60,6 +61,7 @@ export type Database = {
           comments_count?: number
           content: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           is_pinned?: boolean
           likes_count?: number
@@ -70,6 +72,7 @@ export type Database = {
           comments_count?: number
           content?: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           is_pinned?: boolean
           likes_count?: number
@@ -100,6 +103,57 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          expires_at: string
+          id: string
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified: boolean
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified?: boolean
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_initials: string | null
@@ -119,6 +173,7 @@ export type Database = {
           nationality: string | null
           objectifs: string[] | null
           points: number
+          points_social: number
           revenus_monthly: number | null
           status: string
           target_city: string | null
@@ -145,6 +200,7 @@ export type Database = {
           nationality?: string | null
           objectifs?: string[] | null
           points?: number
+          points_social?: number
           revenus_monthly?: number | null
           status?: string
           target_city?: string | null
@@ -171,6 +227,7 @@ export type Database = {
           nationality?: string | null
           objectifs?: string[] | null
           points?: number
+          points_social?: number
           revenus_monthly?: number | null
           status?: string
           target_city?: string | null
@@ -185,6 +242,53 @@ export type Database = {
             columns: ["university_id"]
             isOneToOne: false
             referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources_links: {
+        Row: {
+          category: Database["public"]["Enums"]["resource_category"]
+          created_at: string
+          created_by: string
+          description: string | null
+          expires_at: string | null
+          id: string
+          is_verified: boolean
+          organization_id: string | null
+          title: string
+          url: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["resource_category"]
+          created_at?: string
+          created_by: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_verified?: boolean
+          organization_id?: string | null
+          title: string
+          url: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["resource_category"]
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_verified?: boolean
+          organization_id?: string | null
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_links_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -269,11 +373,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_verified_organization: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       announcement_category: "entraide" | "sorties" | "logement" | "general"
       connection_status: "pending" | "accepted" | "rejected"
+      resource_category:
+        | "jobs"
+        | "alternance"
+        | "sante"
+        | "social"
+        | "reorientation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -403,6 +513,13 @@ export const Constants = {
     Enums: {
       announcement_category: ["entraide", "sorties", "logement", "general"],
       connection_status: ["pending", "accepted", "rejected"],
+      resource_category: [
+        "jobs",
+        "alternance",
+        "sante",
+        "social",
+        "reorientation",
+      ],
     },
   },
 } as const
