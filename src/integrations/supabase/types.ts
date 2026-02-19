@@ -138,6 +138,66 @@ export type Database = {
         }
         Relationships: []
       }
+      dating_likes: {
+        Row: {
+          created_at: string
+          id: string
+          liked_id: string
+          liker_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          liked_id: string
+          liker_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          liked_id?: string
+          liker_id?: string
+        }
+        Relationships: []
+      }
+      dating_profiles: {
+        Row: {
+          age_max: number | null
+          age_min: number | null
+          bio: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          looking_for: string
+          show_me: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age_max?: number | null
+          age_min?: number | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          looking_for?: string
+          show_me?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age_max?: number | null
+          age_min?: number | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          looking_for?: string
+          show_me?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -533,6 +593,7 @@ export type Database = {
     }
     Functions: {
       cleanup_expired_announcements: { Args: never; Returns: undefined }
+      has_dating_profile: { Args: { _user_id: string }; Returns: boolean }
       is_temoin: { Args: { _user_id: string }; Returns: boolean }
       is_verified_organization: { Args: { _user_id: string }; Returns: boolean }
     }
