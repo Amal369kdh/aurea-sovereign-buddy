@@ -10,7 +10,7 @@ type Tab = "hub" | "rencontres";
 
 const HubSocial = () => {
   const [tab, setTab] = useState<Tab>("hub");
-  const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement">("all");
+  const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement" | "general">("all");
   const [goldOpen, setGoldOpen] = useState(false);
 
   return (
