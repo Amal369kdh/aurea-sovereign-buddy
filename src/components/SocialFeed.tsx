@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag } from "lucide-react";
+import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useAnnouncements, type AnnouncementCategory } from "@/hooks/useAnnouncements";
 import { formatDistanceToNow } from "date-fns";
@@ -67,11 +67,39 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
       </div>
 
       {/* Trust banner */}
-      <div className="mb-6 flex items-center gap-3 rounded-3xl border border-primary/20 bg-primary/5 px-5 py-3">
+      <div className="mb-4 flex items-center gap-3 rounded-3xl border border-primary/20 bg-primary/5 px-5 py-3">
         <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
         <p className="text-xs text-muted-foreground">
           <span className="font-bold text-primary">Espace sécurisé</span> — Seuls les Témoins vérifiés peuvent envoyer des messages privés.
         </p>
+      </div>
+
+      {/* Entraide & Bénévolat banner */}
+      <div className="mb-6 rounded-3xl border border-success/20 bg-success/5 p-4">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-success/15">
+            <HandHeart className="h-5 w-5 text-success" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-foreground">Entraide & Bénévolat</h3>
+            <p className="text-[11px] text-muted-foreground">
+              Aide au tutorat, déménagement, accompagnement… Chaque post d'entraide te rapporte <span className="font-bold text-success">+5 points</span> pour la Ligue des Facs !
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-2xl bg-success/15 px-3 py-1.5">
+            <Trophy className="h-3.5 w-3.5 text-success" />
+            <span className="text-xs font-bold text-success">+5 pts</span>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            onCategoryChange("entraide");
+            setNewCategory("entraide");
+          }}
+          className="mt-1 text-xs font-semibold text-success hover:underline cursor-pointer"
+        >
+          → Poster dans Entraide
+        </button>
       </div>
 
       {/* Compose box */}
