@@ -23,7 +23,7 @@ const SecuritySovereign = () => {
 
   return (
     <>
-      {/* Discreet floating button — positioned above Aya */}
+      {/* Discreet floating button — positioned above Amal */}
       <motion.button
         onClick={() => setOpen(true)}
         className="fixed bottom-24 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 cursor-pointer"

@@ -99,7 +99,7 @@ const PhaseChecklist = () => {
                               className="flex items-center gap-1.5 rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20"
                             >
                               <Sparkles className="h-3 w-3" />
-                              Demander à Aya
+                              Demander à Amal
                             </button>
                           )}
                         </motion.div>
