@@ -1,96 +1,26 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles } from "lucide-react";
+import { ShieldCheck, Heart, MessageCircle, Share2, Sparkles, Send, Pin, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useAnnouncements, type AnnouncementCategory } from "@/hooks/useAnnouncements";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 
-type Category = "all" | "entraide" | "sorties" | "logement";
-
-interface Post {
-  id: number;
-  author: string;
-  avatar: string;
-  uni: string;
-  verified: boolean;
-  category: Category;
-  content: string;
-  likes: number;
-  comments: number;
-  time: string;
-}
-
-const posts: Post[] = [
-  {
-    id: 1,
-    author: "Amina K.",
-    avatar: "AK",
-    uni: "UGA",
-    verified: true,
-    category: "entraide",
-    content: "Quelqu'un sait comment faire la demande de numéro de sécu en ligne ? J'ai reçu mon VLS-TS mais la plateforme AMELI ne fonctionne pas… 😩",
-    likes: 12,
-    comments: 5,
-    time: "il y a 2h",
-  },
-  {
-    id: 2,
-    author: "Lucas M.",
-    avatar: "LM",
-    uni: "INSA Lyon",
-    verified: true,
-    category: "sorties",
-    content: "🎉 Soirée d'intégration ce vendredi au Macadam ! Venez nombreux, c'est gratuit pour les étudiants avant 23h.",
-    likes: 34,
-    comments: 18,
-    time: "il y a 4h",
-  },
-  {
-    id: 3,
-    author: "Fatou D.",
-    avatar: "FD",
-    uni: "UJM",
-    verified: true,
-    category: "logement",
-    content: "Chambre dispo en coloc à Saint-Martin-d'Hères, 350€/mois charges comprises. Proche tram B. DM si intéressé·e !",
-    likes: 8,
-    comments: 3,
-    time: "il y a 6h",
-  },
-  {
-    id: 4,
-    author: "Yuki T.",
-    avatar: "YT",
-    uni: "Grenoble INP",
-    verified: false,
-    category: "entraide",
-    content: "Est-ce que quelqu'un a un bon plan pour une assurance habitation pas chère ? Je viens d'arriver.",
-    likes: 5,
-    comments: 7,
-    time: "il y a 8h",
-  },
-  {
-    id: 5,
-    author: "Carlos R.",
-    avatar: "CR",
-    uni: "Sciences Po",
-    verified: true,
-    category: "sorties",
-    content: "Groupe de running tous les dimanches matin au Parc Paul Mistral 🏃‍♂️ On est déjà 8, rejoignez-nous !",
-    likes: 21,
-    comments: 9,
-    time: "il y a 1j",
-  },
-];
+type Category = AnnouncementCategory | "all";
 
 const categoryLabels: Record<Category, string> = {
   all: "Tout",
   entraide: "Entraide",
   sorties: "Sorties",
   logement: "Logement",
+  general: "Général",
 };
 
 const categoryColors: Record<string, string> = {
   entraide: "bg-info/20 text-info",
   sorties: "bg-primary/20 text-primary",
   logement: "bg-success/20 text-success",
+  general: "bg-muted text-muted-foreground",
 };
 
 interface SocialFeedProps {
@@ -99,11 +29,25 @@ interface SocialFeedProps {
 }
 
 const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
-  const filtered = activeCategory === "all" ? posts : posts.filter((p) => p.category === activeCategory);
+  const { announcements, loading, createPost, toggleLike } = useAnnouncements(
+    activeCategory === "all" ? "all" : activeCategory
+  );
+
+  const [newContent, setNewContent] = useState("");
+  const [newCategory, setNewCategory] = useState<AnnouncementCategory>("general");
+  const [posting, setPosting] = useState(false);
+
+  const handlePost = async () => {
+    if (!newContent.trim()) return;
+    setPosting(true);
+    await createPost(newContent.trim(), newCategory);
+    setNewContent("");
+    setPosting(false);
+  };
 
   return (
     <div>
-      {/* Tabs */}
+      {/* Category Tabs */}
       <div className="mb-6 flex gap-2 overflow-x-auto scrollbar-none">
         {(Object.keys(categoryLabels) as Category[]).map((cat) => (
           <button
@@ -128,65 +72,124 @@ const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
         </p>
       </div>
 
-      {/* Posts */}
-      <div className="flex flex-col gap-4">
-        {filtered.map((post, i) => (
-          <motion.div
-            key={post.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08, duration: 0.35 }}
-            className="rounded-3xl border border-border bg-card p-5 transition-all hover:border-primary/20"
+      {/* Compose box */}
+      <div className="mb-6 rounded-3xl border border-border bg-card p-4">
+        <textarea
+          value={newContent}
+          onChange={(e) => setNewContent(e.target.value)}
+          placeholder="Partage quelque chose avec la communauté…"
+          className="w-full resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+          rows={3}
+        />
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex gap-2">
+            {(["general", "entraide", "sorties", "logement"] as AnnouncementCategory[]).map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setNewCategory(cat)}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                  newCategory === cat
+                    ? "gold-gradient text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground"
+                }`}
+              >
+                {categoryLabels[cat]}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={handlePost}
+            disabled={posting || !newContent.trim()}
+            className="flex items-center gap-2 rounded-2xl gold-gradient px-5 py-2.5 text-sm font-bold text-primary-foreground transition-all disabled:opacity-50 cursor-pointer"
           >
-            {/* Author row */}
-            <div className="mb-3 flex items-center gap-3">
-              <div className="relative">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
-                  {post.avatar}
+            {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            Publier
+          </button>
+        </div>
+      </div>
+
+      {/* Posts */}
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        </div>
+      ) : announcements.length === 0 ? (
+        <div className="rounded-3xl border border-border bg-card p-8 text-center">
+          <p className="text-sm text-muted-foreground">Aucune publication pour le moment. Sois le premier à poster ! 🚀</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {announcements.map((post, i) => (
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06, duration: 0.3 }}
+              className="rounded-3xl border border-border bg-card p-5 transition-all hover:border-primary/20"
+            >
+              {/* Pinned indicator */}
+              {post.is_pinned && (
+                <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-primary">
+                  <Pin className="h-3 w-3" /> Épinglé
                 </div>
-                {post.verified && (
-                  <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full gold-gradient">
-                    <ShieldCheck className="h-3 w-3 text-primary-foreground" />
+              )}
+
+              {/* Author row */}
+              <div className="mb-3 flex items-center gap-3">
+                <div className="relative">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
+                    {post.author_initials}
                   </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-foreground">{post.author}</span>
-                  {post.verified && (
-                    <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
+                  {post.author_verified && (
+                    <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full gold-gradient">
+                      <ShieldCheck className="h-3 w-3 text-primary-foreground" />
+                    </div>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {post.uni} · {post.time}
-                </p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-foreground">{post.author_name}</span>
+                    {post.author_verified && (
+                      <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {post.author_university || "Université"} ·{" "}
+                    {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: fr })}
+                  </p>
+                </div>
+                <Badge className={`border-0 text-[10px] ${categoryColors[post.category] || ""}`}>
+                  {categoryLabels[post.category]}
+                </Badge>
               </div>
-              <Badge className={`border-0 text-[10px] ${categoryColors[post.category] || ""}`}>
-                {categoryLabels[post.category]}
-              </Badge>
-            </div>
 
-            {/* Content */}
-            <p className="mb-4 text-sm leading-relaxed text-foreground/90">{post.content}</p>
+              {/* Content */}
+              <p className="mb-4 text-sm leading-relaxed text-foreground/90">{post.content}</p>
 
-            {/* Actions */}
-            <div className="flex items-center gap-5">
-              <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
-                <Heart className="h-4 w-4" /> {post.likes}
-              </button>
-              <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
-                <MessageCircle className="h-4 w-4" /> {post.comments}
-              </button>
-              <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
-                <Share2 className="h-4 w-4" />
-              </button>
-              <button className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80 cursor-pointer">
-                <Sparkles className="h-3.5 w-3.5" /> Aya
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              {/* Actions */}
+              <div className="flex items-center gap-5">
+                <button
+                  onClick={() => toggleLike(post.id, post.liked_by_me)}
+                  className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
+                    post.liked_by_me ? "text-primary font-semibold" : "text-muted-foreground hover:text-primary"
+                  }`}
+                >
+                  <Heart className={`h-4 w-4 ${post.liked_by_me ? "fill-primary" : ""}`} /> {post.likes_count}
+                </button>
+                <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+                  <MessageCircle className="h-4 w-4" /> {post.comments_count}
+                </button>
+                <button className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary cursor-pointer">
+                  <Share2 className="h-4 w-4" />
+                </button>
+                <button className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80 cursor-pointer">
+                  <Sparkles className="h-3.5 w-3.5" /> Aya
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

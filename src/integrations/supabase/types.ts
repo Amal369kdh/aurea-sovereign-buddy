@@ -14,29 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcement_likes: {
+        Row: {
+          announcement_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_likes_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       announcements: {
         Row: {
           author_id: string
           category: Database["public"]["Enums"]["announcement_category"]
+          comments_count: number
           content: string
           created_at: string
           id: string
+          is_pinned: boolean
           likes_count: number
         }
         Insert: {
           author_id: string
           category?: Database["public"]["Enums"]["announcement_category"]
+          comments_count?: number
           content: string
           created_at?: string
           id?: string
+          is_pinned?: boolean
           likes_count?: number
         }
         Update: {
           author_id?: string
           category?: Database["public"]["Enums"]["announcement_category"]
+          comments_count?: number
           content?: string
           created_at?: string
           id?: string
+          is_pinned?: boolean
           likes_count?: number
         }
         Relationships: []
@@ -68,45 +103,113 @@ export type Database = {
       profiles: {
         Row: {
           avatar_initials: string | null
+          birth_date: string | null
+          budget_monthly: number | null
           city: string | null
           created_at: string
+          daily_swipes_count: number
           display_name: string | null
+          full_name: string | null
           id: string
           integration_progress: number
           interests: string[] | null
           is_premium: boolean
           is_verified: boolean
+          last_swipe_reset: string
+          nationality: string | null
+          objectifs: string[] | null
+          points: number
+          revenus_monthly: number | null
+          status: string
+          target_city: string | null
           university: string | null
+          university_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_initials?: string | null
+          birth_date?: string | null
+          budget_monthly?: number | null
           city?: string | null
           created_at?: string
+          daily_swipes_count?: number
           display_name?: string | null
+          full_name?: string | null
           id?: string
           integration_progress?: number
           interests?: string[] | null
           is_premium?: boolean
           is_verified?: boolean
+          last_swipe_reset?: string
+          nationality?: string | null
+          objectifs?: string[] | null
+          points?: number
+          revenus_monthly?: number | null
+          status?: string
+          target_city?: string | null
           university?: string | null
+          university_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_initials?: string | null
+          birth_date?: string | null
+          budget_monthly?: number | null
           city?: string | null
           created_at?: string
+          daily_swipes_count?: number
           display_name?: string | null
+          full_name?: string | null
           id?: string
           integration_progress?: number
           interests?: string[] | null
           is_premium?: boolean
           is_verified?: boolean
+          last_swipe_reset?: string
+          nationality?: string | null
+          objectifs?: string[] | null
+          points?: number
+          revenus_monthly?: number | null
+          status?: string
+          target_city?: string | null
           university?: string | null
+          university_id?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      universities: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          name: string
+          short_name: string | null
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          id?: string
+          name: string
+          short_name?: string | null
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          name?: string
+          short_name?: string | null
         }
         Relationships: []
       }
