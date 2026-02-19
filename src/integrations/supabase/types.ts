@@ -246,6 +246,47 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          reported_announcement_id: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          reported_announcement_id?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          reported_announcement_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reported_announcement_id_fkey"
+            columns: ["reported_announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources_links: {
         Row: {
           category: Database["public"]["Enums"]["resource_category"]
@@ -373,6 +414,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_temoin: { Args: { _user_id: string }; Returns: boolean }
       is_verified_organization: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {

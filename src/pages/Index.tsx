@@ -3,6 +3,7 @@ import SovereigntyWidget from "@/components/SovereigntyWidget";
 import BentoGrid from "@/components/BentoGrid";
 import SocialPulse from "@/components/SocialPulse";
 import AyaTrigger from "@/components/AyaTrigger";
+import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
 
 const Index = () => {
@@ -29,6 +30,7 @@ const Index = () => {
         </div>
       </main>
 
+      <SecuritySovereign />
       <AyaTrigger />
     </div>
   );
