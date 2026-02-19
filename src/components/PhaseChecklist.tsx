@@ -33,7 +33,7 @@ const PhaseChecklist = () => {
             </div>
           </div>
           <button
-            onClick={() => setIsInFrance(!isInFrance)}
+            onClick={() => setIsInFrance(isInFrance === true ? false : true)}
             className="rounded-xl border border-border bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/80 cursor-pointer"
           >
             {isInFrance ? "Afficher pré-arrivée" : "Je suis en France"}

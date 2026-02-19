@@ -6,6 +6,7 @@ import SocialFeed from "@/components/SocialFeed";
 import DatingGrid from "@/components/DatingGrid";
 import DatingMatches from "@/components/DatingMatches";
 import GoldModal from "@/components/GoldModal";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import { useDating } from "@/hooks/useDating";
 import { Users, Heart, Sparkles } from "lucide-react";
 
@@ -82,6 +83,7 @@ const HubSocial = () => {
       <SecuritySovereign />
       <AmalTrigger />
       <GoldModal open={goldOpen} onClose={() => setGoldOpen(false)} />
+      <MobileBottomNav />
     </div>
   );
 };
