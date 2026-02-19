@@ -10,7 +10,7 @@ export interface ChecklistItem {
   scope?: "pre" | "post";
   link?: string;
   tip?: string;
-  /** true = visible but not interactable (preview for not-in-france users) */
+  /** true = visible but not interactable (preview for not-in-france users or non-temoin) */
   locked?: boolean;
 }
 
@@ -29,6 +29,7 @@ interface IntegrationState {
   progress: number;
   isInFrance: boolean | null;
   isFrench: boolean;
+  isTemoin: boolean;
   toggleTask: (phaseId: string, itemId: string) => void;
   setIsInFrance: (value: boolean) => void;
 }
@@ -63,10 +64,10 @@ const allPhases: ChecklistPhase[] = [
     id: "legal",
     title: "Démarches légales",
     icon: "⚖️",
+    scope: "post",
     items: [
-      { id: "vls-ts", label: "Validation du VLS-TS (titre de séjour)", done: false, hasAya: true, scope: "pre", link: "https://administration-etrangers-en-france.interieur.gouv.fr/", tip: "À faire dans les 3 premiers mois après ton arrivée — paiement de 75 €." },
+      { id: "vls-ts", label: "Validation du VLS-TS (titre de séjour)", done: false, hasAya: true, link: "https://administration-etrangers-en-france.interieur.gouv.fr/", tip: "À faire dans les 3 premiers mois après ton arrivée — paiement de 75 €." },
       { id: "secu", label: "Numéro de Sécurité Sociale", done: false, hasAya: true, link: "https://etudiant-etranger.ameli.fr/", tip: "Inscris-toi en ligne sur ameli.fr — prévoir 2 à 4 semaines." },
-      { id: "ofii", label: "Convocation OFII", done: false, scope: "pre", link: "https://www.ofii.fr/", tip: "Tu recevras une convocation après la validation du VLS-TS." },
     ],
   },
   {
@@ -86,25 +87,37 @@ const allPhases: ChecklistPhase[] = [
 
 /**
  * Build phases with access logic:
- * - French: no pre-arrival at all
- * - In France: post-arrival active, pre-arrival hidden (can toggle)
+ * - French: no pre-arrival at all, post-arrival active (no temoin gate for French)
+ * - In France + temoin: post-arrival active, pre-arrival hidden (can toggle)
+ * - In France + NOT temoin: post-arrival LOCKED (needs email verification)
  * - Not in France: pre-arrival active, post-arrival shown as LOCKED PREVIEW
  */
 function buildAccessPhases(
   rawPhases: ChecklistPhase[],
   isInFrance: boolean | null,
   isFrench: boolean,
+  isTemoin: boolean,
   showPreArrival: boolean
 ): ChecklistPhase[] {
   if (isInFrance === null && !isFrench) return rawPhases;
 
   return rawPhases
     .map((phase) => {
-      // French nationals: skip all pre-arrival
+      // French nationals: skip all pre-arrival, post-arrival always active
       if (isFrench && phase.scope === "pre") return null;
+      if (isFrench) return phase;
 
       // In France: hide pre-arrival unless toggled
       if (isInFrance && phase.scope === "pre" && !showPreArrival) return null;
+
+      // In France but NOT temoin: post-arrival is LOCKED (needs verification)
+      if (isInFrance && phase.scope === "post" && !isTemoin) {
+        return {
+          ...phase,
+          locked: true,
+          items: phase.items.map((item) => ({ ...item, locked: true })),
+        };
+      }
 
       // Not in France: show post-arrival as LOCKED preview
       if (isInFrance === false && phase.scope === "post") {
@@ -148,6 +161,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const [rawPhases, setRawPhases] = useState(allPhases);
   const [isInFrance, setIsInFranceState] = useState<boolean | null>(null);
   const [isFrench, setIsFrench] = useState(false);
+  const [isTemoin, setIsTemoin] = useState(false);
   const [showPreArrival, setShowPreArrival] = useState(false);
 
   useEffect(() => {
@@ -155,20 +169,21 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
       setRawPhases(allPhases);
       setIsInFranceState(null);
       setIsFrench(false);
+      setIsTemoin(false);
       return;
     }
 
     const loadData = async () => {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_in_france, nationality")
+        .select("is_in_france, nationality, status")
         .eq("user_id", user.id)
         .single();
 
       if (profile) {
-        const p = profile as any;
-        setIsInFranceState(p.is_in_france ?? null);
-        setIsFrench(p.nationality === "🇫🇷 Française");
+        setIsInFranceState(profile.is_in_france ?? null);
+        setIsFrench(profile.nationality === "🇫🇷 Française");
+        setIsTemoin(profile.status === "temoin");
       }
 
       const { data: tasks } = await supabase
@@ -177,7 +192,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
         .eq("user_id", user.id);
 
       if (tasks && tasks.length > 0) {
-        const taskMap = new Map(tasks.map((t: any) => [`${t.phase_id}:${t.task_id}`, t.done]));
+        const taskMap = new Map(tasks.map((t) => [`${t.phase_id}:${t.task_id}`, t.done]));
         setRawPhases((prev) =>
           prev.map((phase) => ({
             ...phase,
@@ -193,14 +208,14 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     loadData();
   }, [user]);
 
-  const phases = buildAccessPhases(rawPhases, isInFrance, isFrench, showPreArrival);
+  const phases = buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival);
 
   useEffect(() => {
     if (!user) return;
     const progress = calcProgress(phases);
     supabase
       .from("profiles")
-      .update({ integration_progress: progress } as any)
+      .update({ integration_progress: progress })
       .eq("user_id", user.id)
       .then();
   }, [phases, user]);
@@ -208,12 +223,14 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const setIsInFrance = useCallback(
     (value: boolean) => {
       setIsInFranceState(value);
-      // If switching to "not in France", allow showing pre-arrival
       if (!value) setShowPreArrival(false);
       if (user) {
         supabase
           .from("profiles")
-          .update({ is_in_france: value, student_status: value ? "en_france" : "futur_arrivant" } as any)
+          .update({
+            is_in_france: value,
+            student_status: value ? "en_france" : "futur_arrivant",
+          })
           .eq("user_id", user.id)
           .then();
       }
@@ -235,7 +252,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
                     supabase
                       .from("user_tasks")
                       .upsert(
-                        { user_id: user.id, phase_id: phaseId, task_id: itemId, done: newDone } as any,
+                        { user_id: user.id, phase_id: phaseId, task_id: itemId, done: newDone },
                         { onConflict: "user_id,phase_id,task_id" }
                       )
                       .then();
@@ -253,7 +270,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const progress = calcProgress(phases);
 
   return (
-    <IntegrationContext.Provider value={{ phases, progress, isInFrance, isFrench, toggleTask, setIsInFrance }}>
+    <IntegrationContext.Provider value={{ phases, progress, isInFrance, isFrench, isTemoin, toggleTask, setIsInFrance }}>
       {children}
     </IntegrationContext.Provider>
   );

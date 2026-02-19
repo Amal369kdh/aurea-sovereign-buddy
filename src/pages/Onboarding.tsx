@@ -167,7 +167,7 @@ const Onboarding = () => {
         looking_for: lookingFor,
         onboarding_step: 3,
         status: "explorateur",
-      } as any)
+      })
       .eq("user_id", user.id);
 
     if (error) {
