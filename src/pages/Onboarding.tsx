@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,13 +7,17 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Crown, Globe, MapPin, GraduationCap, Target, Heart,
   Wallet, ArrowRight, ArrowLeft, Loader2, Check, Plane, AlertTriangle,
+  UtensilsCrossed, ShoppingCart, Sparkles, Users,
 } from "lucide-react";
 
+/* ─── Constants ─── */
+
 const NATIONALITIES = [
+  "🇫🇷 Française",
   "🇲🇦 Marocaine", "🇹🇳 Tunisienne", "🇩🇿 Algérienne", "🇸🇳 Sénégalaise",
   "🇨🇮 Ivoirienne", "🇨🇲 Camerounaise", "🇬🇦 Gabonaise", "🇨🇬 Congolaise",
   "🇲🇱 Malienne", "🇧🇫 Burkinabè", "🇹🇬 Togolaise", "🇧🇯 Béninoise",
-  "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "🇫🇷 Française", "Autre",
+  "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "Autre",
 ];
 
 const CITIES = [
@@ -35,9 +39,40 @@ const INTERESTS = [
   "Cinéma", "Mode", "Fitness", "Photographie", "Gaming", "Art",
 ];
 
-type Step = "nationality" | "location" | "city" | "university" | "objectifs" | "interests" | "budget";
+const DIETARY_OPTIONS = [
+  "Classique", "Végétarien", "Halal", "Vegan", "Sans gluten",
+];
 
-const STEPS: Step[] = ["nationality", "location", "city", "university", "objectifs", "interests", "budget"];
+const CUISINE_OPTIONS = [
+  "Africaine", "Maghrébine", "Européenne", "Asiatique", "Américaine", "Indienne",
+];
+
+const STORE_OPTIONS = [
+  "Lidl", "Carrefour", "Leclerc", "Aldi", "Intermarché", "Épiceries locales",
+];
+
+const EXPERTISE_OPTIONS = [
+  "Maths", "Droit", "Langues", "Cuisine", "Bons plans", "Informatique", "Sciences", "Administratif",
+];
+
+const LOOKING_FOR_OPTIONS = [
+  { id: "amis", label: "👥 Amis" },
+  { id: "aide_admin", label: "📋 Aide administrative" },
+  { id: "sport", label: "⚽ Partenaires de sport" },
+  { id: "etudes", label: "📚 Groupe d'études" },
+  { id: "sorties", label: "🎉 Sorties" },
+];
+
+/* ─── Step definitions ─── */
+
+// Step 1: Identity (required for access)
+type Step1Key = "nationality" | "location" | "city" | "university";
+// Step 2: Profile for AI personalization  
+type Step2Key = "objectifs" | "budget" | "dietary" | "stores";
+// Step 3: Social
+type Step3Key = "interests" | "expertise" | "lookingfor";
+
+type StepKey = Step1Key | Step2Key | Step3Key;
 
 const Onboarding = () => {
   const { user } = useAuth();
@@ -46,39 +81,72 @@ const Onboarding = () => {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
+  // Step 1 data
   const [nationality, setNationality] = useState("");
   const [isInFrance, setIsInFrance] = useState<boolean | null>(null);
   const [city, setCity] = useState("");
   const [university, setUniversity] = useState("");
-  const [objectifs, setObjectifs] = useState<string[]>([]);
-  const [interests, setInterests] = useState<string[]>([]);
-  const [budget, setBudget] = useState("");
 
+  // Step 2 data
+  const [objectifs, setObjectifs] = useState<string[]>([]);
+  const [budget, setBudget] = useState("");
+  const [dietary, setDietary] = useState("Classique");
+  const [cuisinePrefs, setCuisinePrefs] = useState<string[]>([]);
+  const [budgetGroceries, setBudgetGroceries] = useState("");
+  const [nearbyStores, setNearbyStores] = useState<string[]>([]);
+
+  // Step 3 data
+  const [interests, setInterests] = useState<string[]>([]);
+  const [expertise, setExpertise] = useState<string[]>([]);
+  const [lookingFor, setLookingFor] = useState<string[]>([]);
+
+  const isFrench = nationality === "🇫🇷 Française";
+
+  // Build dynamic steps based on nationality
+  const buildSteps = (): StepKey[] => {
+    const steps: StepKey[] = ["nationality"];
+    if (!isFrench) steps.push("location");
+    steps.push("city", "university", "objectifs", "budget", "dietary", "stores", "interests", "expertise", "lookingfor");
+    return steps;
+  };
+
+  const STEPS = buildSteps();
   const currentStep = STEPS[step];
 
-  const canNext = () => {
+  // Auto-set isInFrance for French nationals
+  useEffect(() => {
+    if (isFrench) setIsInFrance(true);
+  }, [isFrench]);
+
+  const canNext = (): boolean => {
     switch (currentStep) {
       case "nationality": return nationality.length > 0;
       case "location": return isInFrance !== null;
       case "city": return city.length > 0;
       case "university": return university.length > 0;
       case "objectifs": return objectifs.length > 0;
-      case "interests": return interests.length > 0;
       case "budget": return budget.length > 0;
+      case "dietary": return true; // has default
+      case "stores": return true; // optional
+      case "interests": return interests.length > 0;
+      case "expertise": return true; // optional
+      case "lookingfor": return true; // optional
+      default: return true;
     }
   };
 
-  const toggleObjectif = (id: string) =>
-    setObjectifs((prev) => prev.includes(id) ? prev.filter((o) => o !== id) : prev.length < 3 ? [...prev, id] : prev);
-
-  const toggleInterest = (label: string) =>
-    setInterests((prev) => prev.includes(label) ? prev.filter((i) => i !== label) : prev.length < 5 ? [...prev, label] : prev);
+  const toggle = (arr: string[], setArr: React.Dispatch<React.SetStateAction<string[]>>, val: string, max: number) => {
+    setArr((prev) => prev.includes(val) ? prev.filter((v) => v !== val) : prev.length < max ? [...prev, val] : prev);
+  };
 
   const handleFinish = async () => {
     if (!user) return;
     setSubmitting(true);
 
     const budgetNum = parseInt(budget) || null;
+    const groceriesNum = parseInt(budgetGroceries) || null;
+    const studentStatus = isFrench ? "francais" : isInFrance ? "en_france" : "futur_arrivant";
+
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -90,7 +158,15 @@ const Onboarding = () => {
         interests,
         budget_monthly: budgetNum,
         is_in_france: isInFrance,
-        status: "temoin",
+        student_status: studentStatus,
+        dietary,
+        cuisine_preferences: cuisinePrefs,
+        budget_groceries_weekly: groceriesNum,
+        nearby_stores: nearbyStores,
+        expertise_domains: expertise,
+        looking_for: lookingFor,
+        onboarding_step: 3,
+        status: "explorateur",
       } as any)
       .eq("user_id", user.id);
 
@@ -105,6 +181,14 @@ const Onboarding = () => {
 
   const isLast = step === STEPS.length - 1;
 
+  // Phase labels for progress
+  const getPhaseLabel = () => {
+    const phaseIndex = STEPS.indexOf(currentStep);
+    if (phaseIndex <= STEPS.indexOf("university")) return "① Identité";
+    if (phaseIndex <= STEPS.indexOf("stores")) return "② Profil IA";
+    return "③ Social";
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-lg">
@@ -117,7 +201,7 @@ const Onboarding = () => {
             <span className="gold-text">Complète ton profil</span>
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Étape {step + 1} / {STEPS.length}
+            {getPhaseLabel()} — Étape {step + 1} / {STEPS.length}
           </p>
         </div>
 
@@ -154,75 +238,26 @@ const Onboarding = () => {
               <StepLayout icon={<Plane className="h-5 w-5" />} title="Es-tu déjà en France ?">
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 gap-3">
-                    <button
+                    <ToggleChoice
+                      selected={isInFrance === true}
                       onClick={() => setIsInFrance(true)}
-                      className={`flex items-center gap-3 rounded-2xl border px-4 py-4 text-sm font-medium transition-all cursor-pointer ${
-                        isInFrance === true
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {isInFrance === true && <Check className="h-4 w-4 text-primary" />}
-                      🇫🇷 Oui, je suis déjà en France
-                    </button>
-                    <button
+                      label="🇫🇷 Oui, je suis déjà en France"
+                    />
+                    <ToggleChoice
+                      selected={isInFrance === false}
                       onClick={() => setIsInFrance(false)}
-                      className={`flex items-center gap-3 rounded-2xl border px-4 py-4 text-sm font-medium transition-all cursor-pointer ${
-                        isInFrance === false
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {isInFrance === false && <Check className="h-4 w-4 text-primary" />}
-                      ✈️ Non, je ne suis pas encore arrivé(e)
-                    </button>
+                      label="✈️ Non, je ne suis pas encore arrivé(e)"
+                    />
                   </div>
-
-                  {/* Warning when selecting "already in France" */}
                   {isInFrance === true && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-semibold text-amber-600 dark:text-amber-400">
-                            Attention
-                          </p>
-                          <p className="mt-1 text-xs text-amber-600/80 dark:text-amber-400/80">
-                            En cochant cette option, les procédures pré-arrivée (visa, Campus France, assurance voyage…) 
-                            seront masquées de ton parcours. Si tu n'as pas encore finalisé ces démarches, 
-                            tu risques de louper des étapes importantes. Tu pourras toujours réactiver ces procédures 
-                            depuis ton dossier plus tard.
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
+                    <InfoBox variant="warning" icon={<AlertTriangle className="h-5 w-5" />} title="Note">
+                      Les procédures pré-arrivée (visa, Campus France…) seront masquées. Tu pourras les réactiver depuis ton dossier.
+                    </InfoBox>
                   )}
-
-                  {/* Info when not yet in France */}
                   {isInFrance === false && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="rounded-2xl border border-primary/30 bg-primary/5 p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <Plane className="h-5 w-5 shrink-0 text-primary mt-0.5" />
-                        <div>
-                          <p className="text-sm font-semibold text-primary">
-                            Parfait, on t'accompagne dès maintenant !
-                          </p>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            Tu verras toutes les procédures pré-arrivée en priorité (visa, Campus France, logement…) 
-                            pour que tu sois 100% prêt(e) le jour J. Une fois en France, tu pourras passer 
-                            en mode "sur place" depuis ton dossier.
-                          </p>
-                        </div>
-                      </div>
-                    </motion.div>
+                    <InfoBox variant="info" icon={<Plane className="h-5 w-5" />} title="Parfait !">
+                      Tu verras les procédures pré-arrivée en priorité pour être 100% prêt(e) le jour J.
+                    </InfoBox>
                   )}
                 </div>
               </StepLayout>
@@ -231,7 +266,7 @@ const Onboarding = () => {
             {currentStep === "city" && (
               <StepLayout
                 icon={<MapPin className="h-5 w-5" />}
-                title={isInFrance ? "Dans quelle ville étudies-tu ?" : "Dans quelle ville vas-tu étudier ?"}
+                title={isInFrance ? "Dans quelle ville es-tu ?" : "Dans quelle ville vas-tu étudier ?"}
               >
                 <div className="grid grid-cols-3 gap-2">
                   {CITIES.map((c) => (
@@ -245,7 +280,7 @@ const Onboarding = () => {
               <StepLayout icon={<GraduationCap className="h-5 w-5" />} title="Ton université ou école ?">
                 <input
                   type="text"
-                  placeholder="Ex: Université Grenoble Alpes"
+                  placeholder="Ex : Université Grenoble Alpes"
                   value={university}
                   onChange={(e) => setUniversity(e.target.value)}
                   maxLength={150}
@@ -256,40 +291,15 @@ const Onboarding = () => {
 
             {currentStep === "objectifs" && (
               <StepLayout icon={<Target className="h-5 w-5" />} title="Tes objectifs prioritaires (max 3)">
+                <p className="mb-3 text-xs text-muted-foreground">Cela permet à l'IA de te donner des conseils ciblés.</p>
                 <div className="grid grid-cols-1 gap-2">
                   {OBJECTIFS.map((o) => (
-                    <button
+                    <ToggleChoice
                       key={o.id}
-                      onClick={() => toggleObjectif(o.id)}
-                      className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition-all cursor-pointer ${
-                        objectifs.includes(o.id)
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {objectifs.includes(o.id) && <Check className="h-4 w-4 text-primary" />}
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "interests" && (
-              <StepLayout icon={<Heart className="h-5 w-5" />} title="Tes centres d'intérêt (max 5)">
-                <div className="flex flex-wrap gap-2">
-                  {INTERESTS.map((i) => (
-                    <button
-                      key={i}
-                      onClick={() => toggleInterest(i)}
-                      className={`rounded-full border px-4 py-2 text-xs font-medium transition-all cursor-pointer ${
-                        interests.includes(i)
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      {i}
-                    </button>
+                      selected={objectifs.includes(o.id)}
+                      onClick={() => toggle(objectifs, setObjectifs, o.id, 3)}
+                      label={o.label}
+                    />
                   ))}
                 </div>
               </StepLayout>
@@ -300,6 +310,98 @@ const Onboarding = () => {
                 <div className="grid grid-cols-2 gap-2">
                   {["300", "500", "700", "1000", "1500", "2000"].map((b) => (
                     <ChoiceButton key={b} selected={budget === b} onClick={() => setBudget(b)} label={`${b} €/mois`} />
+                  ))}
+                </div>
+              </StepLayout>
+            )}
+
+            {currentStep === "dietary" && (
+              <StepLayout icon={<UtensilsCrossed className="h-5 w-5" />} title="Ton profil alimentaire">
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Pour personnaliser les bons plans repas et le comparateur.
+                </p>
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Régime alimentaire</p>
+                  <div className="flex flex-wrap gap-2">
+                    {DIETARY_OPTIONS.map((d) => (
+                      <ChoiceButton key={d} selected={dietary === d} onClick={() => setDietary(d)} label={d} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Préférences culinaires (max 3)</p>
+                  <div className="flex flex-wrap gap-2">
+                    {CUISINE_OPTIONS.map((c) => (
+                      <ChoiceButton key={c} selected={cuisinePrefs.includes(c)} onClick={() => toggle(cuisinePrefs, setCuisinePrefs, c, 3)} label={c} />
+                    ))}
+                  </div>
+                </div>
+              </StepLayout>
+            )}
+
+            {currentStep === "stores" && (
+              <StepLayout icon={<ShoppingCart className="h-5 w-5" />} title="Budget courses & magasins">
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Optionnel — pour recevoir des alertes promos personnalisées.
+                </p>
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Budget courses hebdomadaire</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["20", "30", "50", "80", "100", "150"].map((b) => (
+                      <ChoiceButton key={b} selected={budgetGroceries === b} onClick={() => setBudgetGroceries(b)} label={`${b} €`} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Magasins de proximité</p>
+                  <div className="flex flex-wrap gap-2">
+                    {STORE_OPTIONS.map((s) => (
+                      <ChoiceButton key={s} selected={nearbyStores.includes(s)} onClick={() => toggle(nearbyStores, setNearbyStores, s, 4)} label={s} />
+                    ))}
+                  </div>
+                </div>
+              </StepLayout>
+            )}
+
+            {currentStep === "interests" && (
+              <StepLayout icon={<Heart className="h-5 w-5" />} title="Tes centres d'intérêt (max 5)">
+                <div className="flex flex-wrap gap-2">
+                  {INTERESTS.map((i) => (
+                    <ChoiceButton
+                      key={i}
+                      selected={interests.includes(i)}
+                      onClick={() => toggle(interests, setInterests, i, 5)}
+                      label={i}
+                      rounded
+                    />
+                  ))}
+                </div>
+              </StepLayout>
+            )}
+
+            {currentStep === "expertise" && (
+              <StepLayout icon={<Sparkles className="h-5 w-5" />} title="Ton domaine d'expertise (pour aider les autres)">
+                <p className="mb-3 text-xs text-muted-foreground">
+                  Optionnel — les autres étudiants pourront te solliciter dans l'entraide.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {EXPERTISE_OPTIONS.map((e) => (
+                    <ChoiceButton key={e} selected={expertise.includes(e)} onClick={() => toggle(expertise, setExpertise, e, 3)} label={e} rounded />
+                  ))}
+                </div>
+              </StepLayout>
+            )}
+
+            {currentStep === "lookingfor" && (
+              <StepLayout icon={<Users className="h-5 w-5" />} title="Ce que tu recherches ici">
+                <div className="grid grid-cols-1 gap-2">
+                  {LOOKING_FOR_OPTIONS.map((o) => (
+                    <ToggleChoice
+                      key={o.id}
+                      selected={lookingFor.includes(o.id)}
+                      onClick={() => toggle(lookingFor, setLookingFor, o.id, 4)}
+                      label={o.label}
+                    />
                   ))}
                 </div>
               </StepLayout>
@@ -336,7 +438,7 @@ const Onboarding = () => {
   );
 };
 
-/* Reusable sub-components */
+/* ─── Reusable sub-components ─── */
 
 const StepLayout = ({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) => (
   <div>
@@ -348,10 +450,10 @@ const StepLayout = ({ icon, title, children }: { icon: React.ReactNode; title: s
   </div>
 );
 
-const ChoiceButton = ({ selected, onClick, label }: { selected: boolean; onClick: () => void; label: string }) => (
+const ChoiceButton = ({ selected, onClick, label, rounded }: { selected: boolean; onClick: () => void; label: string; rounded?: boolean }) => (
   <button
     onClick={onClick}
-    className={`rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all cursor-pointer ${
+    className={`${rounded ? "rounded-full" : "rounded-2xl"} border px-3 py-2.5 text-xs font-medium transition-all cursor-pointer ${
       selected
         ? "border-primary bg-primary/10 text-primary"
         : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
@@ -360,5 +462,36 @@ const ChoiceButton = ({ selected, onClick, label }: { selected: boolean; onClick
     {label}
   </button>
 );
+
+const ToggleChoice = ({ selected, onClick, label }: { selected: boolean; onClick: () => void; label: string }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium transition-all cursor-pointer ${
+      selected
+        ? "border-primary bg-primary/10 text-primary"
+        : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
+    }`}
+  >
+    {selected && <Check className="h-4 w-4 text-primary" />}
+    {label}
+  </button>
+);
+
+const InfoBox = ({ variant, icon, title, children }: { variant: "warning" | "info"; icon: React.ReactNode; title: string; children: React.ReactNode }) => {
+  const colors = variant === "warning"
+    ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+    : "border-primary/30 bg-primary/5 text-primary";
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={`rounded-2xl border p-4 ${colors}`}>
+      <div className="flex items-start gap-3">
+        <span className="shrink-0 mt-0.5">{icon}</span>
+        <div>
+          <p className="text-sm font-semibold">{title}</p>
+          <p className="mt-1 text-xs opacity-80">{children}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 export default Onboarding;

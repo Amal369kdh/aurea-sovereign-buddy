@@ -27,12 +27,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!user) { setProfileChecked(true); return; }
     supabase
       .from("profiles")
-      .select("nationality, city, university, objectifs, is_in_france")
+      .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
         const d = data as any;
-        const incomplete = !d?.nationality || !d?.city || !d?.university || !d?.objectifs || (d.objectifs as string[]).length === 0 || d?.is_in_france === null || d?.is_in_france === undefined;
+        const isFrench = d?.nationality === "🇫🇷 Française";
+        const incomplete = !d?.nationality || !d?.city || !d?.university || !d?.objectifs || (d.objectifs as string[]).length === 0 || (!isFrench && (d?.is_in_france === null || d?.is_in_france === undefined));
         setNeedsOnboarding(incomplete);
         setProfileChecked(true);
       });
