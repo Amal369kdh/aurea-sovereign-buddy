@@ -304,15 +304,20 @@ export type Database = {
       }
       profiles: {
         Row: {
+          apl_status: string | null
           arrival_date: string | null
           avatar_initials: string | null
           aya_messages_used: number
           birth_date: string | null
+          budget_groceries_weekly: number | null
           budget_monthly: number | null
           city: string | null
           created_at: string
+          cuisine_preferences: string[] | null
           daily_swipes_count: number
+          dietary: string | null
           display_name: string | null
+          expertise_domains: string[] | null
           full_name: string | null
           id: string
           integration_progress: number
@@ -321,28 +326,40 @@ export type Database = {
           is_premium: boolean
           is_verified: boolean
           last_swipe_reset: string
+          looking_for: string[] | null
           nationality: string | null
+          nearby_stores: string[] | null
+          next_deadline_date: string | null
+          next_deadline_label: string | null
           objectifs: string[] | null
+          onboarding_step: number | null
           points: number
           points_social: number
           revenus_monthly: number | null
           status: string
+          student_status: string | null
           target_city: string | null
+          titre_sejour_expiry: string | null
           university: string | null
           university_id: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          apl_status?: string | null
           arrival_date?: string | null
           avatar_initials?: string | null
           aya_messages_used?: number
           birth_date?: string | null
+          budget_groceries_weekly?: number | null
           budget_monthly?: number | null
           city?: string | null
           created_at?: string
+          cuisine_preferences?: string[] | null
           daily_swipes_count?: number
+          dietary?: string | null
           display_name?: string | null
+          expertise_domains?: string[] | null
           full_name?: string | null
           id?: string
           integration_progress?: number
@@ -351,28 +368,40 @@ export type Database = {
           is_premium?: boolean
           is_verified?: boolean
           last_swipe_reset?: string
+          looking_for?: string[] | null
           nationality?: string | null
+          nearby_stores?: string[] | null
+          next_deadline_date?: string | null
+          next_deadline_label?: string | null
           objectifs?: string[] | null
+          onboarding_step?: number | null
           points?: number
           points_social?: number
           revenus_monthly?: number | null
           status?: string
+          student_status?: string | null
           target_city?: string | null
+          titre_sejour_expiry?: string | null
           university?: string | null
           university_id?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          apl_status?: string | null
           arrival_date?: string | null
           avatar_initials?: string | null
           aya_messages_used?: number
           birth_date?: string | null
+          budget_groceries_weekly?: number | null
           budget_monthly?: number | null
           city?: string | null
           created_at?: string
+          cuisine_preferences?: string[] | null
           daily_swipes_count?: number
+          dietary?: string | null
           display_name?: string | null
+          expertise_domains?: string[] | null
           full_name?: string | null
           id?: string
           integration_progress?: number
@@ -381,13 +410,20 @@ export type Database = {
           is_premium?: boolean
           is_verified?: boolean
           last_swipe_reset?: string
+          looking_for?: string[] | null
           nationality?: string | null
+          nearby_stores?: string[] | null
+          next_deadline_date?: string | null
+          next_deadline_label?: string | null
           objectifs?: string[] | null
+          onboarding_step?: number | null
           points?: number
           points_social?: number
           revenus_monthly?: number | null
           status?: string
+          student_status?: string | null
           target_city?: string | null
+          titre_sejour_expiry?: string | null
           university?: string | null
           university_id?: string | null
           updated_at?: string

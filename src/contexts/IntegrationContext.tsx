@@ -73,6 +73,7 @@ const allPhases: ChecklistPhase[] = [
     id: "installation",
     title: "Installation",
     icon: "🏠",
+    scope: "post",
     items: [
       {
         id: "logement",
@@ -102,7 +103,7 @@ const allPhases: ChecklistPhase[] = [
         label: "Forfait téléphone français",
         done: false,
         link: "https://www.free.fr/forfait-mobile/",
-        tip: "Free Mobile à 2€ ou 19,99€ — sans engagement, idéal pour commencer.",
+        tip: "Free Mobile à 2 € ou 19,99 € — sans engagement, idéal pour commencer.",
       },
       {
         id: "assurance-habitation",
@@ -125,7 +126,7 @@ const allPhases: ChecklistPhase[] = [
         hasAya: true,
         scope: "pre",
         link: "https://administration-etrangers-en-france.interieur.gouv.fr/",
-        tip: "À faire dans les 3 premiers mois après ton arrivée — paiement de 75€.",
+        tip: "À faire dans les 3 premiers mois après ton arrivée — paiement de 75 €.",
       },
       {
         id: "secu",
@@ -149,6 +150,7 @@ const allPhases: ChecklistPhase[] = [
     id: "vie-locale",
     title: "Vie quotidienne",
     icon: "🌍",
+    scope: "post",
     items: [
       {
         id: "caf",
@@ -156,7 +158,7 @@ const allPhases: ChecklistPhase[] = [
         done: false,
         hasAya: true,
         link: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation",
-        tip: "Simule ton APL en ligne puis fais la demande — ça peut réduire ton loyer de 100 à 300€.",
+        tip: "Simule ton APL en ligne puis fais la demande — ça peut réduire ton loyer de 100 à 300 €.",
       },
       {
         id: "transport",
@@ -177,7 +179,7 @@ const allPhases: ChecklistPhase[] = [
         label: "Trouver un job étudiant",
         done: false,
         link: "https://www.jobaviz.fr/",
-        tip: "20h/semaine max avec un visa étudiant — Jobaviz, Indeed, réseau de la fac.",
+        tip: "20 h/semaine max avec un visa étudiant — Jobaviz, Indeed, réseau de la fac.",
       },
       {
         id: "sport-culture",
