@@ -9,8 +9,8 @@ const SovereigntyWidget = () => {
 
   return (
     <div className="rounded-4xl bg-card p-6 card-glow">
-      <h2 className="mb-1 text-lg font-bold text-foreground">Souveraineté</h2>
-      <p className="mb-6 text-sm text-muted-foreground">Ton avancement d'installation</p>
+      <h2 className="mb-1 text-lg font-bold text-foreground">Score d'intégration</h2>
+      <p className="mb-6 text-sm text-muted-foreground">Ton avancement dans les démarches</p>
 
       <div className="flex items-center justify-center">
         <div className="relative">
