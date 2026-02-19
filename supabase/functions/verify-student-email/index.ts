@@ -7,7 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Allowed academic email domains
 const ALLOWED_PATTERNS = [
   /\.edu$/i,
   /\.edu\.[a-z]{2}$/i,
@@ -41,6 +40,43 @@ function generateToken(): string {
   return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+async function sendVerificationEmail(to: string, confirmUrl: string, resendApiKey: string) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "Amal <onboarding@resend.dev>",
+      to: [to],
+      subject: "Confirme ton email étudiant – Amal",
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
+          <h1 style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px;">Vérifie ton email étudiant 🎓</h1>
+          <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
+            Clique sur le bouton ci-dessous pour confirmer ton adresse <strong>${to}</strong> et débloquer toutes les fonctionnalités d'Amal.
+          </p>
+          <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #D4A853, #C49B4A); color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 15px;">
+            Confirmer mon email ✅
+          </a>
+          <p style="font-size: 13px; color: #999; margin-top: 24px; line-height: 1.5;">
+            Ce lien expire dans 24 heures. Si tu n'as pas fait cette demande, ignore cet email.
+          </p>
+        </div>
+      `,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.text();
+    console.error("Resend error:", res.status, errorBody);
+    throw new Error(`Resend API error: ${res.status}`);
+  }
+
+  return await res.json();
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -68,10 +104,10 @@ serve(async (req) => {
       );
     }
 
-    // Auth
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const authHeader = req.headers.get("Authorization");
 
     if (!authHeader) {
@@ -90,7 +126,6 @@ serve(async (req) => {
       });
     }
 
-    // Rate limit: max 3 verification requests per 24h
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
     const { data: recentRequests } = await serviceClient
       .from("student_email_verifications")
@@ -105,7 +140,6 @@ serve(async (req) => {
       );
     }
 
-    // Check if email already used by another user
     const { data: existingVerified } = await serviceClient
       .from("student_email_verifications")
       .select("user_id")
@@ -120,7 +154,6 @@ serve(async (req) => {
       );
     }
 
-    // Generate token and store
     const token = generateToken();
     await serviceClient.from("student_email_verifications").insert({
       user_id: user.id,
@@ -128,28 +161,30 @@ serve(async (req) => {
       token,
     });
 
-    // Build confirmation URL
-    const projectUrl = supabaseUrl.replace(".supabase.co", "");
     const confirmUrl = `${supabaseUrl}/functions/v1/confirm-student-email?token=${token}`;
 
-    // Send email via Supabase Auth admin (magic link style)
-    // We use a simple approach: send via the AI gateway as a formatted email
-    // For now, we'll use Supabase's built-in email by creating a simple redirect
-    
-    // Actually, let's send a real email using Supabase Auth's invite mechanism
-    // But since we can't customize that easily, we'll return the confirmation link
-    // and let the frontend handle showing it (in dev) or send via a proper email service
-    
-    // For production: integrate with Resend, SendGrid, etc.
-    // For now: return success and the user clicks the confirm link directly
-    
-    console.log(`Verification link for ${trimmedEmail}: ${confirmUrl}`);
+    // Send email via Resend if API key is configured
+    if (resendApiKey) {
+      await sendVerificationEmail(trimmedEmail, confirmUrl, resendApiKey);
+      console.log(`Verification email sent to ${trimmedEmail}`);
 
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Email de vérification envoyé",
+          email_sent: true,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Fallback: return link (dev mode)
+    console.log(`Verification link for ${trimmedEmail}: ${confirmUrl}`);
     return new Response(
       JSON.stringify({
         success: true,
         message: "Lien de vérification généré",
-        // In production, remove this and send via email service
+        email_sent: false,
         confirm_url: confirmUrl,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }

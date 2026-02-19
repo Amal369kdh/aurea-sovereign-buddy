@@ -101,11 +101,13 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
         return;
       }
 
-      setConfirmUrl(data?.confirm_url || null);
+      setConfirmUrl(data?.email_sent ? null : (data?.confirm_url || null));
       setGateState("sent");
       toast({
-        title: "Lien généré ✅",
-        description: "Clique sur le lien pour confirmer ton email étudiant.",
+        title: data?.email_sent ? "Email envoyé ✅" : "Lien généré ✅",
+        description: data?.email_sent
+          ? `Vérifie ta boîte mail ${email.trim().toLowerCase()}`
+          : "Clique sur le lien pour confirmer ton email étudiant.",
       });
     } catch {
       setGateState("error");
@@ -209,10 +211,13 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
             >
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center space-y-3">
                 <CheckCircle2 className="h-10 w-10 text-primary mx-auto" />
-                <p className="text-sm font-bold text-foreground">Lien de vérification généré !</p>
+                <p className="text-sm font-bold text-foreground">
+                  {confirmUrl ? "Lien de vérification généré !" : "Email envoyé ! 📬"}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Clique sur le bouton ci-dessous pour confirmer ton email étudiant.
-                  Une fois confirmé, recharge la page pour accéder à toutes les fonctionnalités.
+                  {confirmUrl
+                    ? "Clique sur le bouton ci-dessous pour confirmer ton email étudiant. Une fois confirmé, recharge la page."
+                    : `Un email de confirmation a été envoyé à ${email.trim().toLowerCase()}. Vérifie ta boîte de réception (et tes spams) puis clique sur le lien. Recharge ensuite la page.`}
                 </p>
                 {confirmUrl && (
                   <a
