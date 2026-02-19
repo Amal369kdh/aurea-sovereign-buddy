@@ -414,6 +414,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_announcements: { Args: never; Returns: undefined }
       is_temoin: { Args: { _user_id: string }; Returns: boolean }
       is_verified_organization: { Args: { _user_id: string }; Returns: boolean }
     }
