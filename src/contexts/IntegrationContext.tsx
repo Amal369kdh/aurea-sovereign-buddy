@@ -156,6 +156,9 @@ export const useIntegration = () => {
   return ctx;
 };
 
+// Test account that bypasses all restrictions for UX testing
+const BYPASS_EMAIL = "donaldh.kponou@gmail.com";
+
 export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [rawPhases, setRawPhases] = useState(allPhases);
@@ -163,6 +166,9 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const [isFrench, setIsFrench] = useState(false);
   const [isTemoin, setIsTemoin] = useState(false);
   const [showPreArrival, setShowPreArrival] = useState(false);
+
+  // Bypass: donaldh.kponou@gmail.com always has full access
+  const isBypassAccount = user?.email === BYPASS_EMAIL;
 
   useEffect(() => {
     if (!user) {
@@ -181,9 +187,16 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
         .single();
 
       if (profile) {
-        setIsInFranceState(profile.is_in_france ?? null);
-        setIsFrench(profile.nationality === "🇫🇷 Française");
-        setIsTemoin(profile.status === "temoin");
+        // Bypass account: force all access flags to true
+        if (isBypassAccount) {
+          setIsInFranceState(true);
+          setIsFrench(false);
+          setIsTemoin(true);
+        } else {
+          setIsInFranceState(profile.is_in_france ?? null);
+          setIsFrench(profile.nationality === "🇫🇷 Française");
+          setIsTemoin(profile.status === "temoin");
+        }
       }
 
       const { data: tasks } = await supabase
@@ -206,7 +219,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadData();
-  }, [user]);
+  }, [user, isBypassAccount]);
 
   const phases = buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival);
 
