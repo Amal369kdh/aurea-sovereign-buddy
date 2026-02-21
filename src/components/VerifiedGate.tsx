@@ -39,6 +39,9 @@ function isAcademicEmail(email: string): boolean {
   return EMAIL_PATTERNS.some((p) => p.test(domain));
 }
 
+// TEST_MODE: When true, accept email format without actual verification email
+const TEST_MODE = true;
+
 const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: VerifiedGateProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -47,7 +50,6 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   const [gateState, setGateState] = useState<GateState>("idle");
   const [email, setEmail] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [confirmUrl, setConfirmUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -77,6 +79,28 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
     setErrorMsg("");
 
     try {
+      if (TEST_MODE) {
+        // TEST MODE: Directly update status to temoin without sending email
+        const { error: updateError } = await supabase
+          .from("profiles")
+          .update({ status: "temoin", is_verified: true })
+          .eq("user_id", user!.id);
+
+        if (updateError) {
+          setGateState("error");
+          setErrorMsg("Erreur lors de la mise à jour du profil.");
+          return;
+        }
+
+        setStatus("temoin");
+        toast({
+          title: "Email vérifié ✅",
+          description: "Ton statut est maintenant Témoin. Bienvenue !",
+        });
+        return;
+      }
+
+      // PRODUCTION MODE: Send verification email via edge function
       const { data, error } = await supabase.functions.invoke("verify-student-email", {
         body: { student_email: email.trim().toLowerCase() },
       });
@@ -101,7 +125,6 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
         return;
       }
 
-      setConfirmUrl(data?.email_sent ? null : (data?.confirm_url || null));
       setGateState("sent");
       toast({
         title: data?.email_sent ? "Email envoyé ✅" : "Lien généré ✅",
@@ -148,8 +171,9 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
                   <div>
                     <p className="text-sm font-semibold text-foreground">Comment ça marche ?</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Entre ton adresse email universitaire et clique sur le lien de confirmation
-                      que tu recevras. Ton statut passera automatiquement à « Témoin » ✅
+                      Entre ton adresse email universitaire. {TEST_MODE
+                        ? "Ton statut sera mis à jour automatiquement si le format est valide."
+                        : "Clique sur le lien de confirmation que tu recevras. Ton statut passera automatiquement à « Témoin » ✅"}
                     </p>
                   </div>
                 </div>
@@ -202,6 +226,19 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
             </motion.div>
           )}
 
+          {gateState === "sending" && (
+            <motion.div
+              key="sending"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center gap-3 py-8"
+            >
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Vérification en cours…</p>
+            </motion.div>
+          )}
+
           {gateState === "sent" && (
             <motion.div
               key="sent"
@@ -211,30 +248,15 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
             >
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center space-y-3">
                 <CheckCircle2 className="h-10 w-10 text-primary mx-auto" />
-                <p className="text-sm font-bold text-foreground">
-                  {confirmUrl ? "Lien de vérification généré !" : "Email envoyé ! 📬"}
-                </p>
+                <p className="text-sm font-bold text-foreground">Email envoyé ! 📬</p>
                 <p className="text-xs text-muted-foreground">
-                  {confirmUrl
-                    ? "Clique sur le bouton ci-dessous pour confirmer ton email étudiant. Une fois confirmé, recharge la page."
-                    : `Un email de confirmation a été envoyé à ${email.trim().toLowerCase()}. Vérifie ta boîte de réception (et tes spams) puis clique sur le lien. Recharge ensuite la page.`}
+                  Un email de confirmation a été envoyé à {email.trim().toLowerCase()}. Vérifie ta boîte de réception (et tes spams) puis clique sur le lien. Recharge ensuite la page.
                 </p>
-                {confirmUrl && (
-                  <a
-                    href={confirmUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-2 rounded-2xl gold-gradient px-6 py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
-                  >
-                    Confirmer mon email <ArrowRight className="h-4 w-4" />
-                  </a>
-                )}
               </div>
               <button
                 onClick={() => {
                   setGateState("idle");
                   setEmail("");
-                  setConfirmUrl(null);
                 }}
                 className="text-xs text-muted-foreground underline hover:text-foreground cursor-pointer"
               >

@@ -3,7 +3,7 @@ import {
   Shield, Briefcase, HeartHandshake, Stethoscope, Calculator, ClipboardCheck,
   GraduationCap, ExternalLink, Phone, MapPin, Building2, BookOpen, ChevronRight,
   Lock, Plane, Home, Landmark, Scale, Utensils, Bus, Dumbbell, Heart, Brain,
-  Globe, FileText, HandCoins, Loader2, Sparkles,
+  Globe, FileText, HandCoins, Loader2, Sparkles, ShieldCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIntegration } from "@/contexts/IntegrationContext";
@@ -33,32 +33,35 @@ interface QuickLink {
 
 /* ─── Tile component ─── */
 const BentoTile = ({
-  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate,
+  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock,
 }: {
   title: string; subtitle: string; icon: React.ElementType; accentClass: string;
-  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void;
+  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void;
 }) => (
   <motion.div
     variants={tile}
     className={`group relative overflow-hidden rounded-4xl border border-border bg-card p-6 transition-all ${
-      locked ? "opacity-60 pointer-events-none select-none" : "hover:border-primary/20 hover:card-glow"
+      locked ? "" : "hover:border-primary/20 hover:card-glow"
     } ${className}`}
   >
     {locked && (
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-4xl bg-background/80 backdrop-blur-sm">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-4xl bg-background/60 backdrop-blur-[3px]">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/80">
           <Lock className="h-6 w-6 text-muted-foreground" />
         </div>
         <div className="text-center px-6">
           <p className="text-sm font-bold text-foreground">Disponible en France</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Cette section se débloquera quand tu seras sur le territoire français.
+            Vérifie ton email étudiant pour débloquer cette section.
           </p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-          <Plane className="h-3 w-3" />
-          En attente d'arrivée
-        </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); onUnlock?.(); }}
+          className="flex items-center gap-1.5 rounded-full gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
+        >
+          <ShieldCheck className="h-3.5 w-3.5" />
+          Vérifier mon email étudiant
+        </button>
       </div>
     )}
 
@@ -298,6 +301,7 @@ const BentoGrid = () => {
             className={t.className}
             locked={t.lockable ? shouldLock : false}
             onNavigate={navigate}
+            onUnlock={() => navigate("/hub-social")}
           />
         ))}
       </motion.div>
