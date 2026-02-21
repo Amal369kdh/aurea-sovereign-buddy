@@ -2,10 +2,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
+import { useNavigate } from "react-router-dom";
 
 const PhaseChecklist = () => {
   const { phases, toggleTask, isInFrance, isFrench, isTemoin, setIsInFrance } = useIntegration();
   const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-4">
@@ -88,7 +90,7 @@ const PhaseChecklist = () => {
             : null;
 
           return (
-            <div key={phase.id} className={`rounded-4xl bg-card border overflow-hidden ${isLocked ? "border-border/50 opacity-75" : "border-border"}`}>
+            <div key={phase.id} className={`rounded-4xl bg-card border overflow-hidden ${isLocked ? "border-border/50" : "border-border"}`}>
               <button
                 onClick={() => setOpenPhase(isOpen ? null : phase.id)}
                 className="flex w-full items-center gap-4 p-5 text-left cursor-pointer transition-colors hover:bg-secondary/30"
@@ -109,10 +111,13 @@ const PhaseChecklist = () => {
                       : `${doneCount}/${activeItems.length} complétées`}
                   </p>
                 </div>
-                {allDone && !isLocked && (
-                  <span className="rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
-                    Terminé ✓
-                  </span>
+                {isLocked && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate("/hub-social"); }}
+                    className="flex items-center gap-1 rounded-full gold-gradient px-3 py-1 text-[10px] font-bold text-primary-foreground cursor-pointer"
+                  >
+                    <ShieldCheck className="h-3 w-3" /> Vérifier
+                  </button>
                 )}
                 {!isLocked && (
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary">
@@ -141,7 +146,7 @@ const PhaseChecklist = () => {
                           <motion.div
                             layout
                             className={`group flex items-center gap-3 px-4 py-3 transition-colors ${
-                              item.locked ? "cursor-default opacity-60" : "cursor-pointer hover:bg-secondary/40"
+                              item.locked ? "cursor-default opacity-70" : "cursor-pointer hover:bg-secondary/40"
                             }`}
                             onClick={() => !item.locked && toggleTask(phase.id, item.id)}
                           >
