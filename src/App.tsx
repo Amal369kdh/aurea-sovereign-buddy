@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -29,7 +30,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       .from("profiles")
       .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (!data) { setNeedsOnboarding(true); setProfileChecked(true); return; }
         const isFrench = data.nationality === "🇫🇷 Française";
@@ -40,6 +41,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       });
   }, [user]);
 
+  if (!loading && !user) return <Navigate to="/auth" replace />;
+
   if (loading || !profileChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -47,7 +50,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  if (!user) return <Navigate to="/auth" replace />;
   if (needsOnboarding) return <Navigate to="/onboarding" replace />;
   return <>{children}</>;
 };
@@ -59,6 +61,7 @@ const App = () => (
         <IntegrationProvider>
           <Toaster />
           <Sonner />
+          <ErrorBoundary>
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<Auth />} />
@@ -70,6 +73,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
+          </ErrorBoundary>
         </IntegrationProvider>
       </AuthProvider>
     </TooltipProvider>
