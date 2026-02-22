@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldAlert, Phone, MapPin, X, AlertTriangle, ExternalLink } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const emergencyNumbers = [
   { label: "SAMU (urgences médicales)", number: "15", color: "text-destructive" },
@@ -11,15 +13,31 @@ const emergencyNumbers = [
   { label: "Prévention suicide", number: "3114", color: "text-info" },
 ];
 
-const safePlaces = [
-  { name: "Commissariat Central Grenoble", address: "36 Bd Maréchal Leclerc", type: "Police" },
-  { name: "CHU Grenoble Alpes — Urgences", address: "Bd de la Chantourne, 38700", type: "Hôpital" },
-  { name: "CROUS — Service social", address: "351 allée de la Colline", type: "Social" },
-  { name: "Maison des Étudiants (MDE)", address: "701 Av. Centrale, 38400", type: "Campus" },
+const buildSafePlaces = (city: string) => [
+  { name: "Commissariat de Police", address: city, type: "Police", mapsQuery: "commissariat police " + city },
+  { name: "Hôpital — Urgences", address: city, type: "Hôpital", mapsQuery: "urgences hôpital " + city },
+  { name: "CROUS — Service social", address: city, type: "Social", mapsQuery: "CROUS service social " + city },
+  { name: "Service santé étudiants", address: city, type: "Campus", mapsQuery: "service santé étudiants " + city },
 ];
 
 const SecuritySovereign = () => {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [city, setCity] = useState("Grenoble");
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("city")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.city) setCity(data.city);
+      });
+  }, [user]);
+
+  const safePlaces = buildSafePlaces(city);
 
   return (
     <>
@@ -105,7 +123,7 @@ const SecuritySovereign = () => {
                 {safePlaces.map((place) => (
                   <a
                     key={place.name}
-                    href={`https://maps.google.com/?q=${encodeURIComponent(place.name + " " + place.address)}`}
+                    href={`https://maps.google.com/?q=${encodeURIComponent(place.mapsQuery)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 rounded-2xl bg-secondary/50 px-4 py-3 transition-all hover:bg-secondary cursor-pointer"
