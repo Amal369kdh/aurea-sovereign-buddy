@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useIntegration } from "@/contexts/IntegrationContext";
 
 const SovereigntyWidget = () => {
-  const { progress } = useIntegration();
+  const { progress, phases } = useIntegration();
   const radius = 80;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
@@ -61,9 +61,9 @@ const SovereigntyWidget = () => {
 
       <div className="mt-6 grid grid-cols-3 gap-3">
         {[
-          { label: "Logement", done: progress >= 30 },
-          { label: "Banque", done: progress >= 20 },
-          { label: "Sécu", done: false },
+          { label: "Logement", done: !!phases.find(p => p.id === "installation")?.items.find(i => i.id === "logement")?.done },
+          { label: "Banque", done: !!phases.find(p => p.id === "installation")?.items.find(i => i.id === "banque")?.done },
+          { label: "Sécu", done: !!phases.find(p => p.id === "legal")?.items.find(i => i.id === "secu")?.done },
         ].map((item) => (
           <div
             key={item.label}

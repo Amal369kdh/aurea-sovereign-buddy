@@ -181,7 +181,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
         .from("profiles")
         .select("is_in_france, nationality, status")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         setIsInFranceState(profile.is_in_france ?? null);
