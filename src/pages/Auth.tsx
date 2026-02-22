@@ -14,6 +14,8 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  if (!loading && user) return <Navigate to="/" replace />;
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -21,8 +23,6 @@ const Auth = () => {
       </div>
     );
   }
-
-  if (user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
