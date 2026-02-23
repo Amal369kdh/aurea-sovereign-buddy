@@ -3,10 +3,12 @@ import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, Shield
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { useNavigate } from "react-router-dom";
+import VerificationDialog from "@/components/VerificationDialog";
 
 const PhaseChecklist = () => {
   const { phases, toggleTask, isInFrance, isFrench, isTemoin, setIsInFrance } = useIntegration();
   const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -113,7 +115,7 @@ const PhaseChecklist = () => {
                 </div>
                 {isLocked && (
                   <button
-                    onClick={(e) => { e.stopPropagation(); navigate("/hub-social"); }}
+                    onClick={(e) => { e.stopPropagation(); setVerifyOpen(true); }}
                     className="flex items-center gap-1 rounded-full gold-gradient px-3 py-1 text-[10px] font-bold text-primary-foreground cursor-pointer"
                   >
                     <ShieldCheck className="h-3 w-3" /> Vérifier
@@ -224,6 +226,7 @@ const PhaseChecklist = () => {
           );
         })}
       </div>
+      <VerificationDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
     </div>
   );
 };

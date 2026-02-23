@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCityResources } from "@/hooks/useCityResources";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import VerificationDialog from "@/components/VerificationDialog";
 
 const container = {
   hidden: {},
@@ -245,8 +246,9 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
 const BentoGrid = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isInFrance, isFrench } = useIntegration();
+  const { isInFrance, isFrench, isTemoin } = useIntegration();
   const [city, setCity] = useState<string>("Grenoble");
+  const [verifyOpen, setVerifyOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -254,7 +256,7 @@ const BentoGrid = () => {
       .from("profiles")
       .select("city, target_city")
       .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data?.city) setCity(data.city);
         else if (data?.target_city) setCity(data.target_city);
@@ -263,7 +265,7 @@ const BentoGrid = () => {
 
   const { data: cityData, loading: cityLoading } = useCityResources(city);
 
-  const shouldLock = isInFrance === false && !isFrench;
+  const shouldLock = !isFrench && (isInFrance === false || (isInFrance && !isTemoin));
 
   const baseTiles = defaultTiles(city);
   const tiles = cityData ? enrichTilesWithCityData(baseTiles, cityData) : baseTiles;
@@ -301,7 +303,7 @@ const BentoGrid = () => {
             className={t.className}
             locked={t.lockable ? shouldLock : false}
             onNavigate={navigate}
-            onUnlock={() => navigate("/hub-social")}
+            onUnlock={() => setVerifyOpen(true)}
           />
         ))}
       </motion.div>
@@ -323,6 +325,7 @@ const BentoGrid = () => {
           </ul>
         </div>
       )}
+      <VerificationDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
     </div>
   );
 };

@@ -32,6 +32,7 @@ interface IntegrationState {
   isTemoin: boolean;
   toggleTask: (phaseId: string, itemId: string) => void;
   setIsInFrance: (value: boolean) => void;
+  refreshProfile: () => Promise<void>;
 }
 
 const allPhases: ChecklistPhase[] = [
@@ -167,6 +168,21 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const [isTemoin, setIsTemoin] = useState(false);
   const [showPreArrival, setShowPreArrival] = useState(false);
 
+  const loadProfileData = useCallback(async () => {
+    if (!user) return;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_in_france, nationality, status")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (profile) {
+      setIsInFranceState(profile.is_in_france ?? null);
+      setIsFrench(profile.nationality === "🇫🇷 Française");
+      setIsTemoin(profile.status === "temoin");
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!user) {
       setRawPhases(allPhases);
@@ -177,17 +193,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const loadData = async () => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_in_france, nationality, status")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (profile) {
-        setIsInFranceState(profile.is_in_france ?? null);
-        setIsFrench(profile.nationality === "🇫🇷 Française");
-        setIsTemoin(profile.status === "temoin");
-      }
+      await loadProfileData();
 
       const { data: tasks } = await supabase
         .from("user_tasks")
@@ -209,7 +215,11 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadData();
-  }, [user]);
+  }, [user, loadProfileData]);
+
+  const refreshProfile = useCallback(async () => {
+    await loadProfileData();
+  }, [loadProfileData]);
 
   const phases = buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival);
 
@@ -273,7 +283,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
   const progress = calcProgress(phases);
 
   return (
-    <IntegrationContext.Provider value={{ phases, progress, isInFrance, isFrench, isTemoin, toggleTask, setIsInFrance }}>
+    <IntegrationContext.Provider value={{ phases, progress, isInFrance, isFrench, isTemoin, toggleTask, setIsInFrance, refreshProfile }}>
       {children}
     </IntegrationContext.Provider>
   );
