@@ -1,17 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { ShieldCheck, Lock, Mail, ArrowRight, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-
-interface VerifiedGateProps {
-  children: React.ReactNode;
-  featureName?: string;
-}
-
-type GateState = "idle" | "input" | "sending" | "sent" | "error";
 
 const EMAIL_PATTERNS = [
   /\.edu$/i,
@@ -40,35 +34,23 @@ function isAcademicEmail(email: string): boolean {
   return EMAIL_PATTERNS.some((p) => p.test(domain));
 }
 
-// TEST_MODE: When true, accept email format without actual verification email
+// Match TEST_MODE from VerifiedGate
 const TEST_MODE = false;
 
-const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: VerifiedGateProps) => {
+type GateState = "idle" | "input" | "sending" | "sent" | "error";
+
+interface VerificationDialogProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const VerificationDialog = ({ open, onClose }: VerificationDialogProps) => {
   const { user } = useAuth();
   const { refreshProfile } = useIntegration();
   const { toast } = useToast();
-  const [status, setStatus] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [gateState, setGateState] = useState<GateState>("idle");
   const [email, setEmail] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
-  useEffect(() => {
-    if (!user) { setLoading(false); return; }
-    supabase
-      .from("profiles")
-      .select("status")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        const profileData = data as { status: string } | null;
-        setStatus(profileData?.status ?? "explorateur");
-        setLoading(false);
-      });
-  }, [user]);
-
-  if (loading) return null;
-  if (status === "temoin") return <>{children}</>;
 
   const clientValid = email.includes("@") && isAcademicEmail(email);
 
@@ -82,7 +64,6 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
 
     try {
       if (TEST_MODE) {
-        // TEST MODE: Directly update status to temoin without sending email
         const { error: updateError } = await supabase
           .from("profiles")
           .update({ status: "temoin", is_verified: true })
@@ -95,15 +76,15 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
         }
 
         await refreshProfile();
-        setStatus("temoin");
         toast({
           title: "Email vérifié ✅",
           description: "Ton statut est maintenant Témoin. Toutes les sections sont débloquées !",
         });
+        onClose();
         return;
       }
 
-      // PRODUCTION MODE: Send verification email via edge function
+      // PRODUCTION MODE
       const { data, error } = await supabase.functions.invoke("verify-student-email", {
         body: { student_email: email.trim().toLowerCase() },
       });
@@ -116,15 +97,10 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
 
       if (data?.error) {
         setGateState("error");
-        if (data.error === "invalid_domain") {
-          setErrorMsg(data.message || "Domaine non reconnu.");
-        } else if (data.error === "rate_limit") {
-          setErrorMsg(data.message || "Trop de tentatives.");
-        } else if (data.error === "email_taken") {
-          setErrorMsg(data.message || "Email déjà utilisé.");
-        } else {
-          setErrorMsg(data.message || "Erreur inconnue.");
-        }
+        if (data.error === "invalid_domain") setErrorMsg(data.message || "Domaine non reconnu.");
+        else if (data.error === "rate_limit") setErrorMsg(data.message || "Trop de tentatives.");
+        else if (data.error === "email_taken") setErrorMsg(data.message || "Email déjà utilisé.");
+        else setErrorMsg(data.message || "Erreur inconnue.");
         return;
       }
 
@@ -142,58 +118,47 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center px-6 py-20">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md text-center"
-      >
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10">
-          <Lock className="h-8 w-8 text-primary" />
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-md p-6">
+        <DialogTitle className="sr-only">Vérification email étudiant</DialogTitle>
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10">
+            <Lock className="h-7 w-7 text-primary" />
+          </div>
+          <h2 className="text-lg font-extrabold text-foreground mb-1">
+            Vérifie ton email étudiant
+          </h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            Un email universitaire (.edu, .univ.fr, etc.) est nécessaire pour débloquer toutes les fonctionnalités.
+          </p>
         </div>
-        <h2 className="text-xl font-extrabold text-foreground mb-2">
-          Accès réservé aux étudiants vérifiés
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Pour accéder à <span className="font-semibold text-foreground">{featureName}</span>,
-          vérifie ton identité avec un email universitaire (.edu, .univ.fr, etc.).
-        </p>
 
         <AnimatePresence mode="wait">
           {(gateState === "idle" || gateState === "input" || gateState === "error") && (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-4"
-            >
-              <div className="rounded-2xl border border-border bg-card p-5 text-left space-y-4">
+            <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+              <div className="rounded-2xl border border-border bg-card p-4 text-left space-y-3">
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 shrink-0 text-primary mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold text-foreground">Comment ça marche ?</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Entre ton adresse email universitaire. {TEST_MODE
+                      {TEST_MODE
                         ? "Ton statut sera mis à jour automatiquement si le format est valide."
-                        : "Clique sur le lien de confirmation que tu recevras. Ton statut passera automatiquement à « Témoin » ✅"}
+                        : "Clique sur le lien de confirmation que tu recevras. Ton statut passera à « Témoin » ✅"}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 shrink-0 text-primary mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Pourquoi cette vérification ?</p>
+                    <p className="text-sm font-semibold text-foreground">Que débloque la vérification ?</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      La sécurité de la communauté est notre priorité.
-                      Seuls les étudiants vérifiés peuvent accéder au Hub Social,
-                      aux Rencontres et à la messagerie privée.
+                      Hub Social, Rencontres, messagerie privée, et toutes les démarches post-arrivée (CAF, Sécu, logement…).
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Email input */}
               <div className="space-y-2">
                 <input
                   type="email"
@@ -208,11 +173,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
                   className="w-full rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
                 {errorMsg && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 text-xs text-destructive"
-                  >
+                  <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 text-xs text-destructive">
                     <AlertCircle className="h-3.5 w-3.5 shrink-0" />
                     {errorMsg}
                   </motion.div>
@@ -230,37 +191,23 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
           )}
 
           {gateState === "sending" && (
-            <motion.div
-              key="sending"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-3 py-8"
-            >
+            <motion.div key="sending" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-3 py-8">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground">Vérification en cours…</p>
             </motion.div>
           )}
 
           {gateState === "sent" && (
-            <motion.div
-              key="sent"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="space-y-4"
-            >
+            <motion.div key="sent" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6 text-center space-y-3">
                 <CheckCircle2 className="h-10 w-10 text-primary mx-auto" />
                 <p className="text-sm font-bold text-foreground">Email envoyé ! 📬</p>
                 <p className="text-xs text-muted-foreground">
-                  Un email de confirmation a été envoyé à {email.trim().toLowerCase()}. Vérifie ta boîte de réception (et tes spams) puis clique sur le lien. Recharge ensuite la page.
+                  Un email de confirmation a été envoyé à {email.trim().toLowerCase()}. Vérifie ta boîte de réception (et tes spams) puis clique sur le lien.
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setGateState("idle");
-                  setEmail("");
-                }}
+                onClick={() => { setGateState("idle"); setEmail(""); }}
                 className="text-xs text-muted-foreground underline hover:text-foreground cursor-pointer"
               >
                 Utiliser un autre email
@@ -268,9 +215,9 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default VerifiedGate;
+export default VerificationDialog;
