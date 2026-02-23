@@ -41,7 +41,7 @@ function isAcademicEmail(email: string): boolean {
 }
 
 // TEST_MODE: When true, accept email format without actual verification email
-const TEST_MODE = false;
+const TEST_MODE = true;
 
 const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: VerifiedGateProps) => {
   const { user } = useAuth();
