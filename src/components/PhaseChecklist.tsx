@@ -1,14 +1,81 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, ShieldCheck } from "lucide-react";
+import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, ShieldCheck, FileText, AlertTriangle, Clock, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { useNavigate } from "react-router-dom";
 import VerificationDialog from "@/components/VerificationDialog";
+import type { ChecklistGuide } from "@/contexts/IntegrationContext";
+
+/* ─── Guide panel sub-component ─── */
+const GuidePanel = ({ guide }: { guide: ChecklistGuide }) => (
+  <div className="border-t border-border/30 bg-secondary/30 px-4 py-4 space-y-3">
+    {/* Steps */}
+    <div>
+      <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1.5">
+        <Check className="h-3.5 w-3.5 text-primary" /> Étapes
+      </p>
+      <ol className="space-y-1.5 pl-1">
+        {guide.steps.map((step, i) => (
+          <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary mt-0.5">{i + 1}</span>
+            <span>{step}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    {/* Documents */}
+    {guide.documents && guide.documents.length > 0 && (
+      <div>
+        <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1.5">
+          <FileText className="h-3.5 w-3.5 text-primary" /> Documents nécessaires
+        </p>
+        <ul className="space-y-1 pl-1">
+          {guide.documents.map((doc, i) => (
+            <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+              <span className="text-primary mt-0.5">•</span>
+              <span>{doc}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {/* Deadline */}
+    {guide.deadline && (
+      <div className="flex items-start gap-2 rounded-xl bg-primary/5 border border-primary/20 p-3">
+        <Clock className="h-3.5 w-3.5 shrink-0 text-primary mt-0.5" />
+        <div>
+          <p className="text-xs font-bold text-foreground">Délai</p>
+          <p className="text-xs text-muted-foreground">{guide.deadline}</p>
+        </div>
+      </div>
+    )}
+
+    {/* Pitfalls */}
+    {guide.pitfalls && guide.pitfalls.length > 0 && (
+      <div>
+        <p className="text-xs font-bold text-foreground mb-2 flex items-center gap-1.5">
+          <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> Pièges à éviter
+        </p>
+        <ul className="space-y-1.5 pl-1">
+          {guide.pitfalls.map((pitfall, i) => (
+            <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+              <span className="text-amber-500 mt-0.5">⚠</span>
+              <span>{pitfall}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+);
 
 const PhaseChecklist = () => {
   const { phases, toggleTask, isInFrance, isFrench, isTemoin, setIsInFrance } = useIntegration();
   const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
   const [verifyOpen, setVerifyOpen] = useState(false);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
   return (
@@ -143,7 +210,9 @@ const PhaseChecklist = () => {
                     className="overflow-hidden"
                   >
                     <div className="border-t border-border px-5 pb-4 pt-2 space-y-2">
-                      {phase.items.map((item) => (
+                      {phase.items.map((item) => {
+                        const isExpanded = expandedItem === `${phase.id}:${item.id}`;
+                        return (
                         <div key={item.id} className={`rounded-2xl border border-border/50 overflow-hidden ${item.locked ? "bg-muted/30" : "bg-secondary/20"}`}>
                           <motion.div
                             layout
@@ -184,6 +253,17 @@ const PhaseChecklist = () => {
                               {item.label}
                             </span>
 
+                            {item.guide && !item.locked && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setExpandedItem(isExpanded ? null : `${phase.id}:${item.id}`); }}
+                                className="flex items-center gap-1 rounded-xl bg-secondary px-2.5 py-1 text-[10px] font-semibold text-muted-foreground transition-colors hover:bg-secondary/80 cursor-pointer"
+                              >
+                                <FileText className="h-3 w-3" />
+                                Guide
+                                <ChevronRight className={`h-3 w-3 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                              </button>
+                            )}
+
                             {item.hasAya && !item.locked && (
                               <button
                                 onClick={(e) => { e.stopPropagation(); }}
@@ -193,6 +273,21 @@ const PhaseChecklist = () => {
                               </button>
                             )}
                           </motion.div>
+
+                          {/* Guide expandable section */}
+                          <AnimatePresence>
+                            {isExpanded && item.guide && !item.locked && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="overflow-hidden"
+                              >
+                                <GuidePanel guide={item.guide} />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
 
                           {/* Tip & Link — hidden for locked items */}
                           {!item.locked && (item.tip || item.link) && (
@@ -217,7 +312,8 @@ const PhaseChecklist = () => {
                             </div>
                           )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </motion.div>
                 )}

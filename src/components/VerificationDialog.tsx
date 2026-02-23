@@ -35,7 +35,7 @@ function isAcademicEmail(email: string): boolean {
 }
 
 // Match TEST_MODE from VerifiedGate
-const TEST_MODE = false;
+const TEST_MODE = true;
 
 type GateState = "idle" | "input" | "sending" | "sent" | "error";
 
