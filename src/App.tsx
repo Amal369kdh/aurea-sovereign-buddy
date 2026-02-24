@@ -58,7 +58,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return () => { cancelled = true; };
   }, [user]);
 
-  if (loading || (!user && !profileChecked)) {
+  if (loading || !profileChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

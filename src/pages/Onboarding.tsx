@@ -5,12 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Crown, Globe, MapPin, GraduationCap, Target, Heart,
-  Wallet, ArrowRight, ArrowLeft, Loader2, Check, Plane, AlertTriangle,
-  UtensilsCrossed, ShoppingCart, Sparkles, Users,
+  Crown, Globe, MapPin, GraduationCap, Target,
+  ArrowRight, ArrowLeft, Loader2, Check, Plane, AlertTriangle,
 } from "lucide-react";
-
-/* ─── Constants ─── */
 
 const NATIONALITIES = [
   "🇫🇷 Française",
@@ -34,45 +31,7 @@ const OBJECTIFS = [
   { id: "sante", label: "🏥 M'occuper de ma santé" },
 ];
 
-const INTERESTS = [
-  "Football", "Musique", "Cuisine", "Voyages", "Lecture", "Tech",
-  "Cinéma", "Mode", "Fitness", "Photographie", "Gaming", "Art",
-];
-
-const DIETARY_OPTIONS = [
-  "Classique", "Végétarien", "Halal", "Vegan", "Sans gluten",
-];
-
-const CUISINE_OPTIONS = [
-  "Africaine", "Maghrébine", "Européenne", "Asiatique", "Américaine", "Indienne",
-];
-
-const STORE_OPTIONS = [
-  "Lidl", "Carrefour", "Leclerc", "Aldi", "Intermarché", "Épiceries locales",
-];
-
-const EXPERTISE_OPTIONS = [
-  "Maths", "Droit", "Langues", "Cuisine", "Bons plans", "Informatique", "Sciences", "Administratif",
-];
-
-const LOOKING_FOR_OPTIONS = [
-  { id: "amis", label: "👥 Amis" },
-  { id: "aide_admin", label: "📋 Aide administrative" },
-  { id: "sport", label: "⚽ Partenaires de sport" },
-  { id: "etudes", label: "📚 Groupe d'études" },
-  { id: "sorties", label: "🎉 Sorties" },
-];
-
-/* ─── Step definitions ─── */
-
-// Step 1: Identity (required for access)
-type Step1Key = "nationality" | "location" | "city" | "university";
-// Step 2: Profile for AI personalization  
-type Step2Key = "objectifs" | "budget" | "dietary" | "stores";
-// Step 3: Social
-type Step3Key = "interests" | "expertise" | "lookingfor";
-
-type StepKey = Step1Key | Step2Key | Step3Key;
+type StepKey = "nationality" | "location" | "city" | "university" | "objectifs";
 
 const Onboarding = () => {
   const { user } = useAuth();
@@ -81,42 +40,27 @@ const Onboarding = () => {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
-  // Step 1 data
   const [nationality, setNationality] = useState("");
   const [isInFrance, setIsInFrance] = useState<boolean | null>(null);
   const [city, setCity] = useState("");
   const [university, setUniversity] = useState("");
-
-  // Step 2 data
   const [objectifs, setObjectifs] = useState<string[]>([]);
-  const [budget, setBudget] = useState("");
-  const [dietary, setDietary] = useState("Classique");
-  const [cuisinePrefs, setCuisinePrefs] = useState<string[]>([]);
-  const [budgetGroceries, setBudgetGroceries] = useState("");
-  const [nearbyStores, setNearbyStores] = useState<string[]>([]);
-
-  // Step 3 data
-  const [interests, setInterests] = useState<string[]>([]);
-  const [expertise, setExpertise] = useState<string[]>([]);
-  const [lookingFor, setLookingFor] = useState<string[]>([]);
 
   const isFrench = nationality === "🇫🇷 Française";
 
-  // Build dynamic steps based on nationality
+  useEffect(() => {
+    if (isFrench) setIsInFrance(true);
+  }, [isFrench]);
+
   const buildSteps = (): StepKey[] => {
     const steps: StepKey[] = ["nationality"];
     if (!isFrench) steps.push("location");
-    steps.push("city", "university", "objectifs", "budget", "dietary", "stores", "interests", "expertise", "lookingfor");
+    steps.push("city", "university", "objectifs");
     return steps;
   };
 
   const STEPS = buildSteps();
   const currentStep = STEPS[step];
-
-  // Auto-set isInFrance for French nationals
-  useEffect(() => {
-    if (isFrench) setIsInFrance(true);
-  }, [isFrench]);
 
   const canNext = (): boolean => {
     switch (currentStep) {
@@ -125,26 +69,20 @@ const Onboarding = () => {
       case "city": return city.length > 0;
       case "university": return university.length > 0;
       case "objectifs": return objectifs.length > 0;
-      case "budget": return budget.length > 0;
-      case "dietary": return true; // has default
-      case "stores": return true; // optional
-      case "interests": return interests.length > 0;
-      case "expertise": return true; // optional
-      case "lookingfor": return true; // optional
       default: return true;
     }
   };
 
-  const toggle = (arr: string[], setArr: React.Dispatch<React.SetStateAction<string[]>>, val: string, max: number) => {
-    setArr((prev) => prev.includes(val) ? prev.filter((v) => v !== val) : prev.length < max ? [...prev, val] : prev);
+  const toggle = (val: string) => {
+    setObjectifs((prev) =>
+      prev.includes(val) ? prev.filter((v) => v !== val) : prev.length < 3 ? [...prev, val] : prev
+    );
   };
 
   const handleFinish = async () => {
     if (!user) return;
     setSubmitting(true);
 
-    const budgetNum = parseInt(budget) || null;
-    const groceriesNum = parseInt(budgetGroceries) || null;
     const studentStatus = isFrench ? "francais" : isInFrance ? "en_france" : "futur_arrivant";
 
     const { error } = await supabase
@@ -156,16 +94,8 @@ const Onboarding = () => {
         target_city: city,
         university,
         objectifs,
-        interests,
-        budget_monthly: budgetNum,
         is_in_france: isInFrance,
         student_status: studentStatus,
-        dietary,
-        cuisine_preferences: cuisinePrefs,
-        budget_groceries_weekly: groceriesNum,
-        nearby_stores: nearbyStores,
-        expertise_domains: expertise,
-        looking_for: lookingFor,
         onboarding_step: 3,
         status: "explorateur",
       }, { onConflict: "user_id" });
@@ -181,14 +111,6 @@ const Onboarding = () => {
 
   const isLast = step === STEPS.length - 1;
 
-  // Phase labels for progress
-  const getPhaseLabel = () => {
-    const phaseIndex = STEPS.indexOf(currentStep);
-    if (phaseIndex <= STEPS.indexOf("university")) return "① Identité";
-    if (phaseIndex <= STEPS.indexOf("stores")) return "② Profil IA";
-    return "③ Social";
-  };
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-lg">
@@ -201,7 +123,7 @@ const Onboarding = () => {
             <span className="gold-text">Complète ton profil</span>
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            {getPhaseLabel()} — Étape {step + 1} / {STEPS.length}
+            Étape {step + 1} / {STEPS.length}
           </p>
         </div>
 
@@ -238,25 +160,17 @@ const Onboarding = () => {
               <StepLayout icon={<Plane className="h-5 w-5" />} title="Es-tu déjà en France ?">
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 gap-3">
-                    <ToggleChoice
-                      selected={isInFrance === true}
-                      onClick={() => setIsInFrance(true)}
-                      label="🇫🇷 Oui, je suis déjà en France"
-                    />
-                    <ToggleChoice
-                      selected={isInFrance === false}
-                      onClick={() => setIsInFrance(false)}
-                      label="✈️ Non, je ne suis pas encore arrivé(e)"
-                    />
+                    <ToggleChoice selected={isInFrance === true} onClick={() => setIsInFrance(true)} label="🇫🇷 Oui, je suis déjà en France" />
+                    <ToggleChoice selected={isInFrance === false} onClick={() => setIsInFrance(false)} label="✈️ Non, je ne suis pas encore arrivé(e)" />
                   </div>
                   {isInFrance === true && (
                     <InfoBox variant="warning" icon={<AlertTriangle className="h-5 w-5" />} title="Note">
-                      Les procédures pré-arrivée (visa, Campus France…) seront masquées. Tu pourras les réactiver depuis ton dossier.
+                      Les procédures pré-arrivée seront masquées. Tu pourras les réactiver depuis ton dossier.
                     </InfoBox>
                   )}
                   {isInFrance === false && (
                     <InfoBox variant="info" icon={<Plane className="h-5 w-5" />} title="Parfait !">
-                      Tu verras les procédures pré-arrivée en priorité pour être 100% prêt(e) le jour J.
+                      Tu verras les procédures pré-arrivée en priorité.
                     </InfoBox>
                   )}
                 </div>
@@ -291,115 +205,13 @@ const Onboarding = () => {
 
             {currentStep === "objectifs" && (
               <StepLayout icon={<Target className="h-5 w-5" />} title="Tes objectifs prioritaires (max 3)">
-                <p className="mb-3 text-xs text-muted-foreground">Cela permet à l'IA de te donner des conseils ciblés.</p>
+                <p className="mb-3 text-xs text-muted-foreground">Pour personnaliser ton expérience.</p>
                 <div className="grid grid-cols-1 gap-2">
                   {OBJECTIFS.map((o) => (
                     <ToggleChoice
                       key={o.id}
                       selected={objectifs.includes(o.id)}
-                      onClick={() => toggle(objectifs, setObjectifs, o.id, 3)}
-                      label={o.label}
-                    />
-                  ))}
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "budget" && (
-              <StepLayout icon={<Wallet className="h-5 w-5" />} title="Ton budget mensuel estimé ?">
-                <div className="grid grid-cols-2 gap-2">
-                  {["300", "500", "700", "1000", "1500", "2000"].map((b) => (
-                    <ChoiceButton key={b} selected={budget === b} onClick={() => setBudget(b)} label={`${b} €/mois`} />
-                  ))}
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "dietary" && (
-              <StepLayout icon={<UtensilsCrossed className="h-5 w-5" />} title="Ton profil alimentaire">
-                <p className="mb-3 text-xs text-muted-foreground">
-                  Pour personnaliser les bons plans repas et le comparateur.
-                </p>
-                <div className="mb-4">
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">Régime alimentaire</p>
-                  <div className="flex flex-wrap gap-2">
-                    {DIETARY_OPTIONS.map((d) => (
-                      <ChoiceButton key={d} selected={dietary === d} onClick={() => setDietary(d)} label={d} />
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">Préférences culinaires (max 3)</p>
-                  <div className="flex flex-wrap gap-2">
-                    {CUISINE_OPTIONS.map((c) => (
-                      <ChoiceButton key={c} selected={cuisinePrefs.includes(c)} onClick={() => toggle(cuisinePrefs, setCuisinePrefs, c, 3)} label={c} />
-                    ))}
-                  </div>
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "stores" && (
-              <StepLayout icon={<ShoppingCart className="h-5 w-5" />} title="Budget courses & magasins">
-                <p className="mb-3 text-xs text-muted-foreground">
-                  Optionnel — pour recevoir des alertes promos personnalisées.
-                </p>
-                <div className="mb-4">
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">Budget courses hebdomadaire</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["20", "30", "50", "80", "100", "150"].map((b) => (
-                      <ChoiceButton key={b} selected={budgetGroceries === b} onClick={() => setBudgetGroceries(b)} label={`${b} €`} />
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">Magasins de proximité</p>
-                  <div className="flex flex-wrap gap-2">
-                    {STORE_OPTIONS.map((s) => (
-                      <ChoiceButton key={s} selected={nearbyStores.includes(s)} onClick={() => toggle(nearbyStores, setNearbyStores, s, 4)} label={s} />
-                    ))}
-                  </div>
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "interests" && (
-              <StepLayout icon={<Heart className="h-5 w-5" />} title="Tes centres d'intérêt (max 5)">
-                <div className="flex flex-wrap gap-2">
-                  {INTERESTS.map((i) => (
-                    <ChoiceButton
-                      key={i}
-                      selected={interests.includes(i)}
-                      onClick={() => toggle(interests, setInterests, i, 5)}
-                      label={i}
-                      rounded
-                    />
-                  ))}
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "expertise" && (
-              <StepLayout icon={<Sparkles className="h-5 w-5" />} title="Ton domaine d'expertise (pour aider les autres)">
-                <p className="mb-3 text-xs text-muted-foreground">
-                  Optionnel — les autres étudiants pourront te solliciter dans l'entraide.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {EXPERTISE_OPTIONS.map((e) => (
-                    <ChoiceButton key={e} selected={expertise.includes(e)} onClick={() => toggle(expertise, setExpertise, e, 3)} label={e} rounded />
-                  ))}
-                </div>
-              </StepLayout>
-            )}
-
-            {currentStep === "lookingfor" && (
-              <StepLayout icon={<Users className="h-5 w-5" />} title="Ce que tu recherches ici">
-                <div className="grid grid-cols-1 gap-2">
-                  {LOOKING_FOR_OPTIONS.map((o) => (
-                    <ToggleChoice
-                      key={o.id}
-                      selected={lookingFor.includes(o.id)}
-                      onClick={() => toggle(lookingFor, setLookingFor, o.id, 4)}
+                      onClick={() => toggle(o.id)}
                       label={o.label}
                     />
                   ))}

@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, Briefcase, HeartHandshake, Stethoscope, Calculator, ClipboardCheck,
-  GraduationCap, ExternalLink, Phone, MapPin, Building2, BookOpen, ChevronRight,
+  GraduationCap, ExternalLink, Phone, MapPin, Building2, BookOpen, ChevronRight, ChevronDown,
   Lock, Plane, Home, Landmark, Scale, Utensils, Bus, Dumbbell, Heart, Brain,
   Globe, FileText, HandCoins, Loader2, Sparkles, ShieldCheck,
 } from "lucide-react";
@@ -38,75 +38,100 @@ const BentoTile = ({
 }: {
   title: string; subtitle: string; icon: React.ElementType; accentClass: string;
   links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void;
-}) => (
-  <motion.div
-    variants={tile}
-    className={`group relative overflow-hidden rounded-4xl border border-border bg-card p-6 transition-all ${
-      locked ? "" : "hover:border-primary/20 hover:card-glow"
-    } ${className}`}
-  >
-    {locked && (
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-4xl bg-background/60 backdrop-blur-[3px]">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/80">
-          <Lock className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <div className="text-center px-6">
-          <p className="text-sm font-bold text-foreground">Disponible en France</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Vérifie ton email étudiant pour débloquer cette section.
-          </p>
-        </div>
-        <button
-          onClick={(e) => { e.stopPropagation(); onUnlock?.(); }}
-          className="flex items-center gap-1.5 rounded-full gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
-        >
-          <ShieldCheck className="h-3.5 w-3.5" />
-          Vérifier mon email étudiant
-        </button>
-      </div>
-    )}
+}) => {
+  const [expanded, setExpanded] = useState(false);
 
-    <div className="mb-5 flex items-center gap-3">
-      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${accentClass}`}>
-        <Icon className="h-5 w-5" />
-      </div>
-      <div>
-        <h3 className="text-base font-bold text-foreground">{title}</h3>
-        <p className="text-xs text-muted-foreground">{subtitle}</p>
-      </div>
-    </div>
-
-    <div className="space-y-2">
-      {links.map((link) => (
-        <button
-          key={link.label}
-          onClick={() => {
-            if (locked) return;
-            if (link.href) window.open(link.href, "_blank", "noopener");
-            else if (link.route) onNavigate(link.route);
-          }}
-          className="flex w-full items-center gap-3 rounded-2xl bg-secondary/50 px-4 py-3 text-left transition-all hover:bg-secondary cursor-pointer"
-        >
-          <link.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm font-semibold text-foreground truncate">{link.label}</p>
-              {link.perplexity && (
-                <Sparkles className="h-3 w-3 shrink-0 text-primary" />
-              )}
-            </div>
-            {link.sub && <p className="text-xs text-muted-foreground truncate">{link.sub}</p>}
+  return (
+    <motion.div
+      variants={tile}
+      className={`group relative overflow-hidden rounded-4xl border border-border bg-card transition-all ${
+        locked ? "" : "hover:border-primary/20 hover:card-glow"
+      } ${className}`}
+    >
+      {locked && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-4xl bg-background/60 backdrop-blur-[3px]">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/80">
+            <Lock className="h-6 w-6 text-muted-foreground" />
           </div>
-          {link.href ? (
-            <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          )}
-        </button>
-      ))}
-    </div>
-  </motion.div>
-);
+          <div className="text-center px-6">
+            <p className="text-sm font-bold text-foreground">Disponible en France</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Vérifie ton email étudiant pour débloquer cette section.
+            </p>
+          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onUnlock?.(); }}
+            className="flex items-center gap-1.5 rounded-full gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Vérifier mon email étudiant
+          </button>
+        </div>
+      )}
+
+      {/* Clickable header */}
+      <button
+        onClick={() => !locked && setExpanded((e) => !e)}
+        className="flex w-full items-center gap-3 p-6 text-left cursor-pointer"
+      >
+        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${accentClass}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-base font-bold text-foreground">{title}</h3>
+          <p className="text-xs text-muted-foreground">{subtitle}</p>
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <span className="text-xs font-medium">{links.length}</span>
+          <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown className="h-4 w-4" />
+          </motion.div>
+        </div>
+      </button>
+
+      {/* Collapsible links */}
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-2 px-6 pb-6">
+              {links.map((link) => (
+                <button
+                  key={link.label}
+                  onClick={() => {
+                    if (locked) return;
+                    if (link.href) window.open(link.href, "_blank", "noopener");
+                    else if (link.route) onNavigate(link.route);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl bg-secondary/50 px-4 py-3 text-left transition-all hover:bg-secondary cursor-pointer"
+                >
+                  <link.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-foreground truncate">{link.label}</p>
+                      {link.perplexity && <Sparkles className="h-3 w-3 shrink-0 text-primary" />}
+                    </div>
+                    {link.sub && <p className="text-xs text-muted-foreground truncate">{link.sub}</p>}
+                  </div>
+                  {link.href ? (
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
 
 /* ─── Default (fallback) links ─── */
 const defaultTiles = (city: string) => [
