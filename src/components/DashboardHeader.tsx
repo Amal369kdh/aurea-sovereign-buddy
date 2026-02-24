@@ -1,4 +1,10 @@
-import { MapPin, ShieldCheck, LogOut } from "lucide-react";
+import { MapPin, ShieldCheck, LogOut, Settings } from "lucide-react";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,13 +48,28 @@ const DashboardHeader = () => {
         <div className="flex h-10 w-10 items-center justify-center rounded-full gold-gradient text-sm font-bold text-primary-foreground">
           {initials}
         </div>
-        <button
-          onClick={signOut}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-destructive/20 hover:text-destructive cursor-pointer"
-          title="Déconnexion"
-        >
-          <LogOut className="h-4 w-4" />
-        </button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-colors hover:bg-accent cursor-pointer"
+              title="Réglages"
+            >
+              <Settings className="h-4 w-4" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-56 p-3 space-y-2">
+            <button
+              onClick={signOut}
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground hover:bg-secondary transition-colors cursor-pointer"
+            >
+              <LogOut className="h-4 w-4" />
+              Déconnexion
+            </button>
+            <div className="border-t border-border pt-2">
+              <DeleteAccountButton />
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </header>
   );
