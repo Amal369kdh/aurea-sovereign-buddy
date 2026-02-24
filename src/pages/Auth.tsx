@@ -33,11 +33,13 @@ const Auth = () => {
       if (error) {
         toast({ title: "Erreur", description: error, variant: "destructive" });
       } else {
-        toast({
-          title: "Compte créé ✨",
-          description: "Vérifie ta boîte email pour confirmer ton inscription.",
-        });
-        setMode("login");
+        // Auto-confirm is on — user is logged in immediately.
+        // Wait for profile trigger to complete before navigating.
+        toast({ title: "Compte créé ✨", description: "Préparation de ton espace…" });
+        // Small delay to let the handle_new_user trigger fire
+        await new Promise((r) => setTimeout(r, 1500));
+        window.location.href = "/";
+        return;
       }
     } else {
       const { error } = await signIn(email, password);

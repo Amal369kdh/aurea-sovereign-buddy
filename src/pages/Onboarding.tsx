@@ -149,7 +149,8 @@ const Onboarding = () => {
 
     const { error } = await supabase
       .from("profiles")
-      .update({
+      .upsert({
+        user_id: user.id,
         nationality,
         city,
         target_city: city,
@@ -167,8 +168,7 @@ const Onboarding = () => {
         looking_for: lookingFor,
         onboarding_step: 3,
         status: "explorateur",
-      })
-      .eq("user_id", user.id);
+      }, { onConflict: "user_id" });
 
     if (error) {
       toast({ title: "Erreur", description: "Impossible de sauvegarder.", variant: "destructive" });

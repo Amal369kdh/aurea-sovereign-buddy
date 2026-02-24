@@ -26,19 +26,36 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!user) { setProfileChecked(true); return; }
-    supabase
-      .from("profiles")
-      .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!data) { setNeedsOnboarding(true); setProfileChecked(true); return; }
-        const isFrench = data.nationality === "🇫🇷 Française";
-        const objectifs = data.objectifs as string[] | null;
-        const incomplete = !data.nationality || !data.city || !data.university || !objectifs || objectifs.length === 0 || (!isFrench && (data.is_in_france === null || data.is_in_france === undefined));
-        setNeedsOnboarding(incomplete);
-        setProfileChecked(true);
-      });
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 8;
+
+    const checkProfile = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      // Profile not yet created by trigger — retry with backoff
+      if (!data && attempts < maxAttempts) {
+        attempts++;
+        setTimeout(checkProfile, 400 * attempts);
+        return;
+      }
+
+      if (!data) { setNeedsOnboarding(true); setProfileChecked(true); return; }
+      const isFrench = data.nationality === "🇫🇷 Française";
+      const objectifs = data.objectifs as string[] | null;
+      const incomplete = !data.nationality || !data.city || !data.university || !objectifs || objectifs.length === 0 || (!isFrench && (data.is_in_france === null || data.is_in_france === undefined));
+      setNeedsOnboarding(incomplete);
+      setProfileChecked(true);
+    };
+
+    checkProfile();
+    return () => { cancelled = true; };
   }, [user]);
 
   if (loading || (!user && !profileChecked)) {
