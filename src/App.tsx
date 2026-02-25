@@ -25,10 +25,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
   useEffect(() => {
-    if (!user) { setProfileChecked(true); return; }
+    setProfileChecked(false);
+    setNeedsOnboarding(false);
+
+    if (!user) {
+      setProfileChecked(true);
+      return;
+    }
+
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 8;
+    const maxAttempts = 10;
 
     const checkProfile = async () => {
       const { data } = await supabase
@@ -39,24 +46,35 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
       if (cancelled) return;
 
-      // Profile not yet created by trigger — retry with backoff
       if (!data && attempts < maxAttempts) {
         attempts++;
-        setTimeout(checkProfile, 400 * attempts);
+        setTimeout(checkProfile, 500 * attempts);
         return;
       }
 
-      if (!data) { setNeedsOnboarding(true); setProfileChecked(true); return; }
+      if (!data) {
+        setNeedsOnboarding(true);
+        setProfileChecked(true);
+        return;
+      }
+
       const isFrench = data.nationality === "🇫🇷 Française";
       const objectifs = data.objectifs as string[] | null;
-      const incomplete = !data.nationality || !data.city || !data.university || !objectifs || objectifs.length === 0 || (!isFrench && (data.is_in_france === null || data.is_in_france === undefined));
+      const incomplete =
+        !data.nationality ||
+        !data.city ||
+        !data.university ||
+        !objectifs ||
+        objectifs.length === 0 ||
+        (!isFrench && data.is_in_france === null);
+
       setNeedsOnboarding(incomplete);
       setProfileChecked(true);
     };
 
     checkProfile();
     return () => { cancelled = true; };
-  }, [user]);
+  }, [user?.id]);
 
   if (loading || !profileChecked) {
     return (
@@ -65,6 +83,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
+
   if (!user) return <Navigate to="/auth" replace />;
   if (needsOnboarding) return <Navigate to="/onboarding" replace />;
   return <>{children}</>;
