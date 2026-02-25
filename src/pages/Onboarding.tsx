@@ -39,6 +39,7 @@ const Onboarding = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [profileReady, setProfileReady] = useState(false);
 
   const [nationality, setNationality] = useState("");
   const [isInFrance, setIsInFrance] = useState<boolean | null>(null);
@@ -47,6 +48,42 @@ const Onboarding = () => {
   const [objectifs, setObjectifs] = useState<string[]>([]);
 
   const isFrench = nationality === "🇫🇷 Française";
+
+  // Wait for profile to exist before showing onboarding
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    const checkProfile = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (data) {
+        setProfileReady(true);
+        return;
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(checkProfile, 800);
+        return;
+      }
+
+      // Fallback: create empty profile
+      await supabase.from("profiles").insert({ user_id: user.id });
+      if (!cancelled) setProfileReady(true);
+    };
+
+    checkProfile();
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   useEffect(() => {
     if (isFrench) setIsInFrance(true);
@@ -111,17 +148,18 @@ const Onboarding = () => {
 
   const isLast = step === STEPS.length - 1;
 
-  if (loading) {
+  if (loading || !profileReady) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Préparation de ton espace…</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
+  if (!user) return <Navigate to="/auth" replace />;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">

@@ -56,7 +56,7 @@ const Auth = () => {
         className="w-full max-w-md"
       >
         {/* Logo */}
-        <div className="mb-8 flex flex-col items-center">
+        <div className="mb-6 flex flex-col items-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
             <Crown className="h-7 w-7 text-primary-foreground" />
           </div>
@@ -64,8 +64,15 @@ const Auth = () => {
             <span className="gold-text">Aurea</span>{" "}
             <span className="text-foreground">Student</span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {mode === "login" ? "Connecte-toi à ton espace" : "Crée ton compte étudiant"}
+        </div>
+
+        {/* Welcome text */}
+        <div className="mb-10 flex flex-col items-center text-center" style={{ maxWidth: 500, margin: "0 auto 2.5rem" }}>
+          <h2 style={{ color: "hsl(43 96% 56%)", fontWeight: 600, fontSize: "1.5rem" }}>
+            Bienvenue dans notre cercle.
+          </h2>
+          <p style={{ color: "#EAEAEA", fontSize: "0.9rem", marginTop: 8 }}>
+            Tu es à ta place.
           </p>
         </div>
 
