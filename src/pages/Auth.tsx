@@ -34,11 +34,9 @@ const Auth = () => {
         toast({ title: "Erreur", description: error, variant: "destructive" });
       } else {
         toast({ title: "Compte créé ✨", description: "Préparation de ton espace…" });
-        // The ProtectedRoute will wait for profile creation via retry logic
-        // No need for manual delay — just trigger a full reload to re-evaluate
-        setSubmitting(false);
-        window.location.href = "/";
-        return;
+        // Let React handle navigation — onAuthStateChange will set user,
+        // then the Navigate at line 17 will redirect to /
+        // ProtectedRoute will wait for profile creation via retry logic
       }
     } else {
       const { error } = await signIn(email, password);
