@@ -3,7 +3,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { IntegrationProvider } from "@/contexts/IntegrationContext";
 import { useEffect, useState } from "react";
@@ -21,6 +21,7 @@ const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
@@ -74,7 +75,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     checkProfile();
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [user?.id, location.key]);
 
   if (loading || !profileChecked) {
     return (
