@@ -319,6 +319,7 @@ export type Database = {
           display_name: string | null
           expertise_domains: string[] | null
           full_name: string | null
+          has_seen_welcome: boolean
           id: string
           integration_progress: number
           interests: string[] | null
@@ -361,6 +362,7 @@ export type Database = {
           display_name?: string | null
           expertise_domains?: string[] | null
           full_name?: string | null
+          has_seen_welcome?: boolean
           id?: string
           integration_progress?: number
           interests?: string[] | null
@@ -403,6 +405,7 @@ export type Database = {
           display_name?: string | null
           expertise_domains?: string[] | null
           full_name?: string | null
+          has_seen_welcome?: boolean
           id?: string
           integration_progress?: number
           interests?: string[] | null
