@@ -4,6 +4,7 @@ import { Crown, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
@@ -29,14 +30,20 @@ const Auth = () => {
     setSubmitting(true);
 
     if (mode === "signup") {
-      const { error } = await signUp(email, password, displayName);
+      const { error, data } = await signUp(email, password, displayName);
       if (error) {
         toast({ title: "Erreur", description: error, variant: "destructive" });
       } else {
         toast({ title: "Compte créé ✨", description: "Préparation de ton espace…" });
-        // Let React handle navigation — onAuthStateChange will set user,
-        // then the Navigate at line 17 will redirect to /
-        // ProtectedRoute will wait for profile creation via retry logic
+        if (data?.user?.id) {
+          await supabase.from("profiles").upsert({
+            user_id: data.user.id,
+            display_name: displayName,
+            avatar_initials: displayName.slice(0, 2).toUpperCase(),
+            status: "explorateur",
+          }, { onConflict: "user_id" });
+          window.location.href = "/onboarding";
+        }
       }
     } else {
       const { error } = await signIn(email, password);
