@@ -2,6 +2,7 @@ import React from "react";
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  retryCount: number;
 }
 
 class ErrorBoundary extends React.Component<
@@ -10,19 +11,24 @@ class ErrorBoundary extends React.Component<
 > {
   constructor(props: { children: React.ReactNode }) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, retryCount: 0 };
   }
 
-  static getDerivedStateFromError(): ErrorBoundaryState {
+  static getDerivedStateFromError(): Partial<ErrorBoundaryState> {
     return { hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("ErrorBoundary caught:", error, errorInfo);
+    if (this.state.retryCount < 5) {
+      setTimeout(() => {
+        this.setState((prev) => ({ hasError: false, retryCount: prev.retryCount + 1 }));
+      }, 2000);
+    }
   }
 
   render() {
-    if (this.state.hasError) {
+    if (this.state.hasError && this.state.retryCount >= 5) {
       return (
         <div className="flex min-h-screen items-center justify-center bg-background px-4">
           <div className="rounded-3xl border border-border bg-card p-8 text-center max-w-md">
