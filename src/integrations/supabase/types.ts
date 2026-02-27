@@ -327,7 +327,10 @@ export type Database = {
           is_premium: boolean
           is_verified: boolean
           last_swipe_reset: string
+          logement_situation: string | null
           looking_for: string[] | null
+          mutuelle: boolean | null
+          mutuelle_nom: string | null
           nationality: string | null
           nearby_stores: string[] | null
           next_deadline_date: string | null
@@ -345,6 +348,7 @@ export type Database = {
           university_id: string | null
           updated_at: string
           user_id: string
+          visa_type: string | null
         }
         Insert: {
           apl_status?: string | null
@@ -370,7 +374,10 @@ export type Database = {
           is_premium?: boolean
           is_verified?: boolean
           last_swipe_reset?: string
+          logement_situation?: string | null
           looking_for?: string[] | null
+          mutuelle?: boolean | null
+          mutuelle_nom?: string | null
           nationality?: string | null
           nearby_stores?: string[] | null
           next_deadline_date?: string | null
@@ -388,6 +395,7 @@ export type Database = {
           university_id?: string | null
           updated_at?: string
           user_id: string
+          visa_type?: string | null
         }
         Update: {
           apl_status?: string | null
@@ -413,7 +421,10 @@ export type Database = {
           is_premium?: boolean
           is_verified?: boolean
           last_swipe_reset?: string
+          logement_situation?: string | null
           looking_for?: string[] | null
+          mutuelle?: boolean | null
+          mutuelle_nom?: string | null
           nationality?: string | null
           nearby_stores?: string[] | null
           next_deadline_date?: string | null
@@ -431,6 +442,7 @@ export type Database = {
           university_id?: string | null
           updated_at?: string
           user_id?: string
+          visa_type?: string | null
         }
         Relationships: [
           {
