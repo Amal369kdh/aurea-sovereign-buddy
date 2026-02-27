@@ -729,7 +729,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          avatar_initials: string | null
+          city: string | null
+          display_name: string | null
+          interests: string[] | null
+          is_verified: boolean | null
+          points_social: number | null
+          status: string | null
+          university: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_initials?: string | null
+          city?: string | null
+          display_name?: string | null
+          interests?: string[] | null
+          is_verified?: boolean | null
+          points_social?: number | null
+          status?: string | null
+          university?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_initials?: string | null
+          city?: string | null
+          display_name?: string | null
+          interests?: string[] | null
+          is_verified?: boolean | null
+          points_social?: number | null
+          status?: string | null
+          university?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_expired_announcements: { Args: never; Returns: undefined }
