@@ -55,10 +55,10 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
       return;
     }
 
-    // Fetch author profiles
+    // Fetch author profiles (vue publique)
     const authorIds = [...new Set(posts.map((p) => p.author_id))];
     const { data: profiles } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, display_name, avatar_initials, university, is_verified")
       .in("user_id", authorIds);
 
