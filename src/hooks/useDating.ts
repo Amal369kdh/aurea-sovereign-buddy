@@ -83,7 +83,7 @@ export function useDating() {
     const userIds = datingProfiles.map((dp) => dp.user_id);
 
     const [{ data: profiles }, { data: myLikes }, { data: receivedLikes }] = await Promise.all([
-      supabase.from("profiles").select("user_id, display_name, avatar_initials, university, city, interests, is_verified, objectifs").in("user_id", userIds),
+      supabase.from("profiles_public").select("user_id, display_name, avatar_initials, university, city, interests, is_verified").in("user_id", userIds),
       supabase.from("dating_likes").select("liked_id").eq("liker_id", user.id),
       supabase.from("dating_likes").select("id").eq("liked_id", user.id),
     ]);
@@ -105,7 +105,7 @@ export function useDating() {
         bio: dp.bio,
         looking_for: dp.looking_for,
         liked_by_me: likedSet.has(dp.user_id),
-        objectifs: prof?.objectifs || [],
+        objectifs: [],
       };
     });
 
@@ -133,7 +133,7 @@ export function useDating() {
     );
 
     const { data: profiles } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, display_name, avatar_initials, city, university")
       .in("user_id", partnerIds);
 

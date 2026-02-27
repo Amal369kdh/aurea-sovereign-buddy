@@ -50,7 +50,7 @@ const LikersPopover = ({ announcementId, likesCount, likedByMe, onToggleLike, on
     if (likes && likes.length > 0) {
       const userIds = likes.map((l) => l.user_id);
       const { data: profiles } = await supabase
-        .from("profiles")
+        .from("profiles_public")
         .select("display_name, avatar_initials")
         .in("user_id", userIds);
 
