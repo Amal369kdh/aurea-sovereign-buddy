@@ -20,7 +20,7 @@ const SocialPulse = () => {
 
   useEffect(() => {
     supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("display_name, avatar_initials, city, university, is_verified")
       .eq("status", "temoin")
       .eq("is_verified", true)

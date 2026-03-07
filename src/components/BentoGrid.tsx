@@ -278,7 +278,7 @@ const BentoGrid = () => {
   useEffect(() => {
     if (!user) return;
     supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("city, target_city")
       .eq("user_id", user.id)
       .maybeSingle()
