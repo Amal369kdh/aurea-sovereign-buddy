@@ -27,11 +27,14 @@ serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Find the verification record
+    // Hash the incoming token and look up by hash (never store/compare plaintext)
+    const tokenHash = await sha256Hex(token);
+
+    // Find the verification record — select only non-sensitive fields
     const { data: verification, error: fetchError } = await supabase
       .from("student_email_verifications")
-      .select("*")
-      .eq("token", token)
+      .select("id, user_id, student_email, verified, expires_at")
+      .eq("token_hash", tokenHash)
       .single();
 
     if (fetchError || !verification) {
