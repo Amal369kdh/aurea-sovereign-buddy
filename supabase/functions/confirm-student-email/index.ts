@@ -7,6 +7,14 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function sha256Hex(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -27,11 +35,14 @@ serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Find the verification record
+    // Hash the incoming token and look up by hash (never store/compare plaintext)
+    const tokenHash = await sha256Hex(token);
+
+    // Find the verification record — select only non-sensitive fields
     const { data: verification, error: fetchError } = await supabase
       .from("student_email_verifications")
-      .select("*")
-      .eq("token", token)
+      .select("id, user_id, student_email, verified, expires_at")
+      .eq("token_hash", tokenHash)
       .single();
 
     if (fetchError || !verification) {

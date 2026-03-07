@@ -155,12 +155,14 @@ serve(async (req) => {
     }
 
     const token = generateToken();
+    // Insert with plaintext token — the DB trigger will hash it and clear plaintext
     await serviceClient.from("student_email_verifications").insert({
       user_id: user.id,
       student_email: trimmedEmail,
       token,
     });
 
+    // Build confirm URL with the original plaintext token (before it was hashed)
     const confirmUrl = `${supabaseUrl}/functions/v1/confirm-student-email?token=${token}`;
 
     // Send email via Resend if API key is configured
