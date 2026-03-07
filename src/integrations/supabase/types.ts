@@ -629,6 +629,7 @@ export type Database = {
           id: string
           student_email: string
           token: string
+          token_hash: string
           user_id: string
           verified: boolean
         }
@@ -638,6 +639,7 @@ export type Database = {
           id?: string
           student_email: string
           token: string
+          token_hash: string
           user_id: string
           verified?: boolean
         }
@@ -647,6 +649,7 @@ export type Database = {
           id?: string
           student_email?: string
           token?: string
+          token_hash?: string
           user_id?: string
           verified?: boolean
         }
