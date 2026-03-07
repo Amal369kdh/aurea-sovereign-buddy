@@ -46,7 +46,7 @@ export function useComments(announcementId: string | null) {
 
     const authorIds = [...new Set(data.map((c) => c.author_id))];
     const { data: profiles } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, display_name, avatar_initials, is_verified")
       .in("user_id", authorIds);
 
