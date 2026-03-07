@@ -736,8 +736,10 @@ export type Database = {
           display_name: string | null
           interests: string[] | null
           is_verified: boolean | null
+          objectifs: string[] | null
           points_social: number | null
           status: string | null
+          target_city: string | null
           university: string | null
           user_id: string | null
         }
@@ -747,8 +749,10 @@ export type Database = {
           display_name?: string | null
           interests?: string[] | null
           is_verified?: boolean | null
+          objectifs?: string[] | null
           points_social?: number | null
           status?: string | null
+          target_city?: string | null
           university?: string | null
           user_id?: string | null
         }
@@ -758,8 +762,10 @@ export type Database = {
           display_name?: string | null
           interests?: string[] | null
           is_verified?: boolean | null
+          objectifs?: string[] | null
           points_social?: number | null
           status?: string | null
+          target_city?: string | null
           university?: string | null
           user_id?: string | null
         }
