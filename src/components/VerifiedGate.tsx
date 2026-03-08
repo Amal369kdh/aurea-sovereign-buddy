@@ -62,8 +62,9 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        const profileData = data as { status: string } | null;
+        const profileData = data as { status: string; suspended_until: string | null } | null;
         setStatus(profileData?.status ?? "explorateur");
+        setSuspendedUntil(profileData?.suspended_until ?? null);
         setLoading(false);
       });
   }, [user]);
