@@ -311,44 +311,64 @@ const BentoGrid = () => {
         </div>
       )}
 
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid gap-4 lg:grid-cols-2"
-      >
-        {tiles.map((t) => (
-          <BentoTile
-            key={t.title}
-            title={t.title}
-            subtitle={t.subtitle}
-            icon={t.icon}
-            accentClass={t.accentClass}
-            links={t.links}
-            className={t.className}
-            locked={t.lockable ? shouldLock : false}
-            onNavigate={navigate}
-            onUnlock={() => setVerifyOpen(true)}
-          />
-        ))}
-      </motion.div>
-
-      {/* Tips from Perplexity */}
-      {cityData?.useful_tips && cityData.useful_tips.length > 0 && !shouldLock && (
-        <div className="mt-4 rounded-3xl border border-primary/20 bg-primary/5 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <h4 className="text-sm font-bold text-foreground">Conseils pour {city}</h4>
+      {shouldLock ? (
+        <motion.div variants={tile} initial="hidden" animate="show">
+          <div className="flex items-center gap-4 rounded-3xl border border-border bg-card px-5 py-4">
+            <span className="text-2xl">🔒</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-foreground leading-snug">Sections disponibles en France</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Vérifie ton email étudiant pour débloquer les ressources.</p>
+            </div>
+            <button
+              onClick={() => setVerifyOpen(true)}
+              className="shrink-0 rounded-full gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
+            >
+              Vérifier
+            </button>
           </div>
-          <ul className="space-y-2">
-            {cityData.useful_tips.map((tip, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
-                <span className="mt-0.5 text-primary font-bold">•</span>
-                <span>{tip}</span>
-              </li>
+        </motion.div>
+      ) : (
+        <>
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid gap-4 lg:grid-cols-2"
+          >
+            {tiles.map((t) => (
+              <BentoTile
+                key={t.title}
+                title={t.title}
+                subtitle={t.subtitle}
+                icon={t.icon}
+                accentClass={t.accentClass}
+                links={t.links}
+                className={t.className}
+                locked={false}
+                onNavigate={navigate}
+                onUnlock={() => setVerifyOpen(true)}
+              />
             ))}
-          </ul>
-        </div>
+          </motion.div>
+
+          {/* Tips from Perplexity */}
+          {cityData?.useful_tips && cityData.useful_tips.length > 0 && (
+            <div className="mt-4 rounded-3xl border border-primary/20 bg-primary/5 p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h4 className="text-sm font-bold text-foreground">Conseils pour {city}</h4>
+              </div>
+              <ul className="space-y-2">
+                {cityData.useful_tips.map((tip, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <span className="mt-0.5 text-primary font-bold">•</span>
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
       )}
       <VerificationDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
     </div>
