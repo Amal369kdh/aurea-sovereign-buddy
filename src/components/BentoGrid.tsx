@@ -281,6 +281,34 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
       return { ...t, links: [...healthLinks, ...t.links.filter((l) => !l.perplexity).slice(0, 5)] };
     }
 
+    if (t.title === "Logement" && cityData.logement?.residences_crous?.length) {
+      const logLinks: QuickLink[] = cityData.logement.residences_crous.map((r: any) => ({
+        icon: Home,
+        label: r.name,
+        sub: r.address || undefined,
+        href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name)}`,
+        perplexity: true,
+      }));
+      return { ...t, links: logLinks };
+    }
+
+    if (t.title === "Banque") {
+      const bankLinks: QuickLink[] = [];
+      if (cityData.banques?.liste?.length) {
+        cityData.banques.liste.forEach((b: any) => {
+          bankLinks.push({
+            icon: Landmark,
+            label: b.name,
+            sub: b.address || b.type || undefined,
+            href: `https://maps.google.com/?q=${encodeURIComponent(b.name + " " + (b.address || ""))}`,
+            perplexity: true,
+          });
+        });
+      }
+      if (!bankLinks.length && !cityData.banques?.conseil) return t;
+      return { ...t, links: bankLinks, _conseil: cityData.banques?.conseil };
+    }
+
     return t;
   });
 }
