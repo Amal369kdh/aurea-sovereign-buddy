@@ -416,8 +416,10 @@ const BentoGrid = () => {
           >
             {tiles
               .filter((t) => {
-                // Masquer Logement/Banque si aucune donnée enrichie
-                if ((t.title === "Logement" || t.title === "Banque") && t.links.length === 0 && !(t as any)._conseil) return false;
+                // Toujours masquer Banque
+                if ((t as any).hidden) return false;
+                // Masquer Logement/Préfecture si aucune donnée enrichie
+                if ((t.title === "Logement" || t.title === "Préfecture") && t.links.length === 0) return false;
                 return true;
               })
               .map((t) => (
