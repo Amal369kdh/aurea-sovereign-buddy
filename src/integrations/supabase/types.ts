@@ -417,6 +417,7 @@ export type Database = {
           revenus_monthly: number | null
           status: string
           student_status: string | null
+          suspended_until: string | null
           target_city: string | null
           titre_sejour_expiry: string | null
           university: string | null
@@ -464,6 +465,7 @@ export type Database = {
           revenus_monthly?: number | null
           status?: string
           student_status?: string | null
+          suspended_until?: string | null
           target_city?: string | null
           titre_sejour_expiry?: string | null
           university?: string | null
@@ -511,6 +513,7 @@ export type Database = {
           revenus_monthly?: number | null
           status?: string
           student_status?: string | null
+          suspended_until?: string | null
           target_city?: string | null
           titre_sejour_expiry?: string | null
           university?: string | null
