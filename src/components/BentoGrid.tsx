@@ -221,6 +221,16 @@ const defaultTiles = (city: string) => [
     className: "lg:col-span-1",
     lockable: true,
     links: [] as QuickLink[],
+    hidden: true,
+  },
+  {
+    title: "Préfecture",
+    subtitle: "Titre de séjour & RDV en ligne",
+    icon: Landmark,
+    accentClass: "bg-info/15 text-info",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [] as QuickLink[],
   },
 ];
 

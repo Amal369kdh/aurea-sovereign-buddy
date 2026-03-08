@@ -102,7 +102,7 @@ serve(async (req) => {
     "autres": ["2-3 plateformes locales recommandées"]
   },
   "useful_tips": [
-    "3-5 conseils pratiques spécifiques à ${targetCity} pour un étudiant étranger"
+    "3-5 conseils pratiques spécifiques à ${targetCity} pour un étudiant étranger, rédigés en phrases naturelles complètes, sans aucune référence entre crochets comme [1] ou [source], sans puces markdown, juste du texte propre et lisible"
   ]
 }`;
 
