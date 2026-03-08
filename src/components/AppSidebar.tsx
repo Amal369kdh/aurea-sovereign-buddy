@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
   FolderLock,
@@ -8,6 +11,7 @@ import {
   Sparkles,
   Settings,
   Crown,
+  ShieldAlert,
 } from "lucide-react";
 
 const navItems = [
@@ -16,12 +20,24 @@ const navItems = [
   { icon: Users, label: "Hub Social", path: "/hub-social" },
   { icon: MessageCircle, label: "Messages", path: "/messages" },
   { icon: Sparkles, label: "Amal IA", path: "#" },
-  { icon: Settings, label: "Réglages", path: "#" },
+  { icon: Settings, label: "Réglages", path: "/profile" },
 ];
 
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("status")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(data?.status === "admin"));
+  }, [user]);
 
   return (
     <aside className="hidden lg:flex w-[240px] shrink-0 flex-col border-r border-border bg-sidebar p-4">
