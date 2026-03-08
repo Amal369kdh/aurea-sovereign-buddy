@@ -34,10 +34,10 @@ interface QuickLink {
 
 /* ─── Tile component ─── */
 const BentoTile = ({
-  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock,
+  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil,
 }: {
   title: string; subtitle: string; icon: React.ElementType; accentClass: string;
-  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void;
+  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string;
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -100,6 +100,12 @@ const BentoTile = ({
             className="overflow-hidden"
           >
             <div className="space-y-2 px-6 pb-6">
+              {conseil && (
+                <div className="flex items-start gap-2 rounded-2xl bg-primary/5 border border-primary/10 px-4 py-3 mb-1">
+                  <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary mt-0.5" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">{conseil}</p>
+                </div>
+              )}
               {links.map((link) => (
                 <button
                   key={link.label}
@@ -198,6 +204,24 @@ const defaultTiles = (city: string) => [
       { icon: Bus, label: `Transport ${city}`, sub: "Abonnement étudiant réduit", href: `https://maps.google.com/?q=transport+étudiant+${city}` },
     ] as QuickLink[],
   },
+  {
+    title: "Logement",
+    subtitle: "Résidences CROUS & plateformes",
+    icon: Home,
+    accentClass: "bg-warning/15 text-warning",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [] as QuickLink[],
+  },
+  {
+    title: "Banque",
+    subtitle: "Comptes étudiants & conseils",
+    icon: Landmark,
+    accentClass: "bg-primary/15 text-primary",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [] as QuickLink[],
+  },
 ];
 
 /** Enrich tiles with Perplexity city data */
@@ -261,6 +285,34 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
       }
       // Replace generic links with enriched ones
       return { ...t, links: [...healthLinks, ...t.links.filter((l) => !l.perplexity).slice(0, 5)] };
+    }
+
+    if (t.title === "Logement" && cityData.logement?.residences_crous?.length) {
+      const logLinks: QuickLink[] = cityData.logement.residences_crous.map((r: any) => ({
+        icon: Home,
+        label: r.name,
+        sub: r.address || undefined,
+        href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name)}`,
+        perplexity: true,
+      }));
+      return { ...t, links: logLinks };
+    }
+
+    if (t.title === "Banque") {
+      const bankLinks: QuickLink[] = [];
+      if (cityData.banques?.liste?.length) {
+        cityData.banques.liste.forEach((b: any) => {
+          bankLinks.push({
+            icon: Landmark,
+            label: b.name,
+            sub: b.address || b.type || undefined,
+            href: `https://maps.google.com/?q=${encodeURIComponent(b.name + " " + (b.address || ""))}`,
+            perplexity: true,
+          });
+        });
+      }
+      if (!bankLinks.length && !cityData.banques?.conseil) return t;
+      return { ...t, links: bankLinks, _conseil: cityData.banques?.conseil };
     }
 
     return t;
@@ -335,7 +387,13 @@ const BentoGrid = () => {
             animate="show"
             className="grid gap-4 lg:grid-cols-2"
           >
-            {tiles.map((t) => (
+            {tiles
+              .filter((t) => {
+                // Masquer Logement/Banque si aucune donnée enrichie
+                if ((t.title === "Logement" || t.title === "Banque") && t.links.length === 0 && !(t as any)._conseil) return false;
+                return true;
+              })
+              .map((t) => (
               <BentoTile
                 key={t.title}
                 title={t.title}
@@ -347,6 +405,7 @@ const BentoGrid = () => {
                 locked={false}
                 onNavigate={navigate}
                 onUnlock={() => setVerifyOpen(true)}
+                conseil={(t as any)._conseil}
               />
             ))}
           </motion.div>
