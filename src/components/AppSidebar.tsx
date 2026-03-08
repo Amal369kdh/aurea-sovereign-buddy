@@ -67,6 +67,21 @@ const AppSidebar = () => {
             </motion.button>
           );
         })}
+
+        {isAdmin && (
+          <motion.button
+            whileHover={{ x: 4 }}
+            onClick={() => navigate("/admin")}
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors cursor-pointer ${
+              location.pathname === "/admin"
+                ? "bg-destructive/15 text-destructive"
+                : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            }`}
+          >
+            <ShieldAlert className="h-5 w-5" />
+            Admin
+          </motion.button>
+        )}
       </nav>
 
       <div className="mt-auto rounded-3xl gold-gradient p-4">
