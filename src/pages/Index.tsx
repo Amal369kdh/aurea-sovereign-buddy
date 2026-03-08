@@ -91,14 +91,14 @@ const Index = () => {
         <DashboardHeader />
 
         <div className="px-6 pb-28">
-          <div className="mb-6">
+          <div className="mb-4">
             <WelcomeGuide />
           </div>
-          <div className="mb-6">
+          <div className="mb-4">
             <SovereigntyWidget />
           </div>
           <BentoGrid />
-          <div className="mt-6">
+          <div className="mt-4">
             <SocialPulse />
           </div>
         </div>
