@@ -88,8 +88,14 @@ serve(async (req) => {
     "url": "https://www.caf.fr"
   },
   "banques": {
-    "liste": [{"name": "nom agence", "address": "adresse", "type": "en ligne ou physique"}],
-    "conseil": "conseil pratique pour ouvrir un compte étudiant à ${targetCity}"
+    "liste": [
+      {"name": "Hello Bank", "link": "URL officielle", "student_offer": "nom de l'offre étudiante si elle existe"},
+      {"name": "BNP Paribas", "link": "URL officielle", "student_offer": "nom de l'offre étudiante si elle existe"},
+      {"name": "Boursorama", "link": "URL officielle", "student_offer": "nom de l'offre étudiante si elle existe"},
+      {"name": "Revolut", "link": "URL officielle", "student_offer": "nom de l'offre étudiante si elle existe"},
+      {"name": "N26", "link": "URL officielle", "student_offer": "nom de l'offre étudiante si elle existe"}
+    ],
+    "conseil": "Une seule phrase naturelle avec conseil pratique pour ouvrir un compte étudiant à ${targetCity}"
   },
   "logement": {
     "residences_crous": [{"name": "nom", "address": "adresse", "url": "lien si dispo"}],
