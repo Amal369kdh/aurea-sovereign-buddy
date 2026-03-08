@@ -107,6 +107,7 @@ const App = () => (
               <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
               <Route path="/hub-social" element={<ProtectedRoute><HubSocial /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
