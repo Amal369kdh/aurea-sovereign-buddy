@@ -70,6 +70,35 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   }, [user]);
 
   if (loading) return null;
+
+  if (suspendedUntil && new Date(suspendedUntil) > new Date()) {
+    const formattedDate = new Date(suspendedUntil).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    return (
+      <div className="flex flex-1 items-center justify-center px-6 py-20">
+        <div className="w-full max-w-md text-center space-y-4">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-destructive/10">
+            <ShieldCheck className="h-8 w-8 text-destructive" />
+          </div>
+          <h2 className="text-xl font-extrabold text-foreground">Compte suspendu</h2>
+          <p className="text-sm text-muted-foreground">
+            Ton compte est suspendu jusqu'au{" "}
+            <span className="font-semibold text-foreground">{formattedDate}</span>.
+          </p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-2 text-xs text-muted-foreground underline hover:text-foreground cursor-pointer"
+          >
+            Retour
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (status === "temoin" || status === "admin") return <>{children}</>;
 
   const clientValid = email.includes("@") && isAcademicEmail(email);
