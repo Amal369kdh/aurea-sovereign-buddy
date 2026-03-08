@@ -19,6 +19,8 @@ const HubSocial = () => {
   const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement" | "general">("all");
   const [goldOpen, setGoldOpen] = useState(false);
   const { matches, isPremium } = useDating();
+  const { flags } = useFeatureFlags();
+  const datingEnabled = flags["dating"] !== false;
 
   return (
     <div className="flex min-h-screen bg-background">

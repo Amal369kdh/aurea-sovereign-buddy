@@ -69,6 +69,8 @@ const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
 const Index = () => {
   const { user } = useAuth();
   const [showWelcome, setShowWelcome] = useState(false);
+  const { flags } = useFeatureFlags();
+  const hubSocialEnabled = flags["hub_social"] !== false;
 
   useEffect(() => {
     if (!user) return;
