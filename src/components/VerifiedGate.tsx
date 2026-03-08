@@ -48,6 +48,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   const { refreshProfile } = useIntegration();
   const { toast } = useToast();
   const [status, setStatus] = useState<string | null>(null);
+  const [suspendedUntil, setSuspendedUntil] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [gateState, setGateState] = useState<GateState>("idle");
   const [email, setEmail] = useState("");
