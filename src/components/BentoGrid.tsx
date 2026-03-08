@@ -221,6 +221,16 @@ const defaultTiles = (city: string) => [
     className: "lg:col-span-1",
     lockable: true,
     links: [] as QuickLink[],
+    hidden: true,
+  },
+  {
+    title: "Préfecture",
+    subtitle: "Titre de séjour & RDV en ligne",
+    icon: Landmark,
+    accentClass: "bg-info/15 text-info",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [] as QuickLink[],
   },
 ];
 
@@ -298,21 +308,38 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
       return { ...t, links: logLinks };
     }
 
-    if (t.title === "Banque") {
-      const bankLinks: QuickLink[] = [];
-      if (cityData.banques?.liste?.length) {
-        cityData.banques.liste.forEach((b: any) => {
-          bankLinks.push({
-            icon: Landmark,
-            label: b.name,
-            sub: b.address || b.type || undefined,
-            href: `https://maps.google.com/?q=${encodeURIComponent(b.name + " " + (b.address || ""))}`,
-            perplexity: true,
-          });
+    if (t.title === "Préfecture" && cityData.prefecture) {
+      const pref = cityData.prefecture;
+      const prefLinks: QuickLink[] = [];
+      if (pref.name || pref.address) {
+        prefLinks.push({
+          icon: MapPin,
+          label: pref.name || "Préfecture",
+          sub: pref.address || undefined,
+          href: pref.address ? `https://maps.google.com/?q=${encodeURIComponent(pref.address)}` : undefined,
+          perplexity: true,
         });
       }
-      if (!bankLinks.length && !cityData.banques?.conseil) return t;
-      return { ...t, links: bankLinks, _conseil: cityData.banques?.conseil };
+      if (pref.phone) {
+        prefLinks.push({
+          icon: Phone,
+          label: pref.phone,
+          sub: "Appeler la préfecture",
+          href: `tel:${pref.phone.replace(/\s/g, "")}`,
+          perplexity: true,
+        });
+      }
+      if (pref.rdv_url) {
+        prefLinks.push({
+          icon: ExternalLink,
+          label: "Prendre RDV en ligne",
+          sub: "Titre de séjour étudiant",
+          href: pref.rdv_url,
+          perplexity: true,
+        });
+      }
+      if (!prefLinks.length) return t;
+      return { ...t, links: prefLinks };
     }
 
     return t;
@@ -389,8 +416,10 @@ const BentoGrid = () => {
           >
             {tiles
               .filter((t) => {
-                // Masquer Logement/Banque si aucune donnée enrichie
-                if ((t.title === "Logement" || t.title === "Banque") && t.links.length === 0 && !(t as any)._conseil) return false;
+                // Toujours masquer Banque
+                if ((t as any).hidden) return false;
+                // Masquer Logement/Préfecture si aucune donnée enrichie
+                if ((t.title === "Logement" || t.title === "Préfecture") && t.links.length === 0) return false;
                 return true;
               })
               .map((t) => (
