@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle,
+  RefreshCw, Save, AlertTriangle, Shield, Pin,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -20,7 +20,8 @@ type TabKey =
   | "resources"
   | "league"
   | "features"
-  | "domains";
+  | "domains"
+  | "moderation";
 
 type UserRow = {
   user_id: string;
