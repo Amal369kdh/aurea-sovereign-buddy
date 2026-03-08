@@ -191,7 +191,7 @@ const Admin = () => {
     setLoading(true);
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -201,6 +201,8 @@ const Admin = () => {
         supabase.from("partners").select("*").order("name"),
         supabase.from("allowed_domains").select("*").order("domain"),
         supabase.from("resources_links").select("id, title, url, category, is_verified, created_at").order("created_at", { ascending: false }).limit(50),
+        supabase.from("reports").select("id, reporter_id, reported_user_id, reported_announcement_id, reason, details, status, created_at").eq("status", "pending").order("created_at", { ascending: false }).limit(50),
+        supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
       ]);
 
     if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
