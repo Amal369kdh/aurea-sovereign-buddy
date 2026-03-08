@@ -1,0 +1,429 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Loader2, ShieldCheck, Save } from "lucide-react";
+
+const NATIONALITIES = [
+  "🇫🇷 Française",
+  "🇲🇦 Marocaine", "🇹🇳 Tunisienne", "🇩🇿 Algérienne", "🇸🇳 Sénégalaise",
+  "🇨🇮 Ivoirienne", "🇨🇲 Camerounaise", "🇬🇦 Gabonaise", "🇨🇬 Congolaise",
+  "🇲🇱 Malienne", "🇧🇫 Burkinabè", "🇹🇬 Togolaise", "🇧🇯 Béninoise",
+  "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "Autre",
+];
+
+const VISA_TYPES = [
+  "Visa étudiant (VLS-TS)",
+  "Titre de séjour étudiant",
+  "Passeport talent",
+  "Visa de long séjour",
+  "Autre",
+];
+
+const LOGEMENT_OPTIONS = [
+  { value: "crous", label: "🏢 Résidence CROUS" },
+  { value: "prive", label: "🏠 Logement privé" },
+  { value: "famille", label: "👨‍👩‍👧 Chez la famille" },
+  { value: "colocation", label: "🤝 Colocation" },
+  { value: "cherche", label: "🔍 En recherche" },
+];
+
+const OBJECTIFS_LIST = [
+  { id: "diplome", label: "🎓 Obtenir mon diplôme" },
+  { id: "job", label: "💼 Trouver un job/stage" },
+  { id: "reseau", label: "🤝 Développer mon réseau" },
+  { id: "papiers", label: "📄 Régulariser mes papiers" },
+  { id: "logement", label: "🏠 Trouver un logement" },
+  { id: "sante", label: "🏥 M'occuper de ma santé" },
+];
+
+type ProfileData = {
+  display_name: string;
+  city: string;
+  university: string;
+  university_id: string | null;
+  nationality: string;
+  visa_type: string;
+  logement_situation: string;
+  mutuelle: boolean;
+  budget_monthly: number | null;
+  revenus_monthly: number | null;
+  objectifs: string[];
+  is_verified: boolean;
+  points_social: number;
+  status: string;
+  avatar_initials: string;
+};
+
+const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="rounded-3xl border border-border bg-card p-5">
+    <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-muted-foreground">{title}</h2>
+    {children}
+  </div>
+);
+
+const FieldRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="mb-4 last:mb-0">
+    <label className="mb-1.5 block text-sm font-semibold text-foreground">{label}</label>
+    {children}
+  </div>
+);
+
+const inputClass =
+  "w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all";
+
+const selectClass =
+  "w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer";
+
+const Profile = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [universities, setUniversities] = useState<{ id: string; name: string; city: string }[]>([]);
+
+  const [profile, setProfile] = useState<ProfileData>({
+    display_name: "",
+    city: "",
+    university: "",
+    university_id: null,
+    nationality: "",
+    visa_type: "",
+    logement_situation: "",
+    mutuelle: false,
+    budget_monthly: null,
+    revenus_monthly: null,
+    objectifs: [],
+    is_verified: false,
+    points_social: 0,
+    status: "explorateur",
+    avatar_initials: "?",
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchAll = async () => {
+      const [profileRes, univRes] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select(
+            "display_name, city, university, university_id, nationality, visa_type, logement_situation, mutuelle, budget_monthly, revenus_monthly, objectifs, is_verified, points_social, status, avatar_initials"
+          )
+          .eq("user_id", user.id)
+          .maybeSingle(),
+        supabase.from("universities").select("id, name, city").order("name"),
+      ]);
+
+      if (univRes.data) setUniversities(univRes.data);
+
+      if (profileRes.data) {
+        const d = profileRes.data;
+        setProfile({
+          display_name: d.display_name ?? "",
+          city: d.city ?? "",
+          university: d.university ?? "",
+          university_id: d.university_id ?? null,
+          nationality: d.nationality ?? "",
+          visa_type: d.visa_type ?? "",
+          logement_situation: d.logement_situation ?? "",
+          mutuelle: d.mutuelle ?? false,
+          budget_monthly: d.budget_monthly ?? null,
+          revenus_monthly: d.revenus_monthly ?? null,
+          objectifs: (d.objectifs as string[]) ?? [],
+          is_verified: d.is_verified ?? false,
+          points_social: d.points_social ?? 0,
+          status: d.status ?? "explorateur",
+          avatar_initials: d.avatar_initials ?? "?",
+        });
+      }
+      setLoading(false);
+    };
+    fetchAll();
+  }, [user]);
+
+  const set = <K extends keyof ProfileData>(key: K, value: ProfileData[K]) =>
+    setProfile((prev) => ({ ...prev, [key]: value }));
+
+  const toggleObjectif = (id: string) =>
+    setProfile((prev) => ({
+      ...prev,
+      objectifs: prev.objectifs.includes(id)
+        ? prev.objectifs.filter((o) => o !== id)
+        : [...prev.objectifs, id],
+    }));
+
+  const handleUniversityChange = (name: string) => {
+    const found = universities.find((u) => u.name === name);
+    setProfile((prev) => ({
+      ...prev,
+      university: name,
+      university_id: found?.id ?? null,
+    }));
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    const initials = profile.display_name.trim().slice(0, 2).toUpperCase() || "?";
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: profile.display_name,
+        avatar_initials: initials,
+        city: profile.city,
+        university: profile.university,
+        university_id: profile.university_id,
+        nationality: profile.nationality,
+        visa_type: profile.visa_type || null,
+        logement_situation: profile.logement_situation || null,
+        mutuelle: profile.mutuelle,
+        budget_monthly: profile.budget_monthly,
+        revenus_monthly: profile.revenus_monthly,
+        objectifs: profile.objectifs,
+      })
+      .eq("user_id", user.id);
+
+    setSaving(false);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profil sauvegardé ✓", description: "Tes informations ont été mises à jour." });
+    }
+  };
+
+  const isFrench = profile.nationality === "🇫🇷 Française";
+
+  const statusLabel: Record<string, string> = {
+    explorateur: "Explorateur",
+    temoin: "Témoin",
+    gold: "Gold",
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Top bar */}
+      <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-4 backdrop-blur-lg">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex h-9 w-9 items-center justify-center rounded-2xl bg-secondary text-muted-foreground hover:bg-accent transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </button>
+        <span className="text-base font-bold text-foreground">Mon Profil</span>
+      </div>
+
+      <div className="mx-auto max-w-lg space-y-4 px-4 pt-6">
+        {/* ── Header avatar ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center gap-3 rounded-3xl border border-border bg-card py-7"
+        >
+          <div className="flex h-20 w-20 items-center justify-center rounded-full gold-gradient text-2xl font-extrabold text-primary-foreground shadow-lg">
+            {profile.avatar_initials}
+          </div>
+          <div className="flex flex-col items-center gap-1.5">
+            <p className="text-lg font-extrabold text-foreground">{profile.display_name || "—"}</p>
+            <div className="flex items-center gap-2">
+              {profile.is_verified && (
+                <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-0.5 text-xs font-bold text-emerald-400">
+                  <ShieldCheck className="h-3 w-3" />
+                  Témoin
+                </span>
+              )}
+              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+                {statusLabel[profile.status] ?? profile.status}
+              </span>
+              <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-muted-foreground">
+                ✦ {profile.points_social} pts
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Informations de base ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <Section title="Informations de base">
+            <FieldRow label="Prénom / Pseudo">
+              <input
+                className={inputClass}
+                value={profile.display_name}
+                onChange={(e) => set("display_name", e.target.value)}
+                placeholder="Ton prénom ou pseudo"
+              />
+            </FieldRow>
+            <FieldRow label="Ville">
+              <input
+                className={inputClass}
+                value={profile.city}
+                onChange={(e) => set("city", e.target.value)}
+                placeholder="Ex: Paris"
+              />
+            </FieldRow>
+            <FieldRow label="Université">
+              <select
+                className={selectClass}
+                value={profile.university}
+                onChange={(e) => handleUniversityChange(e.target.value)}
+              >
+                <option value="">— Sélectionne ton université —</option>
+                {universities.map((u) => (
+                  <option key={u.id} value={u.name}>
+                    {u.name} ({u.city})
+                  </option>
+                ))}
+                <option value="Autre">Autre / Non listée</option>
+              </select>
+            </FieldRow>
+          </Section>
+        </motion.div>
+
+        {/* ── Mon profil ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <Section title="Mon profil">
+            <FieldRow label="Nationalité">
+              <select
+                className={selectClass}
+                value={profile.nationality}
+                onChange={(e) => set("nationality", e.target.value)}
+              >
+                <option value="">— Sélectionne —</option>
+                {NATIONALITIES.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </FieldRow>
+
+            {!isFrench && (
+              <FieldRow label="Type de visa">
+                <select
+                  className={selectClass}
+                  value={profile.visa_type}
+                  onChange={(e) => set("visa_type", e.target.value)}
+                >
+                  <option value="">— Sélectionne —</option>
+                  {VISA_TYPES.map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </FieldRow>
+            )}
+
+            <FieldRow label="Situation de logement">
+              <select
+                className={selectClass}
+                value={profile.logement_situation}
+                onChange={(e) => set("logement_situation", e.target.value)}
+              >
+                <option value="">— Sélectionne —</option>
+                {LOGEMENT_OPTIONS.map((l) => (
+                  <option key={l.value} value={l.value}>{l.label}</option>
+                ))}
+              </select>
+            </FieldRow>
+
+            <FieldRow label="Mutuelle étudiante">
+              <div className="flex gap-3">
+                {[{ val: true, label: "✅ Oui" }, { val: false, label: "❌ Non" }].map(({ val, label }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => set("mutuelle", val)}
+                    className={`flex-1 rounded-2xl border py-3 text-sm font-semibold transition-all ${
+                      profile.mutuelle === val
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border bg-background text-muted-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </FieldRow>
+          </Section>
+        </motion.div>
+
+        {/* ── Finances ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <Section title="Finances">
+            <FieldRow label="Budget mensuel (€)">
+              <input
+                type="number"
+                className={inputClass}
+                value={profile.budget_monthly ?? ""}
+                onChange={(e) => set("budget_monthly", e.target.value ? parseInt(e.target.value) : null)}
+                placeholder="Ex: 800"
+                min={0}
+              />
+            </FieldRow>
+            <FieldRow label="Revenus mensuels (€)">
+              <input
+                type="number"
+                className={inputClass}
+                value={profile.revenus_monthly ?? ""}
+                onChange={(e) => set("revenus_monthly", e.target.value ? parseInt(e.target.value) : null)}
+                placeholder="Ex: 400"
+                min={0}
+              />
+            </FieldRow>
+          </Section>
+        </motion.div>
+
+        {/* ── Objectifs ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Section title="Mes objectifs">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {OBJECTIFS_LIST.map((obj) => {
+                const checked = profile.objectifs.includes(obj.id);
+                return (
+                  <button
+                    key={obj.id}
+                    type="button"
+                    onClick={() => toggleObjectif(obj.id)}
+                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold text-left transition-all ${
+                      checked
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border bg-background text-muted-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all ${
+                      checked ? "border-primary bg-primary" : "border-border"
+                    }`}>
+                      {checked && <span className="text-[10px] font-black text-primary-foreground">✓</span>}
+                    </span>
+                    {obj.label}
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+        </motion.div>
+
+        {/* ── Save button ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex w-full items-center justify-center gap-2 rounded-3xl gold-gradient py-4 text-base font-extrabold text-primary-foreground shadow-lg transition-opacity hover:opacity-90 disabled:opacity-60"
+          >
+            {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+            {saving ? "Sauvegarde…" : "Sauvegarder"}
+          </button>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;
