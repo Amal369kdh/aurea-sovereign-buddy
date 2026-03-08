@@ -9,7 +9,8 @@ import GoldModal from "@/components/GoldModal";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import VerifiedGate from "@/components/VerifiedGate";
 import { useDating } from "@/hooks/useDating";
-import { Users, Heart, Sparkles } from "lucide-react";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { Users, Heart, Sparkles, Zap } from "lucide-react";
 
 type Tab = "hub" | "rencontres" | "matchs";
 
@@ -18,6 +19,8 @@ const HubSocial = () => {
   const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement" | "general">("all");
   const [goldOpen, setGoldOpen] = useState(false);
   const { matches, isPremium } = useDating();
+  const { flags } = useFeatureFlags();
+  const datingEnabled = flags["dating"] !== false;
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -51,6 +54,7 @@ const HubSocial = () => {
                 }`}
               >
                 <Heart className="h-4 w-4" /> Rencontres
+                {!datingEnabled && <Zap className="h-3 w-3 text-primary" />}
               </button>
               <button
                 onClick={() => setTab("matchs")}
@@ -75,7 +79,15 @@ const HubSocial = () => {
             {tab === "hub" ? (
               <SocialFeed activeCategory={category} onCategoryChange={setCategory} />
             ) : tab === "rencontres" ? (
-              <DatingGrid onConnectClick={() => setGoldOpen(true)} />
+              datingEnabled ? (
+                <DatingGrid onConnectClick={() => setGoldOpen(true)} />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+                  <Zap className="h-10 w-10 text-primary" />
+                  <p className="text-lg font-bold text-foreground">Bientôt disponible ⚡</p>
+                  <p className="text-sm text-muted-foreground">La fonctionnalité Rencontres arrive très bientôt.</p>
+                </div>
+              )
             ) : (
               <DatingMatches matches={matches} isPremium={isPremium} onGoldClick={() => setGoldOpen(true)} />
             )}
