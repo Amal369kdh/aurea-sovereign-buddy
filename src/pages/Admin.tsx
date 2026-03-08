@@ -606,7 +606,7 @@ const Admin = () => {
         </button>
         <div className="flex items-center gap-2">
           <span className="text-base font-extrabold gold-text">Admin</span>
-          <span className="rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-bold text-red-400">Panel</span>
+          <span className="rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-bold text-destructive">Panel</span>
         </div>
         <button onClick={fetchAll} className="ml-auto flex h-9 w-9 items-center justify-center rounded-2xl bg-secondary text-muted-foreground hover:bg-accent transition-colors">
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
