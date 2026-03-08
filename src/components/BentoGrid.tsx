@@ -387,7 +387,13 @@ const BentoGrid = () => {
             animate="show"
             className="grid gap-4 lg:grid-cols-2"
           >
-            {tiles.map((t) => (
+            {tiles
+              .filter((t) => {
+                // Masquer Logement/Banque si aucune donnée enrichie
+                if ((t.title === "Logement" || t.title === "Banque") && t.links.length === 0 && !(t as any)._conseil) return false;
+                return true;
+              })
+              .map((t) => (
               <BentoTile
                 key={t.title}
                 title={t.title}
@@ -399,6 +405,7 @@ const BentoGrid = () => {
                 locked={false}
                 onNavigate={navigate}
                 onUnlock={() => setVerifyOpen(true)}
+                conseil={(t as any)._conseil}
               />
             ))}
           </motion.div>
