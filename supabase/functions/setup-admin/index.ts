@@ -1,5 +1,3 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -22,25 +20,37 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Update existing user: confirm email + set password
-    const { error: updateAuthError } = await adminClient.auth.admin.updateUser(userId, {
-      password,
-      email_confirm: true,
+    // 1. Update user password + confirm email via REST API
+    const updateRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": supabaseServiceKey,
+        "Authorization": `Bearer ${supabaseServiceKey}`,
+      },
+      body: JSON.stringify({ password, email_confirm: true }),
     });
 
-    if (updateAuthError) {
-      return new Response(JSON.stringify({ error: "Auth update failed: " + updateAuthError.message }), {
+    if (!updateRes.ok) {
+      const err = await updateRes.text();
+      return new Response(JSON.stringify({ error: "Auth update failed: " + err }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Upsert the profile with admin status
-    const { error: upsertError } = await adminClient
-      .from("profiles")
-      .upsert({
+    // 2. Upsert the profile with admin status via REST
+    const upsertRes = await fetch(`${supabaseUrl}/rest/v1/profiles?on_conflict=user_id`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": supabaseServiceKey,
+        "Authorization": `Bearer ${supabaseServiceKey}`,
+        "Prefer": "resolution=merge-duplicates",
+      },
+      body: JSON.stringify({
         user_id: userId,
         status: "admin",
         display_name: "Admin",
@@ -51,10 +61,12 @@ Deno.serve(async (req) => {
         objectifs: ["admin"],
         is_in_france: true,
         onboarding_step: 99,
-      }, { onConflict: "user_id" });
+      }),
+    });
 
-    if (upsertError) {
-      return new Response(JSON.stringify({ error: "Profile upsert failed: " + upsertError.message }), {
+    if (!upsertRes.ok) {
+      const err = await upsertRes.text();
+      return new Response(JSON.stringify({ error: "Profile upsert failed: " + err }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -65,7 +77,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("Error:", err);
-    return new Response(JSON.stringify({ error: "Erreur interne: " + err.message }), {
+    return new Response(JSON.stringify({ error: "Erreur interne: " + (err as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
