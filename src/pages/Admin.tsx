@@ -265,7 +265,7 @@ const Admin = () => {
 
   const addResource = async () => {
     if (!newResource.title.trim() || !newResource.url.trim()) return;
-    const { error } = await supabase.from("resources_links").insert({ ...newResource, created_by: user!.id });
+    const { error } = await supabase.from("resources_links").insert([{ ...newResource, created_by: user!.id }]);
     if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
     else { toast({ title: "Ressource ajoutée ✓" }); setNewResource({ title: "", url: "", category: "social" }); fetchAll(); }
   };
