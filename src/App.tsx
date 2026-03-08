@@ -14,6 +14,7 @@ import HubSocial from "./pages/HubSocial";
 import Messages from "./pages/Messages";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -106,6 +107,7 @@ const App = () => (
               <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
               <Route path="/hub-social" element={<ProtectedRoute><HubSocial /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
