@@ -1,4 +1,5 @@
-import { MapPin, ShieldCheck, LogOut, Settings } from "lucide-react";
+import { MapPin, ShieldCheck, LogOut, Settings, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 import {
   Popover,
