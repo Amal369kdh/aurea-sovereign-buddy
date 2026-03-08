@@ -87,6 +87,14 @@ serve(async (req) => {
     "phone": "tel",
     "url": "https://www.caf.fr"
   },
+  "banques": {
+    "liste": [{"name": "nom agence", "address": "adresse", "type": "en ligne ou physique"}],
+    "conseil": "conseil pratique pour ouvrir un compte étudiant à ${targetCity}"
+  },
+  "logement": {
+    "residences_crous": [{"name": "nom", "address": "adresse", "url": "lien si dispo"}],
+    "autres": ["2-3 plateformes locales recommandées"]
+  },
   "useful_tips": [
     "3-5 conseils pratiques spécifiques à ${targetCity} pour un étudiant étranger"
   ]
