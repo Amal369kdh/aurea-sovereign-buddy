@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      allowed_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          university_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          university_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          university_name?: string | null
+        }
+        Relationships: []
+      }
       announcement_likes: {
         Row: {
           announcement_id: string
@@ -251,6 +272,33 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flags: {
+        Row: {
+          description: string | null
+          enabled: boolean
+          id: string
+          key: string
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          key: string
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          key?: string
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -299,6 +347,33 @@ export type Database = {
           is_verified?: boolean
           name?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      partners: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          offer: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          offer?: string | null
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          offer?: string | null
+          type?: string
         }
         Relationships: []
       }
