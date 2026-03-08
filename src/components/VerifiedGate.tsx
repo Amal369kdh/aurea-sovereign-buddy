@@ -58,7 +58,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
     if (!user) { setLoading(false); return; }
     supabase
       .from("profiles")
-      .select("status")
+      .select("status, suspended_until")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
