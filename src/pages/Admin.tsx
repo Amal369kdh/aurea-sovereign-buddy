@@ -324,6 +324,48 @@ const Admin = () => {
     else { toast({ title: "Ligue réinitialisée ✓" }); fetchAll(); }
   };
 
+  const warnUser = async (reportId: string, reportedUserId: string | null) => {
+    if (!reportedUserId) return;
+    await supabase.from("reports").update({ status: "warned" }).eq("id", reportId);
+    toast({ title: "Avertissement envoyé", description: "Le signalement est marqué comme traité." });
+    fetchAll();
+  };
+
+  const suspendUser = async (reportId: string, reportedUserId: string | null) => {
+    if (!reportedUserId) return;
+    const suspendedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const [suspendRes, reportRes] = await Promise.all([
+      supabase.from("profiles").update({ suspended_until: suspendedUntil } as any).eq("user_id", reportedUserId),
+      supabase.from("reports").update({ status: "suspended" }).eq("id", reportId),
+    ]);
+    if (suspendRes.error) {
+      toast({ title: "Erreur", description: suspendRes.error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Utilisateur suspendu 7 jours ✓" });
+      fetchAll();
+    }
+  };
+
+  const publishPinned = async () => {
+    if (!newPinnedContent.trim() || !user) return;
+    setPublishingPinned(true);
+    const { error } = await supabase.from("announcements").insert({
+      content: newPinnedContent.trim(),
+      author_id: user.id,
+      is_pinned: true,
+      category: "general" as const,
+    });
+    setPublishingPinned(false);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: "Annonce épinglée publiée ✓" }); setNewPinnedContent(""); fetchAll(); }
+  };
+
+  const deletePinned = async (id: string) => {
+    const { error } = await supabase.from("announcements").delete().eq("id", id);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: "Annonce supprimée" }); fetchAll(); }
+  };
+
   // ─── Gate checks ─────────────────────────────────────────────────────────
 
   if (isAdmin === null) {
