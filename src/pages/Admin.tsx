@@ -210,6 +210,14 @@ const Admin = () => {
     if (partnersRes.data) setPartners(partnersRes.data as Partner[]);
     if (domainsRes.data) setDomains(domainsRes.data as AllowedDomain[]);
     if (resourcesRes.data) setResources(resourcesRes.data as ResourceRow[]);
+    if (reportsRes.data) {
+      const enriched = reportsRes.data.map((r) => ({
+        ...r,
+        reported_display_name: users.find((u) => u.user_id === r.reported_user_id)?.display_name ?? r.reported_user_id?.slice(0, 8) ?? "—",
+      }));
+      setReports(enriched as ReportRow[]);
+    }
+    if (pinnedRes.data) setPinnedAnnouncements(pinnedRes.data as PinnedAnnouncement[]);
 
     // Build league from profiles
     if (profilesRes.data) {
