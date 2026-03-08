@@ -198,6 +198,24 @@ const defaultTiles = (city: string) => [
       { icon: Bus, label: `Transport ${city}`, sub: "Abonnement étudiant réduit", href: `https://maps.google.com/?q=transport+étudiant+${city}` },
     ] as QuickLink[],
   },
+  {
+    title: "Logement",
+    subtitle: "Résidences CROUS & plateformes",
+    icon: Home,
+    accentClass: "bg-warning/15 text-warning",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [] as QuickLink[],
+  },
+  {
+    title: "Banque",
+    subtitle: "Comptes étudiants & conseils",
+    icon: Landmark,
+    accentClass: "bg-primary/15 text-primary",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [] as QuickLink[],
+  },
 ];
 
 /** Enrich tiles with Perplexity city data */
