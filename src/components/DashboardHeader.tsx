@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const DashboardHeader = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "User";
   const initials = displayName.slice(0, 2).toUpperCase();
   const [city, setCity] = useState("France");
@@ -59,6 +60,13 @@ const DashboardHeader = () => {
             </button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-56 p-3 space-y-2">
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground hover:bg-secondary transition-colors cursor-pointer"
+            >
+              <User className="h-4 w-4" />
+              Mon profil
+            </button>
             <button
               onClick={signOut}
               className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-muted-foreground hover:bg-secondary transition-colors cursor-pointer"
