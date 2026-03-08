@@ -68,7 +68,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   }, [user]);
 
   if (loading) return null;
-  if (status === "temoin") return <>{children}</>;
+  if (status === "temoin" || status === "admin") return <>{children}</>;
 
   const clientValid = email.includes("@") && isAcademicEmail(email);
 

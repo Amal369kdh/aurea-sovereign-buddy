@@ -436,7 +436,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     if (profile) {
       setIsInFranceState(profile.is_in_france ?? null);
       setIsFrench(profile.nationality === "🇫🇷 Française");
-      setIsTemoin(profile.status === "temoin");
+      setIsTemoin(profile.status === "temoin" || profile.status === "admin");
     }
   }, [user]);
 

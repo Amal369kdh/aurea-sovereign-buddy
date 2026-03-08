@@ -39,7 +39,7 @@ export function useMessages(selectedUserId?: string) {
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
-        setIsTemoin(data?.status === "temoin");
+        setIsTemoin(data?.status === "temoin" || data?.status === "admin");
       });
   }, [user]);
 
