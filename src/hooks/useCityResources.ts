@@ -33,6 +33,14 @@ export interface CityResources {
     phone: string;
     url: string;
   };
+  banques?: {
+    liste?: { name: string; address: string; type: string }[];
+    conseil?: string;
+  };
+  logement?: {
+    residences_crous?: { name: string; address: string; url?: string }[];
+    autres?: string[];
+  };
   useful_tips?: string[];
   citations?: string[];
   fetched_at?: string;
