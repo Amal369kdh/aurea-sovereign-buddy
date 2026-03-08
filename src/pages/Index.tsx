@@ -101,9 +101,11 @@ const Index = () => {
             <SovereigntyWidget />
           </div>
           <BentoGrid />
-          <div className="mt-4">
-            <SocialPulse />
-          </div>
+          {hubSocialEnabled && (
+            <div className="mt-4">
+              <SocialPulse />
+            </div>
+          )}
         </div>
       </main>
 

@@ -79,7 +79,15 @@ const HubSocial = () => {
             {tab === "hub" ? (
               <SocialFeed activeCategory={category} onCategoryChange={setCategory} />
             ) : tab === "rencontres" ? (
-              <DatingGrid onConnectClick={() => setGoldOpen(true)} />
+              datingEnabled ? (
+                <DatingGrid onConnectClick={() => setGoldOpen(true)} />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+                  <Zap className="h-10 w-10 text-primary" />
+                  <p className="text-lg font-bold text-foreground">Bientôt disponible ⚡</p>
+                  <p className="text-sm text-muted-foreground">La fonctionnalité Rencontres arrive très bientôt.</p>
+                </div>
+              )
             ) : (
               <DatingMatches matches={matches} isPremium={isPremium} onGoldClick={() => setGoldOpen(true)} />
             )}
