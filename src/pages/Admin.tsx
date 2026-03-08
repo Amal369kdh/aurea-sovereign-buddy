@@ -660,9 +660,89 @@ const Admin = () => {
     </div>
   );
 
+  const renderModeration = () => (
+    <div className="space-y-5">
+      {/* Section 1: Signalements */}
+      <Section title={`Signalements en attente (${reports.length})`}>
+        {reports.length === 0 && <p className="text-sm text-muted-foreground">Aucun signalement en attente.</p>}
+        {reports.map((r) => (
+          <div key={r.id} className="mb-4 rounded-2xl border border-border bg-secondary/40 p-4 last:mb-0">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-foreground">
+                  {r.reported_user_id ? `Utilisateur : ${r.reported_display_name}` : "Annonce signalée"}
+                </p>
+                <p className="mt-0.5 text-xs font-semibold text-destructive">{r.reason}</p>
+                {r.details && <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{r.details}</p>}
+                <p className="mt-1 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("fr-FR")}</p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => warnUser(r.id, r.reported_user_id)}
+                className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500 hover:bg-amber-500/20 transition-colors"
+              >
+                ⚠️ Avertir
+              </button>
+              <button
+                onClick={() => suspendUser(r.id, r.reported_user_id)}
+                disabled={!r.reported_user_id}
+                className="rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-bold text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-40"
+              >
+                🚫 Suspendre 7 jours
+              </button>
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      {/* Section 2: Publier une annonce épinglée */}
+      <Section title="Publier une annonce épinglée">
+        <div className="space-y-3">
+          <textarea
+            className={`${inputCls} min-h-[100px] resize-none`}
+            placeholder="Texte de l'annonce importante à épingler pour tous les utilisateurs…"
+            value={newPinnedContent}
+            onChange={(e) => setNewPinnedContent(e.target.value)}
+          />
+          <button
+            onClick={publishPinned}
+            disabled={!newPinnedContent.trim() || publishingPinned}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
+          >
+            {publishingPinned ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pin className="h-4 w-4" />}
+            Publier l'annonce épinglée
+          </button>
+        </div>
+      </Section>
+
+      {/* Section 3: Annonces épinglées actives */}
+      <Section title={`Annonces épinglées actives (${pinnedAnnouncements.length})`}>
+        {pinnedAnnouncements.length === 0 && <p className="text-sm text-muted-foreground">Aucune annonce épinglée.</p>}
+        {pinnedAnnouncements.map((a) => (
+          <div key={a.id} className="mb-3 flex items-start justify-between gap-3 last:mb-0">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-foreground line-clamp-2">{a.content}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {new Date(a.created_at).toLocaleDateString("fr-FR")} · {a.likes_count} ❤️
+              </p>
+            </div>
+            <button
+              onClick={() => deletePinned(a.id)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ))}
+      </Section>
+    </div>
+  );
+
   const RENDERERS: Record<TabKey, () => React.ReactNode> = {
     overview: renderOverview,
     users: renderUsers,
+    moderation: renderModeration,
     premium: renderPremium,
     partners: renderPartners,
     resources: renderResources,
