@@ -1,6 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderLock, Users, MessageCircle } from "lucide-react";
+import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -12,10 +15,27 @@ const navItems = [
 const MobileBottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("status")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(data?.status === "admin"));
+  }, [user]);
+
+  const allItems = [
+    ...navItems,
+    ...(isAdmin ? [{ icon: ShieldAlert, label: "Admin", path: "/admin" }] : []),
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex lg:hidden items-center justify-around border-t border-border bg-card/95 backdrop-blur-lg px-2 py-2 safe-bottom">
-      {navItems.map((item) => {
+      {allItems.map((item) => {
         const active = location.pathname === item.path;
         return (
           <button
@@ -32,12 +52,20 @@ const MobileBottomNav = () => {
             )}
             <item.icon
               className={`relative z-10 h-5 w-5 ${
-                active ? "text-primary" : "text-muted-foreground"
+                active
+                  ? item.path === "/admin"
+                    ? "text-destructive"
+                    : "text-primary"
+                  : "text-muted-foreground"
               }`}
             />
             <span
               className={`relative z-10 text-[10px] font-semibold ${
-                active ? "text-primary" : "text-muted-foreground"
+                active
+                  ? item.path === "/admin"
+                    ? "text-destructive"
+                    : "text-primary"
+                  : "text-muted-foreground"
               }`}
             >
               {item.label}
