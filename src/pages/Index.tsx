@@ -12,6 +12,7 @@ import WelcomeGuide from "@/components/WelcomeGuide";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
   const handleEnter = async () => {

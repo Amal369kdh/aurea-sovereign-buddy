@@ -9,7 +9,8 @@ import GoldModal from "@/components/GoldModal";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import VerifiedGate from "@/components/VerifiedGate";
 import { useDating } from "@/hooks/useDating";
-import { Users, Heart, Sparkles } from "lucide-react";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { Users, Heart, Sparkles, Zap } from "lucide-react";
 
 type Tab = "hub" | "rencontres" | "matchs";
 
