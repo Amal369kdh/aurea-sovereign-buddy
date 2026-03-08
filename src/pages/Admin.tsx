@@ -111,6 +111,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "overview", label: "Vue générale", icon: LayoutDashboard },
   { key: "users", label: "Utilisateurs", icon: Users },
+  { key: "moderation", label: "Modération", icon: Shield },
   { key: "premium", label: "Premium", icon: Crown },
   { key: "partners", label: "Partenaires", icon: Handshake },
   { key: "resources", label: "Ressources", icon: Link2 },
