@@ -54,6 +54,7 @@ const HubSocial = () => {
                 }`}
               >
                 <Heart className="h-4 w-4" /> Rencontres
+                {!datingEnabled && <Zap className="h-3 w-3 text-primary" />}
               </button>
               <button
                 onClick={() => setTab("matchs")}
