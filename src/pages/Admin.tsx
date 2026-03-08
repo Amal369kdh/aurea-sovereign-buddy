@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle,
+  RefreshCw, Save, AlertTriangle, Shield, Pin,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -20,7 +20,8 @@ type TabKey =
   | "resources"
   | "league"
   | "features"
-  | "domains";
+  | "domains"
+  | "moderation";
 
 type UserRow = {
   user_id: string;
@@ -71,6 +72,25 @@ type UniversityLeague = {
   member_count: number;
 };
 
+type ReportRow = {
+  id: string;
+  reporter_id: string;
+  reported_user_id: string | null;
+  reported_announcement_id: string | null;
+  reason: string;
+  details: string | null;
+  status: string;
+  created_at: string;
+  reported_display_name?: string | null;
+};
+
+type PinnedAnnouncement = {
+  id: string;
+  content: string;
+  created_at: string;
+  likes_count: number;
+};
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const inputCls =
@@ -110,6 +130,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "overview", label: "Vue générale", icon: LayoutDashboard },
   { key: "users", label: "Utilisateurs", icon: Users },
+  { key: "moderation", label: "Modération", icon: Shield },
   { key: "premium", label: "Premium", icon: Crown },
   { key: "partners", label: "Partenaires", icon: Handshake },
   { key: "resources", label: "Ressources", icon: Link2 },
@@ -136,6 +157,12 @@ const Admin = () => {
   const [resources, setResources] = useState<ResourceRow[]>([]);
   const [league, setLeague] = useState<UniversityLeague[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Moderation states
+  const [reports, setReports] = useState<ReportRow[]>([]);
+  const [pinnedAnnouncements, setPinnedAnnouncements] = useState<PinnedAnnouncement[]>([]);
+  const [newPinnedContent, setNewPinnedContent] = useState("");
+  const [publishingPinned, setPublishingPinned] = useState(false);
 
   // Form states
   const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "" });
@@ -164,7 +191,7 @@ const Admin = () => {
     setLoading(true);
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -174,6 +201,8 @@ const Admin = () => {
         supabase.from("partners").select("*").order("name"),
         supabase.from("allowed_domains").select("*").order("domain"),
         supabase.from("resources_links").select("id, title, url, category, is_verified, created_at").order("created_at", { ascending: false }).limit(50),
+        supabase.from("reports").select("id, reporter_id, reported_user_id, reported_announcement_id, reason, details, status, created_at").eq("status", "pending").order("created_at", { ascending: false }).limit(50),
+        supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
       ]);
 
     if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
@@ -181,6 +210,14 @@ const Admin = () => {
     if (partnersRes.data) setPartners(partnersRes.data as Partner[]);
     if (domainsRes.data) setDomains(domainsRes.data as AllowedDomain[]);
     if (resourcesRes.data) setResources(resourcesRes.data as ResourceRow[]);
+    if (reportsRes.data) {
+      const enriched = reportsRes.data.map((r) => ({
+        ...r,
+        reported_display_name: users.find((u) => u.user_id === r.reported_user_id)?.display_name ?? r.reported_user_id?.slice(0, 8) ?? "—",
+      }));
+      setReports(enriched as ReportRow[]);
+    }
+    if (pinnedRes.data) setPinnedAnnouncements(pinnedRes.data as PinnedAnnouncement[]);
 
     // Build league from profiles
     if (profilesRes.data) {
@@ -285,6 +322,48 @@ const Admin = () => {
     const { error } = await supabase.from("profiles").update({ points_social: 0 }).neq("user_id", "00000000-0000-0000-0000-000000000000");
     if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
     else { toast({ title: "Ligue réinitialisée ✓" }); fetchAll(); }
+  };
+
+  const warnUser = async (reportId: string, reportedUserId: string | null) => {
+    if (!reportedUserId) return;
+    await supabase.from("reports").update({ status: "warned" }).eq("id", reportId);
+    toast({ title: "Avertissement envoyé", description: "Le signalement est marqué comme traité." });
+    fetchAll();
+  };
+
+  const suspendUser = async (reportId: string, reportedUserId: string | null) => {
+    if (!reportedUserId) return;
+    const suspendedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const [suspendRes, reportRes] = await Promise.all([
+      supabase.from("profiles").update({ suspended_until: suspendedUntil } as any).eq("user_id", reportedUserId),
+      supabase.from("reports").update({ status: "suspended" }).eq("id", reportId),
+    ]);
+    if (suspendRes.error) {
+      toast({ title: "Erreur", description: suspendRes.error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Utilisateur suspendu 7 jours ✓" });
+      fetchAll();
+    }
+  };
+
+  const publishPinned = async () => {
+    if (!newPinnedContent.trim() || !user) return;
+    setPublishingPinned(true);
+    const { error } = await supabase.from("announcements").insert({
+      content: newPinnedContent.trim(),
+      author_id: user.id,
+      is_pinned: true,
+      category: "general" as const,
+    });
+    setPublishingPinned(false);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: "Annonce épinglée publiée ✓" }); setNewPinnedContent(""); fetchAll(); }
+  };
+
+  const deletePinned = async (id: string) => {
+    const { error } = await supabase.from("announcements").delete().eq("id", id);
+    if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    else { toast({ title: "Annonce supprimée" }); fetchAll(); }
   };
 
   // ─── Gate checks ─────────────────────────────────────────────────────────
@@ -581,9 +660,89 @@ const Admin = () => {
     </div>
   );
 
+  const renderModeration = () => (
+    <div className="space-y-5">
+      {/* Section 1: Signalements */}
+      <Section title={`Signalements en attente (${reports.length})`}>
+        {reports.length === 0 && <p className="text-sm text-muted-foreground">Aucun signalement en attente.</p>}
+        {reports.map((r) => (
+          <div key={r.id} className="mb-4 rounded-2xl border border-border bg-secondary/40 p-4 last:mb-0">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-foreground">
+                  {r.reported_user_id ? `Utilisateur : ${r.reported_display_name}` : "Annonce signalée"}
+                </p>
+                <p className="mt-0.5 text-xs font-semibold text-destructive">{r.reason}</p>
+                {r.details && <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{r.details}</p>}
+                <p className="mt-1 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("fr-FR")}</p>
+              </div>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => warnUser(r.id, r.reported_user_id)}
+                className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500 hover:bg-amber-500/20 transition-colors"
+              >
+                ⚠️ Avertir
+              </button>
+              <button
+                onClick={() => suspendUser(r.id, r.reported_user_id)}
+                disabled={!r.reported_user_id}
+                className="rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-bold text-destructive hover:bg-destructive/20 transition-colors disabled:opacity-40"
+              >
+                🚫 Suspendre 7 jours
+              </button>
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      {/* Section 2: Publier une annonce épinglée */}
+      <Section title="Publier une annonce épinglée">
+        <div className="space-y-3">
+          <textarea
+            className={`${inputCls} min-h-[100px] resize-none`}
+            placeholder="Texte de l'annonce importante à épingler pour tous les utilisateurs…"
+            value={newPinnedContent}
+            onChange={(e) => setNewPinnedContent(e.target.value)}
+          />
+          <button
+            onClick={publishPinned}
+            disabled={!newPinnedContent.trim() || publishingPinned}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
+          >
+            {publishingPinned ? <Loader2 className="h-4 w-4 animate-spin" /> : <Pin className="h-4 w-4" />}
+            Publier l'annonce épinglée
+          </button>
+        </div>
+      </Section>
+
+      {/* Section 3: Annonces épinglées actives */}
+      <Section title={`Annonces épinglées actives (${pinnedAnnouncements.length})`}>
+        {pinnedAnnouncements.length === 0 && <p className="text-sm text-muted-foreground">Aucune annonce épinglée.</p>}
+        {pinnedAnnouncements.map((a) => (
+          <div key={a.id} className="mb-3 flex items-start justify-between gap-3 last:mb-0">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-foreground line-clamp-2">{a.content}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {new Date(a.created_at).toLocaleDateString("fr-FR")} · {a.likes_count} ❤️
+              </p>
+            </div>
+            <button
+              onClick={() => deletePinned(a.id)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ))}
+      </Section>
+    </div>
+  );
+
   const RENDERERS: Record<TabKey, () => React.ReactNode> = {
     overview: renderOverview,
     users: renderUsers,
+    moderation: renderModeration,
     premium: renderPremium,
     partners: renderPartners,
     resources: renderResources,
