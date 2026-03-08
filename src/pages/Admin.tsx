@@ -72,6 +72,25 @@ type UniversityLeague = {
   member_count: number;
 };
 
+type ReportRow = {
+  id: string;
+  reporter_id: string;
+  reported_user_id: string | null;
+  reported_announcement_id: string | null;
+  reason: string;
+  details: string | null;
+  status: string;
+  created_at: string;
+  reported_display_name?: string | null;
+};
+
+type PinnedAnnouncement = {
+  id: string;
+  content: string;
+  created_at: string;
+  likes_count: number;
+};
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const inputCls =
