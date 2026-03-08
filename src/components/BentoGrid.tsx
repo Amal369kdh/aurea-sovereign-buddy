@@ -34,10 +34,10 @@ interface QuickLink {
 
 /* ─── Tile component ─── */
 const BentoTile = ({
-  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock,
+  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil,
 }: {
   title: string; subtitle: string; icon: React.ElementType; accentClass: string;
-  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void;
+  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string;
 }) => {
   const [expanded, setExpanded] = useState(false);
 
