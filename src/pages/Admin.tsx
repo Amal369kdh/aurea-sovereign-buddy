@@ -139,6 +139,12 @@ const Admin = () => {
   const [league, setLeague] = useState<UniversityLeague[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Moderation states
+  const [reports, setReports] = useState<ReportRow[]>([]);
+  const [pinnedAnnouncements, setPinnedAnnouncements] = useState<PinnedAnnouncement[]>([]);
+  const [newPinnedContent, setNewPinnedContent] = useState("");
+  const [publishingPinned, setPublishingPinned] = useState(false);
+
   // Form states
   const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "" });
   const [newDomain, setNewDomain] = useState({ domain: "", university_name: "" });
