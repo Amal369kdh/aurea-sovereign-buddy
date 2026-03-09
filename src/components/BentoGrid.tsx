@@ -165,6 +165,26 @@ const BentoTile = ({
                 <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
             )}
+
+            {/* Bannière partenaires — Logement */}
+            {title === "Logement" && !locked && (
+              <div className="mx-6 mb-4 flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5">
+                <span className="text-sm">🤝</span>
+                <p className="text-xs text-primary/80 leading-snug">
+                  <span className="font-semibold text-primary">Plateformes partenaires et offres exclusives</span> arrivent bientôt ⚡
+                </p>
+              </div>
+            )}
+
+            {/* Bannière partenaires — Banque */}
+            {title === "Banque" && !locked && (
+              <div className="mx-6 mb-4 flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5">
+                <span className="text-sm">🤝</span>
+                <p className="text-xs text-primary/80 leading-snug">
+                  <span className="font-semibold text-primary">Comparateur de comptes étudiants</span> arrive bientôt ⚡
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
