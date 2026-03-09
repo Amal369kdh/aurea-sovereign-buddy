@@ -33,19 +33,6 @@ const SovereigntyWidget = () => {
         />
       </div>
 
-      {/* Indicators on one line */}
-      <div className="mt-3 flex gap-2">
-        {indicators.map((item) => (
-          <div
-            key={item.label}
-            className={`flex-1 rounded-xl px-2 py-1.5 text-center text-xs font-semibold ${
-              item.done ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
-            }`}
-          >
-            {item.done ? "✓ " : "○ "}{item.label}
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

@@ -43,10 +43,6 @@ const DashboardHeader = () => {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary">
-          <ShieldCheck className="h-4 w-4" />
-          {displayName}
-        </div>
         <div className="flex h-10 w-10 items-center justify-center rounded-full gold-gradient text-sm font-bold text-primary-foreground">
           {initials}
         </div>

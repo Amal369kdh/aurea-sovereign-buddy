@@ -95,9 +95,6 @@ const Index = () => {
 
         <div className="px-6 pb-28">
           <div className="mb-4">
-            <WelcomeGuide />
-          </div>
-          <div className="mb-4">
             <SovereigntyWidget />
           </div>
           <BentoGrid />
