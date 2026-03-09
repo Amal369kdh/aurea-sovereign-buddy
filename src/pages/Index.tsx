@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useNavigate } from "react-router-dom";
+import { Users, Sparkles } from "lucide-react";
 
 const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
   const handleEnter = async () => {
