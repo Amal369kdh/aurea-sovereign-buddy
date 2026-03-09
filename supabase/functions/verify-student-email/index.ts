@@ -71,7 +71,7 @@ async function sendVerificationEmail(to: string, confirmUrl: string, resendApiKe
   if (!res.ok) {
     const errorBody = await res.text();
     console.error("Resend error:", res.status, errorBody);
-    throw new Error(`Resend API error: ${res.status}`);
+    throw new Error("Une erreur est survenue lors de l'envoi de l'email.");
   }
 
   return await res.json();
