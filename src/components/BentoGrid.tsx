@@ -221,7 +221,6 @@ const defaultTiles = (city: string) => [
     className: "lg:col-span-1",
     lockable: true,
     links: [] as QuickLink[],
-    hidden: true,
   },
   {
     title: "Préfecture",
@@ -239,29 +238,29 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
   if (!cityData || cityData.parse_error) return tiles;
 
   return tiles.map((t) => {
-    if (t.title === "Ma Survie" && cityData.crous) {
-      const crousLinks: QuickLink[] = [];
-      if (cityData.crous.url) {
-        crousLinks.push({ icon: Building2, label: cityData.crous.name || "CROUS local", sub: cityData.crous.address, href: cityData.crous.url, perplexity: true });
+    if (t.title === "Ma Survie" && (cityData.crous || cityData.transport)) {
+      const enrichedLinks: QuickLink[] = [];
+      if (cityData.crous?.url) {
+        enrichedLinks.push({ icon: Building2, label: cityData.crous.name || "CROUS local", sub: cityData.crous.address, href: cityData.crous.url, perplexity: true });
       }
       if (cityData.caf) {
-        crousLinks.push({ icon: Home, label: "CAF locale", sub: cityData.caf.address || "Aide au logement", href: cityData.caf.url || "https://www.caf.fr", perplexity: true });
+        enrichedLinks.push({ icon: Home, label: "CAF locale", sub: cityData.caf.address || "Aide au logement", href: cityData.caf.url || "https://www.caf.fr", perplexity: true });
       }
-      if (cityData.crous.resto_u?.length) {
+      if (cityData.crous?.resto_u?.length) {
         cityData.crous.resto_u.slice(0, 2).forEach((r: any) => {
-          crousLinks.push({ icon: Utensils, label: r.name, sub: r.address, href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name + " " + r.address)}`, perplexity: true });
+          enrichedLinks.push({ icon: Utensils, label: r.name, sub: r.address, href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name + " " + r.address)}`, perplexity: true });
         });
       }
-      // Keep original links and add enriched ones
-      return { ...t, links: [...t.links.slice(0, 3), ...crousLinks, ...t.links.slice(3)] };
-    }
-
-    if (t.title === "Soutien" && cityData.prefecture) {
-      const extraLinks: QuickLink[] = [];
-      if (cityData.prefecture.rdv_url) {
-        extraLinks.push({ icon: Landmark, label: "Préfecture — RDV en ligne", sub: cityData.prefecture.address, href: cityData.prefecture.rdv_url, perplexity: true });
+      if (cityData.transport) {
+        enrichedLinks.push({
+          icon: Bus,
+          label: `${cityData.transport.network_name} — Abo étudiant`,
+          sub: cityData.transport.student_subscription,
+          href: cityData.transport.url,
+          perplexity: true,
+        });
       }
-      return { ...t, links: [...t.links, ...extraLinks] };
+      return { ...t, links: [...t.links.slice(0, 3), ...enrichedLinks, ...t.links.slice(3)] };
     }
 
     if (t.title === "Santé" && cityData.health) {
@@ -284,16 +283,7 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
           perplexity: true,
         });
       }
-      if (cityData.transport) {
-        healthLinks.push({
-          icon: Bus,
-          label: `${cityData.transport.network_name} — Abo étudiant`,
-          sub: cityData.transport.student_subscription,
-          href: cityData.transport.url,
-          perplexity: true,
-        });
-      }
-      // Replace generic links with enriched ones
+      // Replace generic links with enriched ones (no transport here)
       return { ...t, links: [...healthLinks, ...t.links.filter((l) => !l.perplexity).slice(0, 5)] };
     }
 
