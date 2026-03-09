@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Shield, Briefcase, HeartHandshake, Stethoscope, Calculator, ClipboardCheck,
+  Briefcase, HeartHandshake, Stethoscope, Calculator, ClipboardCheck,
   GraduationCap, ExternalLink, Phone, MapPin, Building2, BookOpen, ChevronRight, ChevronDown,
-  Lock, Plane, Home, Landmark, Scale, Utensils, Bus, Dumbbell, Heart, Brain,
+  Lock, Home, Landmark, Scale, Utensils, Bus, Dumbbell, Heart, Brain,
   Globe, FileText, HandCoins, Loader2, Sparkles, ShieldCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -29,15 +29,15 @@ interface QuickLink {
   sub?: string;
   href?: string;
   route?: string;
-  perplexity?: boolean; // enriched by Perplexity
+  perplexity?: boolean;
 }
 
 /* ─── Tile component ─── */
 const BentoTile = ({
-  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil,
+  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil, step,
 }: {
   title: string; subtitle: string; icon: React.ElementType; accentClass: string;
-  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string;
+  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string; step?: number;
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -74,6 +74,11 @@ const BentoTile = ({
         onClick={() => !locked && setExpanded((e) => !e)}
         className="flex w-full items-center gap-3 p-6 text-left cursor-pointer"
       >
+        {step !== undefined && (
+          <span className="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground">
+            {step}
+          </span>
+        )}
         <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${accentClass}`}>
           <Icon className="h-5 w-5" />
         </div>
@@ -139,25 +144,106 @@ const BentoTile = ({
   );
 };
 
-/* ─── Default (fallback) links ─── */
+/* ─── Default tiles ─── ordre chronologique pour un étudiant arrivant en France */
 const defaultTiles = (city: string) => [
+  // ÉTAPE 1 — Trouver un logement (avant même d'arriver)
   {
-    title: "Ma Survie",
-    subtitle: "Budget, logement & administratif",
-    icon: Shield,
-    accentClass: "gold-gradient text-primary-foreground",
-    className: "lg:col-span-1 lg:row-span-2",
+    step: 1,
+    title: "Logement",
+    subtitle: "Résidences CROUS & plateformes locales",
+    icon: Home,
+    accentClass: "bg-warning/15 text-warning",
+    className: "lg:col-span-1",
     lockable: true,
     links: [
-      { icon: Calculator, label: "Simulateur de budget", sub: "Estime tes dépenses mensuelles", route: "/" },
-      { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
-      { icon: Building2, label: "Aides financières", sub: "CROUS, APL, bourses, aides d'urgence", href: "https://www.messervices.etudiant.gouv.fr" },
+      { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
+      { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://lokaviz.fr" },
       { icon: Home, label: "Simulateur APL", sub: "Calcule ton aide au logement en 2 min", href: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation" },
+      { icon: Globe, label: "SeLoger Étudiant", sub: "Colocations et studios", href: "https://www.seloger.com" },
+    ] as QuickLink[],
+  },
+  // ÉTAPE 2 — Titre de séjour & préfecture (arrivée = premier passage obligatoire)
+  {
+    step: 2,
+    title: "Préfecture",
+    subtitle: "Titre de séjour & RDV en ligne",
+    icon: Landmark,
+    accentClass: "bg-info/15 text-info",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [
+      { icon: MapPin, label: `Préfecture de ${city}`, sub: "Trouver l'adresse", href: `https://maps.google.com/?q=préfecture+${city}` },
+      { icon: Globe, label: "Prendre RDV en ligne", sub: "Titre de séjour étudiant", href: "https://www.prefectures-regions.gouv.fr" },
+    ] as QuickLink[],
+  },
+  // ÉTAPE 3 — Aides financières & CAF (dès l'arrivée)
+  {
+    step: 3,
+    title: "Aides & Administratif",
+    subtitle: "CAF, bourses, CROUS & papiers",
+    icon: ClipboardCheck,
+    accentClass: "gold-gradient text-primary-foreground",
+    className: "lg:col-span-2",
+    lockable: true,
+    links: [
+      { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
       { icon: HandCoins, label: "Bourse CROUS (DSE)", sub: "Demande en ligne — deadline octobre", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
+      { icon: Home, label: "CAF — Aide au logement", sub: "APL, ALS, ALF — simulation gratuite", href: "https://www.caf.fr" },
+      { icon: Calculator, label: "Simulateur de budget", sub: "Estime tes dépenses mensuelles", route: "/" },
       { icon: Landmark, label: "Aide d'urgence CROUS", sub: "Si tu es en difficulté financière", href: "https://www.etudiant.gouv.fr/fr/aides-specifiques-702" },
     ] as QuickLink[],
   },
+  // ÉTAPE 4 — Ouvrir un compte bancaire
   {
+    step: 4,
+    title: "Banque",
+    subtitle: "Ouvrir un compte étudiant",
+    icon: Landmark,
+    accentClass: "bg-primary/15 text-primary",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [
+      { icon: Globe, label: "Hello Bank", sub: "Compte gratuit étudiant", href: "https://www.hellobank.fr" },
+      { icon: Globe, label: "BNP Paribas", sub: "Esprit Libre Étudiant", href: "https://mabanque.bnpparibas.com" },
+      { icon: Globe, label: "Boursorama", sub: "Bienvenue Étudiant", href: "https://www.boursobank.com" },
+      { icon: Globe, label: "Revolut", sub: "Compte multi-devises gratuit", href: "https://www.revolut.com/fr" },
+      { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
+    ] as QuickLink[],
+  },
+  // ÉTAPE 5 — Santé (médecin traitant, SSE, urgences)
+  {
+    step: 5,
+    title: "Santé",
+    subtitle: "Soins, urgences & bien-être",
+    icon: Stethoscope,
+    accentClass: "bg-destructive/15 text-destructive",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [
+      { icon: Stethoscope, label: "Médecins secteur 1", sub: "Sans avance de frais — Annuaire Ameli", href: "https://annuairesante.ameli.fr/" },
+      { icon: MapPin, label: "Centre santé universitaire", sub: `Gratuit — SSE de ton campus à ${city}`, href: `https://maps.google.com/?q=Service+santé+étudiants+${city}` },
+      { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
+      { icon: Heart, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" },
+    ] as QuickLink[],
+  },
+  // ÉTAPE 6 — Vie pratique au quotidien
+  {
+    step: 6,
+    title: "Vie pratique",
+    subtitle: "Transport, repas à 1€ & sport",
+    icon: Bus,
+    accentClass: "bg-success/15 text-success",
+    className: "lg:col-span-1",
+    lockable: true,
+    links: [
+      { icon: Bus, label: `Transport ${city}`, sub: "Abonnement étudiant réduit", href: `https://maps.google.com/?q=transport+étudiant+${city}` },
+      { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.etudiant.gouv.fr/fr/le-repas-au-crous-1204" },
+      { icon: Dumbbell, label: "Sport universitaire (SUAPS)", sub: `Activités gratuites à ${city}`, href: `https://maps.google.com/?q=SUAPS+${city}` },
+    ] as QuickLink[],
+  },
+  // ÉTAPE 7 — Carrière & avenir
+  {
+    step: 7,
     title: "Mon Avenir",
     subtitle: "Jobs, stages, alternance & carrière",
     icon: Briefcase,
@@ -171,65 +257,21 @@ const defaultTiles = (city: string) => [
       { icon: FileText, label: "Rédiger son CV", sub: "Modèles gratuits adaptés aux étudiants", href: "https://www.canva.com/fr_fr/cv/" },
     ] as QuickLink[],
   },
+  // ÉTAPE 8 — Soutien & aide humaine
   {
+    step: 8,
     title: "Soutien",
-    subtitle: "Aide sociale, psycho & réorientation",
+    subtitle: "Aide sociale, psycho & juridique",
     icon: HeartHandshake,
-    accentClass: "bg-success/15 text-success",
+    accentClass: "bg-destructive/10 text-destructive",
     className: "lg:col-span-1",
     lockable: true,
     links: [
       { icon: Phone, label: "Assistante sociale CROUS", sub: `04 76 57 44 00 — ${city}`, href: "tel:+33476574400" },
-      { icon: MapPin, label: `CROUS ${city}`, sub: "Trouve ton antenne locale", href: `https://maps.google.com/?q=CROUS+${city}` },
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit", href: "tel:0800235236" },
       { icon: BookOpen, label: "Réorientation Parcoursup", sub: "Passerelles, vœux, conseils", href: "https://www.parcoursup.gouv.fr/" },
       { icon: Scale, label: "Aide juridique gratuite", sub: "CDAD — accès au droit pour étudiants", href: "https://www.justice.fr/themes/acces-droit" },
     ] as QuickLink[],
-  },
-  {
-    title: "Santé",
-    subtitle: "Soins, urgences & bien-être",
-    icon: Stethoscope,
-    accentClass: "bg-destructive/15 text-destructive",
-    className: "lg:col-span-2",
-    lockable: true,
-    links: [
-      { icon: Stethoscope, label: "Médecins secteur 1", sub: "Sans avance de frais — Annuaire Ameli", href: "https://annuairesante.ameli.fr/" },
-      { icon: MapPin, label: "Centre santé universitaire", sub: `Gratuit — SSE de ton campus à ${city}`, href: `https://maps.google.com/?q=Service+santé+étudiants+${city}` },
-      { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
-      { icon: Phone, label: `SOS Médecins ${city}`, sub: "Visites à domicile", href: `https://maps.google.com/?q=SOS+Medecins+${city}` },
-      { icon: Heart, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" },
-      { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.etudiant.gouv.fr/fr/le-repas-au-crous-1204" },
-      { icon: Dumbbell, label: "Sport universitaire (SUAPS)", sub: `Activités gratuites à ${city}`, href: `https://maps.google.com/?q=SUAPS+${city}` },
-      { icon: Bus, label: `Transport ${city}`, sub: "Abonnement étudiant réduit", href: `https://maps.google.com/?q=transport+étudiant+${city}` },
-    ] as QuickLink[],
-  },
-  {
-    title: "Logement",
-    subtitle: "Résidences CROUS & plateformes",
-    icon: Home,
-    accentClass: "bg-warning/15 text-warning",
-    className: "lg:col-span-1",
-    lockable: true,
-    links: [] as QuickLink[],
-  },
-  {
-    title: "Banque",
-    subtitle: "Comptes étudiants & conseils",
-    icon: Landmark,
-    accentClass: "bg-primary/15 text-primary",
-    className: "lg:col-span-1",
-    lockable: true,
-    links: [] as QuickLink[],
-  },
-  {
-    title: "Préfecture",
-    subtitle: "Titre de séjour & RDV en ligne",
-    icon: Landmark,
-    accentClass: "bg-info/15 text-info",
-    className: "lg:col-span-1",
-    lockable: true,
-    links: [] as QuickLink[],
   },
 ];
 
@@ -238,66 +280,33 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
   if (!cityData || cityData.parse_error) return tiles;
 
   return tiles.map((t) => {
-    if (t.title === "Ma Survie" && (cityData.crous || cityData.transport)) {
-      const enrichedLinks: QuickLink[] = [];
-      if (cityData.crous?.url) {
-        enrichedLinks.push({ icon: Building2, label: cityData.crous.name || "CROUS local", sub: cityData.crous.address, href: cityData.crous.url, perplexity: true });
-      }
-      if (cityData.caf) {
-        enrichedLinks.push({ icon: Home, label: "CAF locale", sub: cityData.caf.address || "Aide au logement", href: cityData.caf.url || "https://www.caf.fr", perplexity: true });
-      }
-      if (cityData.crous?.resto_u?.length) {
-        cityData.crous.resto_u.slice(0, 2).forEach((r: any) => {
-          enrichedLinks.push({ icon: Utensils, label: r.name, sub: r.address, href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name + " " + r.address)}`, perplexity: true });
+
+    // Logement : résidences CROUS + plateformes locales de la ville
+    if (t.title === "Logement") {
+      const logLinks: QuickLink[] = [];
+      if (cityData.logement?.residences_crous?.length) {
+        cityData.logement.residences_crous.forEach((r: any) => {
+          logLinks.push({
+            icon: Building2,
+            label: r.name,
+            sub: r.address || undefined,
+            href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name)}`,
+            perplexity: true,
+          });
         });
       }
-      if (cityData.transport) {
-        enrichedLinks.push({
-          icon: Bus,
-          label: `${cityData.transport.network_name} — Abo étudiant`,
-          sub: cityData.transport.student_subscription,
-          href: cityData.transport.url,
-          perplexity: true,
+      if (cityData.logement?.autres?.length) {
+        cityData.logement.autres.slice(0, 2).forEach((p: string) => {
+          logLinks.push({ icon: Globe, label: p, sub: "Plateforme locale recommandée", perplexity: true });
         });
       }
-      return { ...t, links: [...t.links.slice(0, 3), ...enrichedLinks, ...t.links.slice(3)] };
+      if (logLinks.length) {
+        return { ...t, links: [...logLinks, ...t.links.filter(l => !l.perplexity)] };
+      }
+      return t;
     }
 
-    if (t.title === "Santé" && cityData.health) {
-      const healthLinks: QuickLink[] = [];
-      if (cityData.health.university_health_center?.name) {
-        healthLinks.push({
-          icon: Stethoscope,
-          label: cityData.health.university_health_center.name,
-          sub: cityData.health.university_health_center.address,
-          href: cityData.health.university_health_center.phone ? `tel:${cityData.health.university_health_center.phone.replace(/\s/g, "")}` : undefined,
-          perplexity: true,
-        });
-      }
-      if (cityData.health.sos_medecins?.phone) {
-        healthLinks.push({
-          icon: Phone,
-          label: "SOS Médecins",
-          sub: cityData.health.sos_medecins.phone,
-          href: `tel:${cityData.health.sos_medecins.phone.replace(/\s/g, "")}`,
-          perplexity: true,
-        });
-      }
-      // Replace generic links with enriched ones (no transport here)
-      return { ...t, links: [...healthLinks, ...t.links.filter((l) => !l.perplexity).slice(0, 5)] };
-    }
-
-    if (t.title === "Logement" && cityData.logement?.residences_crous?.length) {
-      const logLinks: QuickLink[] = cityData.logement.residences_crous.map((r: any) => ({
-        icon: Home,
-        label: r.name,
-        sub: r.address || undefined,
-        href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name)}`,
-        perplexity: true,
-      }));
-      return { ...t, links: logLinks };
-    }
-
+    // Préfecture : données officielles de la ville
     if (t.title === "Préfecture" && cityData.prefecture) {
       const pref = cityData.prefecture;
       const prefLinks: QuickLink[] = [];
@@ -328,8 +337,104 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
           perplexity: true,
         });
       }
-      if (!prefLinks.length) return t;
-      return { ...t, links: prefLinks };
+      if (prefLinks.length) return { ...t, links: prefLinks };
+      return t;
+    }
+
+    // Aides & Administratif : CROUS + CAF locaux
+    if (t.title === "Aides & Administratif") {
+      const adminLinks: QuickLink[] = [];
+      if (cityData.crous?.url) {
+        adminLinks.push({
+          icon: Building2,
+          label: cityData.crous.name || "CROUS local",
+          sub: cityData.crous.address,
+          href: cityData.crous.url,
+          perplexity: true,
+        });
+      }
+      if (cityData.caf) {
+        adminLinks.push({
+          icon: Home,
+          label: "CAF locale",
+          sub: cityData.caf.address || "Aide au logement",
+          href: cityData.caf.url || "https://www.caf.fr",
+          perplexity: true,
+        });
+      }
+      if (cityData.crous?.resto_u?.length) {
+        cityData.crous.resto_u.slice(0, 1).forEach((r: any) => {
+          adminLinks.push({
+            icon: Utensils,
+            label: r.name,
+            sub: r.address,
+            href: r.url || `https://maps.google.com/?q=${encodeURIComponent(r.name + " " + r.address)}`,
+            perplexity: true,
+          });
+        });
+      }
+      if (adminLinks.length) {
+        return { ...t, links: [...adminLinks, ...t.links.filter(l => !l.perplexity)] };
+      }
+      return t;
+    }
+
+    // Banque : liste officielle + conseil
+    if (t.title === "Banque" && cityData.banques) {
+      const bankLinks: QuickLink[] = [];
+      if (cityData.banques.liste?.length) {
+        cityData.banques.liste.forEach((b: any) => {
+          bankLinks.push({
+            icon: Landmark,
+            label: b.name,
+            sub: b.student_offer || undefined,
+            href: b.link || undefined,
+            perplexity: true,
+          });
+        });
+      }
+      if (bankLinks.length) {
+        return { ...t, links: bankLinks, _conseil: cityData.banques.conseil } as any;
+      }
+      return t;
+    }
+
+    // Santé : centre universitaire + SOS Médecins
+    if (t.title === "Santé" && cityData.health) {
+      const healthLinks: QuickLink[] = [];
+      if (cityData.health.university_health_center?.name) {
+        healthLinks.push({
+          icon: Stethoscope,
+          label: cityData.health.university_health_center.name,
+          sub: cityData.health.university_health_center.address,
+          href: cityData.health.university_health_center.phone
+            ? `tel:${cityData.health.university_health_center.phone.replace(/\s/g, "")}`
+            : undefined,
+          perplexity: true,
+        });
+      }
+      if (cityData.health.sos_medecins?.phone) {
+        healthLinks.push({
+          icon: Phone,
+          label: "SOS Médecins",
+          sub: cityData.health.sos_medecins.phone,
+          href: `tel:${cityData.health.sos_medecins.phone.replace(/\s/g, "")}`,
+          perplexity: true,
+        });
+      }
+      return { ...t, links: [...healthLinks, ...t.links.filter(l => !l.perplexity)] };
+    }
+
+    // Vie pratique : transport de la ville
+    if (t.title === "Vie pratique" && cityData.transport) {
+      const transportLink: QuickLink = {
+        icon: Bus,
+        label: `${cityData.transport.network_name} — Abo étudiant`,
+        sub: cityData.transport.student_subscription,
+        href: cityData.transport.url,
+        perplexity: true,
+      };
+      return { ...t, links: [transportLink, ...t.links.filter(l => !l.perplexity)] };
     }
 
     return t;
@@ -404,15 +509,7 @@ const BentoGrid = () => {
             animate="show"
             className="grid gap-4 lg:grid-cols-2"
           >
-            {tiles
-              .filter((t) => {
-                // Toujours masquer Banque
-                if ((t as any).hidden) return false;
-                // Masquer Logement/Préfecture si aucune donnée enrichie
-                if ((t.title === "Logement" || t.title === "Préfecture") && t.links.length === 0) return false;
-                return true;
-              })
-              .map((t) => (
+            {tiles.map((t) => (
               <BentoTile
                 key={t.title}
                 title={t.title}
@@ -425,6 +522,7 @@ const BentoGrid = () => {
                 onNavigate={navigate}
                 onUnlock={() => setVerifyOpen(true)}
                 conseil={(t as any)._conseil}
+                step={t.step}
               />
             ))}
           </motion.div>
