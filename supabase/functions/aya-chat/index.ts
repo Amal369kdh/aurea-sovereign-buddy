@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const FREE_MESSAGE_LIMIT = 2;
+const FREE_MESSAGE_LIMIT = 5;
 const MIN_INTEGRATION_PROGRESS = 20; // must have at least 20% progress to unlock Amal
 
 const SYSTEM_PROMPT = `Tu es Amal, l'assistant IA souverain de la plateforme étudiante. Tu es expert, direct, rationnel et bienveillant.
