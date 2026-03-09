@@ -2,13 +2,7 @@ import { motion } from "framer-motion";
 import { useIntegration } from "@/contexts/IntegrationContext";
 
 const SovereigntyWidget = () => {
-  const { progress, phases } = useIntegration();
-
-  const indicators = [
-    { label: "Logement", done: !!phases.find(p => p.id === "installation")?.items.find(i => i.id === "logement")?.done },
-    { label: "Banque", done: !!phases.find(p => p.id === "installation")?.items.find(i => i.id === "banque")?.done },
-    { label: "Sécu", done: !!phases.find(p => p.id === "legal")?.items.find(i => i.id === "secu")?.done },
-  ];
+  const { progress } = useIntegration();
 
   return (
     <div className="rounded-4xl bg-card p-5 card-glow">
@@ -39,19 +33,6 @@ const SovereigntyWidget = () => {
         />
       </div>
 
-      {/* Indicators on one line */}
-      <div className="mt-3 flex gap-2">
-        {indicators.map((item) => (
-          <div
-            key={item.label}
-            className={`flex-1 rounded-xl px-2 py-1.5 text-center text-xs font-semibold ${
-              item.done ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
-            }`}
-          >
-            {item.done ? "✓ " : "○ "}{item.label}
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
