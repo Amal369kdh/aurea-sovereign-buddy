@@ -189,7 +189,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("aya-chat error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erreur inconnue" }), {
+    return new Response(JSON.stringify({ error: "Une erreur est survenue, réessaie." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
