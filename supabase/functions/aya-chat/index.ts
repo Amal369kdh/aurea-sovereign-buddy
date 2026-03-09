@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const FREE_MESSAGE_LIMIT = 2;
+const FREE_MESSAGE_LIMIT = 5;
 const MIN_INTEGRATION_PROGRESS = 20; // must have at least 20% progress to unlock Amal
 
 const SYSTEM_PROMPT = `Tu es Amal, l'assistant IA souverain de la plateforme étudiante. Tu es expert, direct, rationnel et bienveillant.
@@ -172,21 +172,9 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Trop de requêtes, réessaie dans un moment." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Crédits IA épuisés." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Erreur du service IA" }), {
+      return new Response(JSON.stringify({ error: "Une erreur est survenue, réessaie." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -201,7 +189,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("aya-chat error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erreur inconnue" }), {
+    return new Response(JSON.stringify({ error: "Une erreur est survenue, réessaie." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useNavigate } from "react-router-dom";
+import { Users, Sparkles } from "lucide-react";
 
 const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
   const handleEnter = async () => {
@@ -68,6 +70,7 @@ const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
 
 const Index = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(false);
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
@@ -94,6 +97,28 @@ const Index = () => {
         <DashboardHeader />
 
         <div className="px-6 pb-28">
+          {/* Quick action buttons */}
+          <div className="mb-4 flex items-center gap-2">
+            {hubSocialEnabled && (
+              <button
+                onClick={() => navigate("/hub-social")}
+                className="flex items-center gap-1.5 rounded-full border border-border bg-secondary/60 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground cursor-pointer"
+              >
+                <Users className="h-3 w-3" />
+                Hub Social
+              </button>
+            )}
+            <button
+              onClick={() => {
+                const btn = document.querySelector<HTMLButtonElement>("[data-amal-trigger]");
+                btn?.click();
+              }}
+              className="flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10 cursor-pointer"
+            >
+              <Sparkles className="h-3 w-3" />
+              Amal
+            </button>
+          </div>
           <div className="mb-4">
             <SovereigntyWidget />
           </div>

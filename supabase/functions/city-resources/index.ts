@@ -125,7 +125,7 @@ serve(async (req) => {
     if (!response.ok) {
       const errText = await response.text();
       console.error("Perplexity error:", response.status, errText);
-      return new Response(JSON.stringify({ error: "Erreur du service de recherche", status: response.status }), {
+      return new Response(JSON.stringify({ error: "Une erreur est survenue, réessaie." }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -159,7 +159,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("city-resources error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erreur inconnue" }), {
+    return new Response(JSON.stringify({ error: "Une erreur est survenue, réessaie." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
