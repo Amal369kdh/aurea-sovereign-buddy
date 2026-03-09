@@ -221,7 +221,6 @@ const defaultTiles = (city: string) => [
     className: "lg:col-span-1",
     lockable: true,
     links: [] as QuickLink[],
-    hidden: true,
   },
   {
     title: "Préfecture",
