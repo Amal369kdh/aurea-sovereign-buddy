@@ -2,13 +2,7 @@ import { motion } from "framer-motion";
 import { useIntegration } from "@/contexts/IntegrationContext";
 
 const SovereigntyWidget = () => {
-  const { progress, phases } = useIntegration();
-
-  const indicators = [
-    { label: "Logement", done: !!phases.find(p => p.id === "installation")?.items.find(i => i.id === "logement")?.done },
-    { label: "Banque", done: !!phases.find(p => p.id === "installation")?.items.find(i => i.id === "banque")?.done },
-    { label: "Sécu", done: !!phases.find(p => p.id === "legal")?.items.find(i => i.id === "secu")?.done },
-  ];
+  const { progress } = useIntegration();
 
   return (
     <div className="rounded-4xl bg-card p-5 card-glow">
