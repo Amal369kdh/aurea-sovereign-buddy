@@ -32,6 +32,18 @@ interface QuickLink {
   perplexity?: boolean;
 }
 
+// Mapping tuile → phase de checklist dans Mon Dossier
+const TILE_CHECKLIST_MAP: Record<string, string> = {
+  "Logement": "Logement & Installation",
+  "Préfecture": "Titre de séjour",
+  "Aides & Administratif": "CAF, bourses & aides",
+  "Banque": "Ouvrir un compte",
+  "Santé": "Mutuelle & santé",
+  "Vie pratique": "Vie quotidienne",
+  "Mon Avenir": "Jobs & carrière",
+  "Soutien": "Aide sociale",
+};
+
 /* ─── Tile component ─── */
 const BentoTile = ({
   title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil, step,
@@ -40,6 +52,7 @@ const BentoTile = ({
   links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string; step?: number;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const checklistLabel = TILE_CHECKLIST_MAP[title];
 
   return (
     <motion.div
@@ -104,7 +117,7 @@ const BentoTile = ({
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="space-y-2 px-6 pb-6">
+            <div className="space-y-2 px-6 pb-4">
               {conseil && (
                 <div className="flex items-start gap-2 rounded-2xl bg-primary/5 border border-primary/10 px-4 py-3 mb-1">
                   <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary mt-0.5" />
@@ -137,6 +150,21 @@ const BentoTile = ({
                 </button>
               ))}
             </div>
+
+            {/* Lien vers la checklist Mon Dossier */}
+            {checklistLabel && !locked && (
+              <button
+                onClick={() => onNavigate("/mon-dossier")}
+                className="flex w-full items-center justify-between border-t border-border/40 px-6 py-3 text-left transition-colors hover:bg-secondary/30 cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <ClipboardCheck className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-xs font-semibold text-primary">Cocher dans ma checklist</span>
+                  <span className="text-xs text-muted-foreground">— {checklistLabel}</span>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
