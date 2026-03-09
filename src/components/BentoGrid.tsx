@@ -32,6 +32,18 @@ interface QuickLink {
   perplexity?: boolean;
 }
 
+// Mapping tuile → phase de checklist dans Mon Dossier
+const TILE_CHECKLIST_MAP: Record<string, string> = {
+  "Logement": "Logement & Installation",
+  "Préfecture": "Titre de séjour",
+  "Aides & Administratif": "CAF, bourses & aides",
+  "Banque": "Ouvrir un compte",
+  "Santé": "Mutuelle & santé",
+  "Vie pratique": "Vie quotidienne",
+  "Mon Avenir": "Jobs & carrière",
+  "Soutien": "Aide sociale",
+};
+
 /* ─── Tile component ─── */
 const BentoTile = ({
   title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil, step,
