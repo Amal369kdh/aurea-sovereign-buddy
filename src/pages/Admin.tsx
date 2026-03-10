@@ -190,8 +190,9 @@ const Admin = () => {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -203,42 +204,17 @@ const Admin = () => {
         supabase.from("resources_links").select("id, title, url, category, is_verified, created_at").order("created_at", { ascending: false }).limit(50),
         supabase.from("reports").select("id, reporter_id, reported_user_id, reported_announcement_id, reason, details, status, created_at").eq("status", "pending").order("created_at", { ascending: false }).limit(50),
         supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
+        supabase.from("profiles").select("aya_messages_used").gt("aya_messages_used", 0),
       ]);
-
-    if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
-    if (featuresRes.data) setFeatures(featuresRes.data as FeatureFlag[]);
-    if (partnersRes.data) setPartners(partnersRes.data as Partner[]);
-    if (domainsRes.data) setDomains(domainsRes.data as AllowedDomain[]);
-    if (resourcesRes.data) setResources(resourcesRes.data as ResourceRow[]);
-    if (reportsRes.data) {
-      const enriched = reportsRes.data.map((r) => ({
-        ...r,
-        reported_display_name: users.find((u) => u.user_id === r.reported_user_id)?.display_name ?? r.reported_user_id?.slice(0, 8) ?? "—",
-      }));
-      setReports(enriched as ReportRow[]);
-    }
-    if (pinnedRes.data) setPinnedAnnouncements(pinnedRes.data as PinnedAnnouncement[]);
-
-    // Build league from profiles
-    if (profilesRes.data) {
-      const map: Record<string, { total: number; count: number }> = {};
-      for (const p of profilesRes.data) {
-        if (!p.university) continue;
-        if (!map[p.university]) map[p.university] = { total: 0, count: 0 };
-        map[p.university].total += p.points_social ?? 0;
-        map[p.university].count += 1;
-      }
-      const sorted = Object.entries(map)
-        .map(([university, v]) => ({ university, total_points: v.total, member_count: v.count }))
-        .sort((a, b) => b.total_points - a.total_points);
-      setLeague(sorted);
-    }
+...
+    const ayaMsgToday = ayaTodayRes.data?.reduce((sum, p) => sum + (p.aya_messages_used ?? 0), 0) ?? 0;
 
     setKpi({
       total: profilesRes.data?.length ?? 0,
       newWeek: newUsersRes.count ?? 0,
       verified: verifiedRes.count ?? 0,
       premiumRevenue: (premiumRes.count ?? 0) * 9,
+      ayaMsgToday,
     });
 
     setLoading(false);
