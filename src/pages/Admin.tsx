@@ -149,7 +149,7 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   // Data states
-  const [kpi, setKpi] = useState({ total: 0, newWeek: 0, verified: 0, premiumRevenue: 0 });
+  const [kpi, setKpi] = useState({ total: 0, newWeek: 0, verified: 0, premiumRevenue: 0, ayaMsgToday: 0 });
   const [users, setUsers] = useState<UserRow[]>([]);
   const [features, setFeatures] = useState<FeatureFlag[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
