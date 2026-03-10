@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -478,17 +478,21 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     await loadProfileData();
   }, [loadProfileData]);
 
-  const phases = buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival);
+  const phases = useMemo(
+    () => buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival),
+    [rawPhases, isInFrance, isFrench, isTemoin, showPreArrival]
+  );
+
+  const progress = useMemo(() => calcProgress(phases), [phases]);
 
   useEffect(() => {
     if (!user) return;
-    const progress = calcProgress(phases);
     supabase
       .from("profiles")
       .update({ integration_progress: progress })
       .eq("user_id", user.id)
       .then();
-  }, [phases, user]);
+  }, [progress, user]);
 
   const setIsInFrance = useCallback(
     (value: boolean) => {
@@ -537,7 +541,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     [user]
   );
 
-  const progress = calcProgress(phases);
+  
 
   return (
     <IntegrationContext.Provider value={{ phases, progress, isInFrance, isFrench, isTemoin, toggleTask, setIsInFrance, refreshProfile }}>
