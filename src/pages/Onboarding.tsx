@@ -17,9 +17,10 @@ const NATIONALITIES = [
   "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "Autre",
 ];
 
-const CITIES = [
+const CITIES_AVAILABLE = ["Grenoble"];
+const CITIES_SOON = [
   "Paris", "Lyon", "Marseille", "Toulouse", "Bordeaux", "Lille",
-  "Nantes", "Strasbourg", "Montpellier", "Grenoble", "Rennes", "Rouen",
+  "Nantes", "Strasbourg", "Montpellier", "Rennes", "Rouen",
 ];
 
 const OBJECTIFS = [
