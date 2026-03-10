@@ -206,7 +206,36 @@ const Admin = () => {
         supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
         supabase.from("profiles").select("aya_messages_used").gt("aya_messages_used", 0),
       ]);
-...
+
+    if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
+    if (featuresRes.data) setFeatures(featuresRes.data as FeatureFlag[]);
+    if (partnersRes.data) setPartners(partnersRes.data as Partner[]);
+    if (domainsRes.data) setDomains(domainsRes.data as AllowedDomain[]);
+    if (resourcesRes.data) setResources(resourcesRes.data as ResourceRow[]);
+    if (reportsRes.data) {
+      const enriched = reportsRes.data.map((r) => ({
+        ...r,
+        reported_display_name: users.find((u) => u.user_id === r.reported_user_id)?.display_name ?? r.reported_user_id?.slice(0, 8) ?? "—",
+      }));
+      setReports(enriched as ReportRow[]);
+    }
+    if (pinnedRes.data) setPinnedAnnouncements(pinnedRes.data as PinnedAnnouncement[]);
+
+    // Build league from profiles
+    if (profilesRes.data) {
+      const leagueMap: Record<string, { total: number; count: number }> = {};
+      for (const p of profilesRes.data) {
+        if (!p.university) continue;
+        if (!leagueMap[p.university]) leagueMap[p.university] = { total: 0, count: 0 };
+        leagueMap[p.university].total += p.points_social ?? 0;
+        leagueMap[p.university].count += 1;
+      }
+      const sorted = Object.entries(leagueMap)
+        .map(([university, v]) => ({ university, total_points: v.total, member_count: v.count }))
+        .sort((a, b) => b.total_points - a.total_points);
+      setLeague(sorted);
+    }
+
     const ayaMsgToday = ayaTodayRes.data?.reduce((sum, p) => sum + (p.aya_messages_used ?? 0), 0) ?? 0;
 
     setKpi({
