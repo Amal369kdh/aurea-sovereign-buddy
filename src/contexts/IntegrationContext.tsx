@@ -541,7 +541,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     [user]
   );
 
-  const progress = calcProgress(phases);
+  
 
   return (
     <IntegrationContext.Provider value={{ phases, progress, isInFrance, isFrench, isTemoin, toggleTask, setIsInFrance, refreshProfile }}>
