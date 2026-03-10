@@ -478,17 +478,21 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     await loadProfileData();
   }, [loadProfileData]);
 
-  const phases = buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival);
+  const phases = useMemo(
+    () => buildAccessPhases(rawPhases, isInFrance, isFrench, isTemoin, showPreArrival),
+    [rawPhases, isInFrance, isFrench, isTemoin, showPreArrival]
+  );
+
+  const progress = useMemo(() => calcProgress(phases), [phases]);
 
   useEffect(() => {
     if (!user) return;
-    const progress = calcProgress(phases);
     supabase
       .from("profiles")
       .update({ integration_progress: progress })
       .eq("user_id", user.id)
       .then();
-  }, [phases, user]);
+  }, [progress, user]);
 
   const setIsInFrance = useCallback(
     (value: boolean) => {
