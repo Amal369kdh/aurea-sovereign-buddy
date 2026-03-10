@@ -46,6 +46,15 @@ serve(async (req) => {
     const targetCity = city || "Grenoble";
     const cacheKey = targetCity.toLowerCase().trim();
 
+    // Only Grenoble is supported for launch
+    const SUPPORTED_CITIES = ["grenoble"];
+    if (!SUPPORTED_CITIES.includes(cacheKey)) {
+      return new Response(
+        JSON.stringify({ city: targetCity, coming_soon: true, message: "Ta ville arrive bientôt ⚡" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Check cache
     const cached = cityCache.get(cacheKey);
     if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {

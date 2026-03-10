@@ -17,9 +17,10 @@ const NATIONALITIES = [
   "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "Autre",
 ];
 
-const CITIES = [
+const CITIES_AVAILABLE = ["Grenoble"];
+const CITIES_SOON = [
   "Paris", "Lyon", "Marseille", "Toulouse", "Bordeaux", "Lille",
-  "Nantes", "Strasbourg", "Montpellier", "Grenoble", "Rennes", "Rouen",
+  "Nantes", "Strasbourg", "Montpellier", "Rennes", "Rouen",
 ];
 
 const OBJECTIFS = [
@@ -233,8 +234,22 @@ const Onboarding = () => {
                 title={isInFrance ? "Dans quelle ville es-tu ?" : "Dans quelle ville vas-tu étudier ?"}
               >
                 <div className="grid grid-cols-3 gap-2">
-                  {CITIES.map((c) => (
-                    <ChoiceButton key={c} selected={city === c} onClick={() => setCity(c)} label={c} />
+                  {CITIES_AVAILABLE.map((c) => (
+                    <div key={c} className="relative">
+                      <ChoiceButton selected={city === c} onClick={() => setCity(c)} label={c} />
+                      <span className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground leading-none">✓</span>
+                    </div>
+                  ))}
+                  {CITIES_SOON.map((c) => (
+                    <div key={c} className="relative">
+                      <button
+                        disabled
+                        className="w-full rounded-2xl border border-border bg-secondary/40 px-3 py-2.5 text-xs font-medium text-muted-foreground/40 cursor-not-allowed"
+                      >
+                        {c}
+                      </button>
+                      <span className="absolute -top-1.5 -right-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground leading-none">bientôt</span>
+                    </div>
                   ))}
                 </div>
               </StepLayout>
