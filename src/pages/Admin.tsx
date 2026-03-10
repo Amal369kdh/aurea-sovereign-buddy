@@ -149,7 +149,7 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   // Data states
-  const [kpi, setKpi] = useState({ total: 0, newWeek: 0, verified: 0, premiumRevenue: 0 });
+  const [kpi, setKpi] = useState({ total: 0, newWeek: 0, verified: 0, premiumRevenue: 0, ayaMsgToday: 0 });
   const [users, setUsers] = useState<UserRow[]>([]);
   const [features, setFeatures] = useState<FeatureFlag[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -190,8 +190,9 @@ const Admin = () => {
   const fetchAll = useCallback(async () => {
     setLoading(true);
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -203,6 +204,7 @@ const Admin = () => {
         supabase.from("resources_links").select("id, title, url, category, is_verified, created_at").order("created_at", { ascending: false }).limit(50),
         supabase.from("reports").select("id, reporter_id, reported_user_id, reported_announcement_id, reason, details, status, created_at").eq("status", "pending").order("created_at", { ascending: false }).limit(50),
         supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
+        supabase.from("profiles").select("aya_messages_used").gt("aya_messages_used", 0),
       ]);
 
     if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
@@ -221,24 +223,27 @@ const Admin = () => {
 
     // Build league from profiles
     if (profilesRes.data) {
-      const map: Record<string, { total: number; count: number }> = {};
+      const leagueMap: Record<string, { total: number; count: number }> = {};
       for (const p of profilesRes.data) {
         if (!p.university) continue;
-        if (!map[p.university]) map[p.university] = { total: 0, count: 0 };
-        map[p.university].total += p.points_social ?? 0;
-        map[p.university].count += 1;
+        if (!leagueMap[p.university]) leagueMap[p.university] = { total: 0, count: 0 };
+        leagueMap[p.university].total += p.points_social ?? 0;
+        leagueMap[p.university].count += 1;
       }
-      const sorted = Object.entries(map)
+      const sorted = Object.entries(leagueMap)
         .map(([university, v]) => ({ university, total_points: v.total, member_count: v.count }))
         .sort((a, b) => b.total_points - a.total_points);
       setLeague(sorted);
     }
+
+    const ayaMsgToday = ayaTodayRes.data?.reduce((sum, p) => sum + (p.aya_messages_used ?? 0), 0) ?? 0;
 
     setKpi({
       total: profilesRes.data?.length ?? 0,
       newWeek: newUsersRes.count ?? 0,
       verified: verifiedRes.count ?? 0,
       premiumRevenue: (premiumRes.count ?? 0) * 9,
+      ayaMsgToday,
     });
 
     setLoading(false);
@@ -393,11 +398,12 @@ const Admin = () => {
 
   const renderOverview = () => (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard label="Utilisateurs total" value={kpi.total} icon="👥" />
         <KpiCard label="Nouveaux cette semaine" value={kpi.newWeek} icon="🆕" />
         <KpiCard label="Témoins vérifiés" value={kpi.verified} icon="✅" />
         <KpiCard label="Revenus estimés (€/mois)" value={`${kpi.premiumRevenue} €`} icon="💰" />
+        <KpiCard label="Messages Amal utilisés" value={kpi.ayaMsgToday} icon="🤖" />
       </div>
       <Section title="Répartition des statuts">
         {(["explorateur", "temoin", "gold", "admin"] as const).map((s) => {
