@@ -151,6 +151,13 @@ const Auth = () => {
             {mode === "login" ? "S'inscrire" : "Se connecter"}
           </button>
         </p>
+
+        {/* Legal link */}
+        <p className="mt-8 text-center text-xs text-muted-foreground/60">
+          <a href="/legal" className="hover:text-muted-foreground transition-colors">
+            Mentions légales · CGU · Confidentialité
+          </a>
+        </p>
       </motion.div>
     </div>
   );

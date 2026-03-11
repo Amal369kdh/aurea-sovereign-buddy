@@ -1,5 +1,8 @@
 project_id = "ddbfmgqknjggkokyfmzz"
 
+[functions.auth-email-hook]
+verify_jwt = false
+
 [functions.cleanup-announcements]
 verify_jwt = false
 
