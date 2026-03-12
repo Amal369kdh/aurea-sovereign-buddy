@@ -126,9 +126,41 @@ const Auth = () => {
             />
           </div>
 
+          {mode === "signup" && (
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={acceptedCgu}
+                onChange={(e) => setAcceptedCgu(e.target.checked)}
+                required
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border border-border bg-secondary accent-primary cursor-pointer"
+              />
+              <span className="text-xs text-muted-foreground leading-relaxed">
+                J'accepte les{" "}
+                <a
+                  href="/legal#cgu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-semibold"
+                >
+                  CGU
+                </a>{" "}
+                et la{" "}
+                <a
+                  href="/legal#rgpd"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-semibold"
+                >
+                  politique de confidentialité
+                </a>
+              </span>
+            </label>
+          )}
+
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || (mode === "signup" && !acceptedCgu)}
             className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
           >
             {submitting ? (
