@@ -15,6 +15,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [acceptedCgu, setAcceptedCgu] = useState(false);
 
   if (!loading && user) return <Navigate to="/" replace />;
 

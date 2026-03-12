@@ -58,7 +58,7 @@ const Legal = () => {
           <span className="gold-text">Informations</span> légales
         </h1>
         <p className="text-sm text-muted-foreground mb-10">
-          Dernière mise à jour : mars 2025
+          Dernière mise à jour : mars 2026
         </p>
 
         {/* ── MENTIONS LÉGALES ── */}
