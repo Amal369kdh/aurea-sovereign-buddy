@@ -179,6 +179,7 @@ const Legal = () => {
             <li><strong className="text-foreground">Supabase</strong> : hébergement de la base de données (serveurs UE)</li>
             <li><strong className="text-foreground">Resend</strong> : envoi d'emails transactionnels</li>
             <li><strong className="text-foreground">Perplexity AI</strong> : traitement de requêtes pour les ressources locales (données anonymisées)</li>
+            <li><strong className="text-foreground">Lovable AI Gateway</strong> : traitement des requêtes conversationnelles pour l'assistant Amal (données de profil anonymisées, non stockées)</li>
           </ul>
 
           <H3>6. Vos droits</H3>
