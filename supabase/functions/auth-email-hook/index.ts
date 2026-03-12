@@ -134,29 +134,65 @@ serve(async (req) => {
     }
 
     const payload = await req.json();
-    console.log("auth-email-hook payload type:", payload?.email_data?.email_action_type);
 
-    const user = payload?.user;
-    const emailData = payload?.email_data;
+    // ── Supabase Auth Hook v2 payload format ──────────────────────────────────
+    // Top-level: { type, user, data: { email_action_type?, token?, token_hash?, redirect_to?, site_url?, confirmation_url? } }
+    // Legacy v1 fallback: { user, email_data: { email_action_type, ... } }
+    // ─────────────────────────────────────────────────────────────────────────
 
-    if (!user?.email || !emailData) {
-      return new Response(JSON.stringify({ error: "Invalid payload" }), {
+    // Detect payload version
+    const isV2 = typeof payload?.type === "string" && payload?.data !== undefined;
+    const isV1 = payload?.email_data !== undefined;
+
+    let emailActionType: string | undefined;
+    let userEmail: string | undefined;
+    let confirmationUrl: string | undefined;
+    let tokenHash: string | undefined;
+    let redirectTo: string | undefined;
+    let siteUrl: string | undefined;
+
+    if (isV2) {
+      // Auth Hook v2 format
+      emailActionType = payload.type; // e.g. "signup", "recovery", "email_change_new", "invite", "magiclink"
+      userEmail = payload.user?.email;
+      const d = payload.data ?? {};
+      confirmationUrl = d.confirmation_url;
+      tokenHash = d.token_hash;
+      redirectTo = d.redirect_to;
+      siteUrl = d.site_url ?? Deno.env.get("SUPABASE_URL")?.replace("/auth/v1", "");
+    } else if (isV1) {
+      // Legacy v1 format (kept for backwards compat)
+      emailActionType = payload.email_data?.email_action_type;
+      userEmail = payload.user?.email;
+      const d = payload.email_data ?? {};
+      confirmationUrl = d.confirmation_url;
+      tokenHash = d.token_hash;
+      redirectTo = d.redirect_to;
+      siteUrl = d.site_url;
+    }
+
+    console.log("auth-email-hook | version:", isV2 ? "v2" : isV1 ? "v1" : "unknown", "| type:", emailActionType, "| to:", userEmail);
+
+    if (!userEmail || !emailActionType) {
+      console.error("Invalid payload — missing email or type. Raw payload:", JSON.stringify(payload));
+      return new Response(JSON.stringify({ error: "Invalid payload: missing email or action type" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { email_action_type, confirmation_url, token_hash, redirect_to, site_url } = emailData;
-
-    // Build the confirmation URL
+    // Build the action URL
     const actionUrl =
-      confirmation_url ??
-      `${site_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to ?? site_url}`;
+      confirmationUrl ??
+      `${siteUrl}/auth/v1/verify?token=${tokenHash}&type=${emailActionType}&redirect_to=${redirectTo ?? siteUrl}`;
 
     let subject: string;
     let html: string;
 
-    switch (email_action_type) {
+    // Normalize type variations between v1 and v2
+    const normalizedType = emailActionType.replace("email_change_new", "email_change").replace("email_change_current", "email_change");
+
+    switch (normalizedType) {
       case "signup":
       case "email_confirmation":
         subject = "Confirme ton adresse email – Aurea Student";
@@ -216,15 +252,15 @@ serve(async (req) => {
         break;
 
       default:
-        console.log("Unhandled email action type:", email_action_type);
+        console.log("Unhandled email action type:", emailActionType);
         return new Response(JSON.stringify({ message: "Event type not handled" }), {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
     }
 
-    await sendEmail(user.email, subject, html, resendApiKey);
-    console.log(`Email sent: ${email_action_type} → ${user.email}`);
+    await sendEmail(userEmail, subject, html, resendApiKey);
+    console.log(`Email sent: ${emailActionType} → ${userEmail}`);
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
