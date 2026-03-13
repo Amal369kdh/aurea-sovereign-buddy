@@ -86,6 +86,7 @@ const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [profileCity, setProfileCity] = useState<string | null>(null);
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
 
@@ -93,12 +94,15 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("has_seen_welcome")
+      .select("has_seen_welcome, city")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        if (data && data.has_seen_welcome === false) {
-          setShowWelcome(true);
+        if (data) {
+          setProfileCity(data.city ?? null);
+          if (data.has_seen_welcome === false) {
+            setShowWelcome(true);
+          }
         }
       });
   }, [user?.id]);
@@ -149,7 +153,7 @@ const Index = () => {
       <AmalTrigger />
       <MobileBottomNav />
 
-      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
+      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} city={profileCity} />}
     </div>
   );
 };
