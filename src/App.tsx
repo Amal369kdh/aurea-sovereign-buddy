@@ -3,7 +3,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { IntegrationProvider } from "@/contexts/IntegrationContext";
 import { useEffect, useState } from "react";
@@ -21,6 +21,59 @@ import Legal from "./pages/Legal";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
+
+/**
+ * Handles Supabase email confirmation links that land on /auth with
+ * ?token_hash=...&type=... or the older #access_token=... fragment.
+ * Exchanges the token/session then redirects to the app.
+ */
+const EmailConfirmHandler = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tokenHash = params.get("token_hash");
+    const type = params.get("type") as "signup" | "recovery" | "email_change" | null;
+
+    // Also handle hash-based legacy tokens (#access_token=...)
+    const hash = new URLSearchParams(location.hash.slice(1));
+    const accessToken = hash.get("access_token");
+    const refreshToken = hash.get("refresh_token");
+
+    if (tokenHash && type) {
+      setProcessing(true);
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type }).then(({ error }) => {
+        if (!error) {
+          navigate("/", { replace: true });
+        } else {
+          // Invalid/expired token — stay on auth page
+          setProcessing(false);
+        }
+      });
+    } else if (accessToken && refreshToken) {
+      setProcessing(true);
+      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
+        if (!error) {
+          navigate("/", { replace: true });
+        } else {
+          setProcessing(false);
+        }
+      });
+    }
+  }, []);
+
+  if (processing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -102,6 +155,7 @@ const App = () => (
           <Sonner />
           <ErrorBoundary>
           <BrowserRouter>
+            <EmailConfirmHandler />
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/onboarding" element={<Onboarding />} />

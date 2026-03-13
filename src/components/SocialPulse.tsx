@@ -86,19 +86,6 @@ const SocialPulse = () => {
         )}
       </div>
 
-      {/* Community stats */}
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        {[
-          { label: "Témoins actifs", value: "120+" },
-          { label: "Posts d'entraide", value: "340+" },
-          { label: "Solutions données", value: "89" },
-        ].map((stat) => (
-          <div key={stat.label} className="rounded-2xl bg-secondary/50 px-3 py-2.5 text-center">
-            <p className="text-base font-extrabold text-foreground">{stat.value}</p>
-            <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

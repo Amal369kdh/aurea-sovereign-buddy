@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Mail, Lock, User, ArrowRight, Loader2 } from "lucide-react";
+import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +16,8 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [acceptedCgu, setAcceptedCgu] = useState(false);
+  const [signupDone, setSignupDone] = useState(false);
+  const [signupEmail, setSignupEmail] = useState("");
 
   if (!loading && user) return <Navigate to="/" replace />;
 
@@ -23,6 +25,55 @@ const Auth = () => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // ── État post-inscription : demande de confirmation email ────────────────────
+  if (signupDone) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md text-center"
+        >
+          <div className="mb-6 flex flex-col items-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
+              <MailCheck className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-3xl font-extrabold">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-8 space-y-4">
+            <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-primary/10">
+              <MailCheck className="h-8 w-8 text-primary" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">Vérifie ta boîte mail ✉️</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Un email de confirmation a été envoyé à{" "}
+              <span className="font-semibold text-foreground">{signupEmail}</span>.
+              <br /><br />
+              Clique sur le lien de confirmation pour activer ton compte et rejoindre le cercle.
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              Vérifie aussi tes spams si tu ne vois pas l'email.
+            </p>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Déjà confirmé ?{" "}
+            <button
+              onClick={() => { setSignupDone(false); setMode("login"); }}
+              className="font-bold text-primary hover:underline cursor-pointer"
+            >
+              Se connecter
+            </button>
+          </p>
+        </motion.div>
       </div>
     );
   }
@@ -36,7 +87,6 @@ const Auth = () => {
       if (error) {
         toast({ title: "Erreur", description: error, variant: "destructive" });
       } else {
-        toast({ title: "Compte créé ✨", description: "Préparation de ton espace…" });
         if (data?.user?.id) {
           await supabase.from("profiles").upsert({
             user_id: data.user.id,
@@ -44,8 +94,9 @@ const Auth = () => {
             avatar_initials: displayName.slice(0, 2).toUpperCase(),
             status: "explorateur",
           }, { onConflict: "user_id" });
-          window.location.href = "/onboarding";
         }
+        setSignupEmail(email);
+        setSignupDone(true);
       }
     } else {
       const { error } = await signIn(email, password);
