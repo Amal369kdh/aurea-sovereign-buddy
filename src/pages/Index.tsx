@@ -16,7 +16,7 @@ import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { useNavigate } from "react-router-dom";
 import { Users, Sparkles } from "lucide-react";
 
-const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
+const WelcomeModal = ({ onClose, city }: { onClose: () => void; city: string | null }) => {
   const handleEnter = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -24,6 +24,8 @@ const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
     }
     onClose();
   };
+
+  const cityLabel = city?.trim() || null;
 
   return (
     <AnimatePresence>
@@ -42,14 +44,26 @@ const WelcomeModal = ({ onClose }: { onClose: () => void }) => {
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
           className="relative w-full max-w-md rounded-2xl border border-border/40 bg-card/95 p-8 shadow-2xl text-center"
         >
+          <div className="mb-4 text-3xl">✨</div>
           <h1
-            className="mb-5 text-2xl font-semibold tracking-tight"
+            className="mb-4 text-2xl font-semibold tracking-tight"
             style={{ color: "hsl(43 74% 58%)" }}
           >
-            Bienvenue à l'intérieur.
+            Content(e) de t'avoir avec nous
           </h1>
           <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
-            Aurea est un espace créé par des étudiants, pour les étudiants. Ici, nous cultivons l'entraide et la responsabilité, sans distinction d'origine, de nationalité ou de niveau social. Nous sommes la relève de demain. Ensemble, bâtissons notre souveraineté, sans peur et avec amour. Tu es à ta place.
+            {cityLabel
+              ? <>
+                  <span className="font-semibold text-foreground">{cityLabel}</span> t'attend — on est là à chaque étape.
+                  <br /><br />
+                  Aurea est un espace bienveillant créé par des étudiants, pour les étudiants. Tu es à ta place.
+                </>
+              : <>
+                  On est là à chaque étape de ton parcours.
+                  <br /><br />
+                  Aurea est un espace bienveillant créé par des étudiants, pour les étudiants. Tu es à ta place.
+                </>
+            }
           </p>
           <Button
             onClick={handleEnter}
