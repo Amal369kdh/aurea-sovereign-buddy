@@ -89,9 +89,21 @@ const VerificationDialog = ({ open, onClose }: VerificationDialogProps) => {
         body: { student_email: email.trim().toLowerCase() },
       });
 
+      // Le SDK Supabase JS place les réponses HTTP 4xx/5xx dans `error` (FunctionsHttpError),
+      // pas dans `data`. On extrait le body JSON pour récupérer le vrai message.
       if (error) {
+        let errBody: { error?: string; message?: string } = {};
+        try {
+          errBody = await (error as { context?: Response }).context?.json?.() ?? {};
+        } catch {
+          // si le parsing échoue, on tombe sur le message générique
+        }
         setGateState("error");
-        setErrorMsg("Erreur réseau. Réessaie.");
+        if (errBody.error === "invalid_domain") setErrorMsg(errBody.message || "Domaine non reconnu.");
+        else if (errBody.error === "rate_limit") setErrorMsg(errBody.message || "Trop de tentatives. Réessaie dans 24h.");
+        else if (errBody.error === "email_taken") setErrorMsg(errBody.message || "Email déjà utilisé par un autre compte.");
+        else if (errBody.message) setErrorMsg(errBody.message);
+        else setErrorMsg("Erreur réseau. Réessaie.");
         return;
       }
 
