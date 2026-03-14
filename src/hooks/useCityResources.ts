@@ -65,14 +65,14 @@ export function useCityResources(city: string | null) {
       setError(null);
 
       // 1. Try reading directly from Supabase DB first (no Perplexity call)
-      const { data: cached } = await supabase
-        .from("city_resources_cache" as any)
+      const { data: cached } = await (supabase as any)
+        .from("city_resources_cache")
         .select("data, last_updated_at")
         .eq("city", cacheKey)
-        .maybeSingle();
+        .maybeSingle() as Promise<{ data: { data: CityResources; last_updated_at: string } | null }>;
 
       if (cached?.data) {
-        setData({ ...(cached.data as CityResources), last_updated_at: cached.last_updated_at });
+        setData({ ...(cached.data as CityResources), last_updated_at: (cached as any).last_updated_at });
         setLoading(false);
         return;
       }
