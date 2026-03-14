@@ -23,9 +23,10 @@ import { Loader2 } from "lucide-react";
 const queryClient = new QueryClient();
 
 /**
- * Handles Supabase email confirmation links that land on /auth with
+ * Handles Supabase email confirmation links that land anywhere with
  * ?token_hash=...&type=... or the older #access_token=... fragment.
- * Exchanges the token/session then redirects to the app.
+ * Exchanges the token/session then waits for the auth state change before
+ * redirecting — avoids the race condition that caused the infinite loader.
  */
 const EmailConfirmHandler = () => {
   const navigate = useNavigate();
@@ -42,26 +43,32 @@ const EmailConfirmHandler = () => {
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
 
-    if (tokenHash && type) {
-      setProcessing(true);
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type }).then(({ error }) => {
-        if (!error) {
-          navigate("/", { replace: true });
-        } else {
-          // Invalid/expired token — stay on auth page
-          setProcessing(false);
-        }
-      });
-    } else if (accessToken && refreshToken) {
-      setProcessing(true);
-      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
-        if (!error) {
-          navigate("/", { replace: true });
-        } else {
-          setProcessing(false);
-        }
-      });
-    }
+    const hasToken = (tokenHash && type) || (accessToken && refreshToken);
+    if (!hasToken) return;
+
+    setProcessing(true);
+
+    // Subscribe BEFORE exchanging the token so we catch the SIGNED_IN event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        subscription.unsubscribe();
+        // Small delay so the session is fully propagated before ProtectedRoute runs
+        setTimeout(() => navigate("/", { replace: true }), 100);
+      }
+    });
+
+    const exchange = tokenHash && type
+      ? supabase.auth.verifyOtp({ token_hash: tokenHash, type })
+      : supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
+
+    exchange.then(({ error }) => {
+      if (error) {
+        subscription.unsubscribe();
+        setProcessing(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   if (processing) {
