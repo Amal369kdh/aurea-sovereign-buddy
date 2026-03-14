@@ -680,6 +680,69 @@ const Admin = () => {
     </div>
   );
 
+  const renderCityResources = () => {
+    const SUPPORTED_CITIES = ["grenoble"];
+    return (
+      <div className="space-y-4">
+        <Section title="Cache ressources par ville">
+          <p className="mb-4 text-xs text-muted-foreground">
+            Les ressources ville sont générées via IA une seule fois puis sauvegardées. Utilise le bouton ci-dessous pour forcer une mise à jour manuelle depuis l'IA.
+          </p>
+          {SUPPORTED_CITIES.map((city) => {
+            const cached = cityResourcesCache.find((c) => c.city === city);
+            return (
+              <div key={city} className="flex items-center justify-between rounded-2xl border border-border bg-secondary/40 px-4 py-3">
+                <div>
+                  <p className="text-sm font-bold text-foreground capitalize">{city}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {cached
+                      ? `Dernière mise à jour : ${new Date(cached.last_updated_at).toLocaleString("fr-FR")}`
+                      : "Pas encore généré"}
+                  </p>
+                </div>
+                <button
+                  disabled={refreshingCity === city}
+                  onClick={async () => {
+                    setRefreshingCity(city);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      await fetch(
+                        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/city-resources`,
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${session?.access_token}`,
+                            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+                          },
+                          body: JSON.stringify({ city, force_refresh: true }),
+                        }
+                      );
+                      toast({ title: `Ressources ${city} mises à jour ✓` });
+                      fetchAll();
+                    } catch {
+                      toast({ title: "Erreur lors de la mise à jour", variant: "destructive" });
+                    } finally {
+                      setRefreshingCity(null);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 rounded-2xl border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {refreshingCity === city ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  )}
+                  Forcer la mise à jour
+                </button>
+              </div>
+            );
+          })}
+        </Section>
+      </div>
+    );
+  };
+
   const renderModeration = () => (
     <div className="space-y-5">
       {/* Section 1: Signalements */}
