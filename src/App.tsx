@@ -87,15 +87,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  // Track which user we last checked so navigations don't re-trigger the loader
+  const checkedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
-    setProfileChecked(false);
-    setNeedsOnboarding(false);
-
     if (!user) {
+      checkedUserRef.current = null;
       setProfileChecked(true);
+      setNeedsOnboarding(false);
       return;
     }
+
+    // Same user, same result — no need to re-check (avoids flash on navigation)
+    if (checkedUserRef.current === user.id && profileChecked) return;
+
+    setProfileChecked(false);
+    setNeedsOnboarding(false);
+    checkedUserRef.current = user.id;
 
     let cancelled = false;
     let attempts = 0;
@@ -138,7 +146,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     checkProfile();
     return () => { cancelled = true; };
-  }, [user?.id, location.key]);
+  }, [user?.id]);  // Only re-run when user ID changes, not on every navigation
 
   if (loading || !profileChecked) {
     return (
