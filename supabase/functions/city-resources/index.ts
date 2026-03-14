@@ -7,8 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h
-const cityCache = new Map<string, { data: any; ts: number }>();
+const SUPPORTED_CITIES = ["grenoble"];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -16,11 +15,9 @@ serve(async (req) => {
   }
 
   try {
-    const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
-    if (!PERPLEXITY_API_KEY) throw new Error("PERPLEXITY_API_KEY is not configured");
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const authHeader = req.headers.get("Authorization");
 
     if (!authHeader) {
@@ -30,11 +27,11 @@ serve(async (req) => {
       });
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    // Verify user auth
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await userClient.auth.getUser();
     if (!user) {
       return new Response(JSON.stringify({ error: "Non authentifié" }), {
         status: 401,
@@ -42,12 +39,11 @@ serve(async (req) => {
       });
     }
 
-    const { city } = await req.json();
+    const body = await req.json();
+    const { city, force_refresh } = body;
     const targetCity = city || "Grenoble";
     const cacheKey = targetCity.toLowerCase().trim();
 
-    // Only Grenoble is supported for launch
-    const SUPPORTED_CITIES = ["grenoble"];
     if (!SUPPORTED_CITIES.includes(cacheKey)) {
       return new Response(
         JSON.stringify({ city: targetCity, coming_soon: true, message: "Ta ville arrive bientôt ⚡" }),
@@ -55,13 +51,28 @@ serve(async (req) => {
       );
     }
 
-    // Check cache
-    const cached = cityCache.get(cacheKey);
-    if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
-      return new Response(JSON.stringify(cached.data), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Service-role client to read/write cache (bypasses RLS for reads too)
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Check DB cache (unless admin forces refresh)
+    if (!force_refresh) {
+      const { data: cached } = await adminClient
+        .from("city_resources_cache")
+        .select("data, last_updated_at")
+        .eq("city", cacheKey)
+        .maybeSingle();
+
+      if (cached?.data) {
+        return new Response(
+          JSON.stringify({ ...cached.data, last_updated_at: cached.last_updated_at }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
     }
+
+    // Fetch from Perplexity
+    const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
+    if (!PERPLEXITY_API_KEY) throw new Error("PERPLEXITY_API_KEY is not configured");
 
     const prompt = `Pour un étudiant (potentiellement étranger) vivant à ${targetCity}, France, donne-moi des informations ACTUELLES et VÉRIFIÉES sous forme JSON structuré. Réponds UNIQUEMENT avec le JSON, sans texte avant ou après.
 
@@ -144,13 +155,11 @@ serve(async (req) => {
     const content = result.choices?.[0]?.message?.content || "";
     const citations = result.citations || [];
 
-    // Parse JSON from response (handle markdown code blocks)
     let parsed: any = null;
     try {
       const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/) || [null, content];
       parsed = JSON.parse(jsonMatch[1].trim());
     } catch {
-      // If JSON parsing fails, return raw content
       parsed = { raw: content, parse_error: true };
     }
 
@@ -160,10 +169,15 @@ serve(async (req) => {
       fetched_at: new Date().toISOString(),
     };
 
-    // Cache result
-    cityCache.set(cacheKey, { data: responseData, ts: Date.now() });
+    // Persist to DB using upsert
+    await adminClient
+      .from("city_resources_cache")
+      .upsert(
+        { city: cacheKey, data: responseData, last_updated_at: new Date().toISOString() },
+        { onConflict: "city" }
+      );
 
-    return new Response(JSON.stringify(responseData), {
+    return new Response(JSON.stringify({ ...responseData, last_updated_at: new Date().toISOString() }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
