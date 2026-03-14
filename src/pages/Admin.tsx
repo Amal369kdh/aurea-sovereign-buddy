@@ -167,6 +167,10 @@ const Admin = () => {
   const [newPinnedContent, setNewPinnedContent] = useState("");
   const [publishingPinned, setPublishingPinned] = useState(false);
 
+  // City resources states
+  const [cityResourcesCache, setCityResourcesCache] = useState<{ city: string; last_updated_at: string }[]>([]);
+  const [refreshingCity, setRefreshingCity] = useState<string | null>(null);
+
   // Form states
   const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "" });
   const [newDomain, setNewDomain] = useState({ domain: "", university_name: "" });
