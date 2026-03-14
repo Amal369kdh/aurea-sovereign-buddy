@@ -769,6 +769,7 @@ const Admin = () => {
     league: renderLeague,
     features: renderFeatures,
     domains: renderDomains,
+    city_resources: renderCityResources,
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
