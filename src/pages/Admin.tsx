@@ -139,6 +139,7 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "league", label: "Ligue des Facs", icon: Trophy },
   { key: "features", label: "Fonctionnalités", icon: Zap },
   { key: "domains", label: "Domaines", icon: GraduationCap },
+  { key: "city_resources", label: "Ressources Ville", icon: MapPin },
 ];
 
 // ─── Main component ───────────────────────────────────────────────────────────
