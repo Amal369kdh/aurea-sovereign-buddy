@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle, Shield, Pin,
+  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
