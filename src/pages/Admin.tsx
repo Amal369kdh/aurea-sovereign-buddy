@@ -228,6 +228,13 @@ const Admin = () => {
     }
     if (pinnedRes.data) setPinnedAnnouncements(pinnedRes.data as PinnedAnnouncement[]);
 
+    // Fetch city resources cache metadata
+    const { data: cityData } = await (supabase as any)
+      .from("city_resources_cache")
+      .select("city, last_updated_at")
+      .order("city");
+    if (cityData) setCityResourcesCache(cityData as { city: string; last_updated_at: string }[]);
+
     // Build league from profiles
     if (profilesRes.data) {
       const leagueMap: Record<string, { total: number; count: number }> = {};
