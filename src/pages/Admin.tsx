@@ -12,6 +12,7 @@ import {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
+
 type TabKey =
   | "overview"
   | "users"
@@ -21,7 +22,8 @@ type TabKey =
   | "league"
   | "features"
   | "domains"
-  | "moderation";
+  | "moderation"
+  | "city_resources";
 
 type UserRow = {
   user_id: string;
