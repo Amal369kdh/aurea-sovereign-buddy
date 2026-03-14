@@ -45,9 +45,9 @@ export interface CityResources {
   citations?: string[];
   fetched_at?: string;
   parse_error?: boolean;
+  last_updated_at?: string;
+  coming_soon?: boolean;
 }
-
-const SESSION_KEY = "city_resources_cache";
 
 export function useCityResources(city: string | null) {
   const { session } = useAuth();
@@ -58,22 +58,27 @@ export function useCityResources(city: string | null) {
   useEffect(() => {
     if (!city || !session?.access_token) return;
 
-    const cacheKey = `${SESSION_KEY}_${city.toLowerCase().trim()}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        // Use cache if less than 24h old
-        if (parsed.fetched_at && Date.now() - new Date(parsed.fetched_at).getTime() < 24 * 60 * 60 * 1000) {
-          setData(parsed);
-          return;
-        }
-      } catch { /* ignore */ }
-    }
+    const cacheKey = city.toLowerCase().trim();
 
-    const fetchResources = async () => {
+    const load = async () => {
       setLoading(true);
       setError(null);
+
+      // 1. Try reading directly from Supabase DB first (no Perplexity call)
+      type CacheRow = { data: CityResources; last_updated_at: string } | null;
+      const cacheResult = await (supabase as any)
+        .from("city_resources_cache")
+        .select("data, last_updated_at")
+        .eq("city", cacheKey)
+        .maybeSingle() as { data: CacheRow };
+
+      if (cacheResult.data?.data) {
+        setData({ ...cacheResult.data.data, last_updated_at: cacheResult.data.last_updated_at });
+        setLoading(false);
+        return;
+      }
+
+      // 2. Not in DB yet — call the edge function (which will fetch & persist)
       try {
         const resp = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/city-resources`,
@@ -95,7 +100,6 @@ export function useCityResources(city: string | null) {
 
         const result = await resp.json();
         setData(result);
-        sessionStorage.setItem(cacheKey, JSON.stringify(result));
       } catch (e) {
         console.error("useCityResources error:", e);
         setError(e instanceof Error ? e.message : "Erreur inconnue");
@@ -104,7 +108,7 @@ export function useCityResources(city: string | null) {
       }
     };
 
-    fetchResources();
+    load();
   }, [city, session?.access_token]);
 
   return { data, loading, error };

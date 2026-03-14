@@ -7,7 +7,19 @@ import { ShieldCheck, Lock, Mail, ArrowRight, CheckCircle2, Loader2, AlertCircle
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
-const EMAIL_PATTERNS = [
+// Patterns matching either the full domain or a subdomain of known academic domains
+const EMAIL_DOMAIN_SUFFIXES = [
+  "edu",
+  "univ-grenoble-alpes.fr",
+  "uga.fr",
+  "grenoble-inp.fr",
+  "parisnanterre.fr",
+  "sorbonne-universite.fr",
+  "universite-paris-saclay.fr",
+  "umontpellier.fr",
+];
+
+const EMAIL_DOMAIN_PATTERNS = [
   /\.edu$/i,
   /\.edu\.[a-z]{2}$/i,
   /\.univ-[a-z-]+\.fr$/i,
@@ -19,19 +31,15 @@ const EMAIL_PATTERNS = [
   /\.ens[a-z]*\.fr$/i,
   /\.insa[a-z-]*\.fr$/i,
   /\.iut[a-z-]*\.fr$/i,
-  /\.grenoble-inp\.fr$/i,
-  /\.parisnanterre\.fr$/i,
-  /\.sorbonne-universite\.fr$/i,
-  /\.universite-paris-saclay\.fr$/i,
-  /\.umontpellier\.fr$/i,
-  /\.univ-grenoble-alpes\.fr$/i,
-  /\.uga\.fr$/i,
 ];
 
 function isAcademicEmail(email: string): boolean {
   const domain = email.split("@")[1]?.toLowerCase();
   if (!domain) return false;
-  return EMAIL_PATTERNS.some((p) => p.test(domain));
+  // Exact match or subdomain of known suffixes
+  if (EMAIL_DOMAIN_SUFFIXES.some((s) => domain === s || domain.endsWith("." + s))) return true;
+  // Regex patterns for subdomain-based academic addresses
+  return EMAIL_DOMAIN_PATTERNS.some((p) => p.test(domain));
 }
 
 // Match TEST_MODE from VerifiedGate

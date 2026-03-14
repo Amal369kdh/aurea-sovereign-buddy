@@ -7,10 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle, Shield, Pin,
+  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+
 
 type TabKey =
   | "overview"
@@ -21,7 +22,8 @@ type TabKey =
   | "league"
   | "features"
   | "domains"
-  | "moderation";
+  | "moderation"
+  | "city_resources";
 
 type UserRow = {
   user_id: string;
@@ -137,6 +139,7 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "league", label: "Ligue des Facs", icon: Trophy },
   { key: "features", label: "Fonctionnalités", icon: Zap },
   { key: "domains", label: "Domaines", icon: GraduationCap },
+  { key: "city_resources", label: "Ressources Ville", icon: MapPin },
 ];
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -163,6 +166,10 @@ const Admin = () => {
   const [pinnedAnnouncements, setPinnedAnnouncements] = useState<PinnedAnnouncement[]>([]);
   const [newPinnedContent, setNewPinnedContent] = useState("");
   const [publishingPinned, setPublishingPinned] = useState(false);
+
+  // City resources states
+  const [cityResourcesCache, setCityResourcesCache] = useState<{ city: string; last_updated_at: string }[]>([]);
+  const [refreshingCity, setRefreshingCity] = useState<string | null>(null);
 
   // Form states
   const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "" });
@@ -220,6 +227,13 @@ const Admin = () => {
       setReports(enriched as ReportRow[]);
     }
     if (pinnedRes.data) setPinnedAnnouncements(pinnedRes.data as PinnedAnnouncement[]);
+
+    // Fetch city resources cache metadata
+    const { data: cityData } = await (supabase as any)
+      .from("city_resources_cache")
+      .select("city, last_updated_at")
+      .order("city");
+    if (cityData) setCityResourcesCache(cityData as { city: string; last_updated_at: string }[]);
 
     // Build league from profiles
     if (profilesRes.data) {
@@ -666,6 +680,69 @@ const Admin = () => {
     </div>
   );
 
+  const renderCityResources = () => {
+    const SUPPORTED_CITIES = ["grenoble"];
+    return (
+      <div className="space-y-4">
+        <Section title="Cache ressources par ville">
+          <p className="mb-4 text-xs text-muted-foreground">
+            Les ressources ville sont générées via IA une seule fois puis sauvegardées. Utilise le bouton ci-dessous pour forcer une mise à jour manuelle depuis l'IA.
+          </p>
+          {SUPPORTED_CITIES.map((city) => {
+            const cached = cityResourcesCache.find((c) => c.city === city);
+            return (
+              <div key={city} className="flex items-center justify-between rounded-2xl border border-border bg-secondary/40 px-4 py-3">
+                <div>
+                  <p className="text-sm font-bold text-foreground capitalize">{city}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {cached
+                      ? `Dernière mise à jour : ${new Date(cached.last_updated_at).toLocaleString("fr-FR")}`
+                      : "Pas encore généré"}
+                  </p>
+                </div>
+                <button
+                  disabled={refreshingCity === city}
+                  onClick={async () => {
+                    setRefreshingCity(city);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      await fetch(
+                        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/city-resources`,
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${session?.access_token}`,
+                            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+                          },
+                          body: JSON.stringify({ city, force_refresh: true }),
+                        }
+                      );
+                      toast({ title: `Ressources ${city} mises à jour ✓` });
+                      fetchAll();
+                    } catch {
+                      toast({ title: "Erreur lors de la mise à jour", variant: "destructive" });
+                    } finally {
+                      setRefreshingCity(null);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 rounded-2xl border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {refreshingCity === city ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  )}
+                  Forcer la mise à jour
+                </button>
+              </div>
+            );
+          })}
+        </Section>
+      </div>
+    );
+  };
+
   const renderModeration = () => (
     <div className="space-y-5">
       {/* Section 1: Signalements */}
@@ -755,6 +832,7 @@ const Admin = () => {
     league: renderLeague,
     features: renderFeatures,
     domains: renderDomains,
+    city_resources: renderCityResources,
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────

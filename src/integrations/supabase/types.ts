@@ -100,6 +100,30 @@ export type Database = {
         }
         Relationships: []
       }
+      city_resources_cache: {
+        Row: {
+          city: string
+          data: Json
+          id: string
+          last_updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          city: string
+          data: Json
+          id?: string
+          last_updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          city?: string
+          data?: Json
+          id?: string
+          last_updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           announcement_id: string

@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { IntegrationProvider } from "@/contexts/IntegrationContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import MonDossier from "./pages/MonDossier";
@@ -23,9 +23,10 @@ import { Loader2 } from "lucide-react";
 const queryClient = new QueryClient();
 
 /**
- * Handles Supabase email confirmation links that land on /auth with
+ * Handles Supabase email confirmation links that land anywhere with
  * ?token_hash=...&type=... or the older #access_token=... fragment.
- * Exchanges the token/session then redirects to the app.
+ * Exchanges the token/session then waits for the auth state change before
+ * redirecting — avoids the race condition that caused the infinite loader.
  */
 const EmailConfirmHandler = () => {
   const navigate = useNavigate();
@@ -42,26 +43,32 @@ const EmailConfirmHandler = () => {
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
 
-    if (tokenHash && type) {
-      setProcessing(true);
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type }).then(({ error }) => {
-        if (!error) {
-          navigate("/", { replace: true });
-        } else {
-          // Invalid/expired token — stay on auth page
-          setProcessing(false);
-        }
-      });
-    } else if (accessToken && refreshToken) {
-      setProcessing(true);
-      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
-        if (!error) {
-          navigate("/", { replace: true });
-        } else {
-          setProcessing(false);
-        }
-      });
-    }
+    const hasToken = (tokenHash && type) || (accessToken && refreshToken);
+    if (!hasToken) return;
+
+    setProcessing(true);
+
+    // Subscribe BEFORE exchanging the token so we catch the SIGNED_IN event
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        subscription.unsubscribe();
+        // Small delay so the session is fully propagated before ProtectedRoute runs
+        setTimeout(() => navigate("/", { replace: true }), 100);
+      }
+    });
+
+    const exchange = tokenHash && type
+      ? supabase.auth.verifyOtp({ token_hash: tokenHash, type })
+      : supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
+
+    exchange.then(({ error }) => {
+      if (error) {
+        subscription.unsubscribe();
+        setProcessing(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   if (processing) {
@@ -80,15 +87,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  // Track which user we last checked so navigations don't re-trigger the loader
+  const checkedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
-    setProfileChecked(false);
-    setNeedsOnboarding(false);
-
     if (!user) {
+      checkedUserRef.current = null;
       setProfileChecked(true);
+      setNeedsOnboarding(false);
       return;
     }
+
+    // Same user, same result — no need to re-check (avoids flash on navigation)
+    if (checkedUserRef.current === user.id && profileChecked) return;
+
+    setProfileChecked(false);
+    setNeedsOnboarding(false);
+    checkedUserRef.current = user.id;
 
     let cancelled = false;
     let attempts = 0;
@@ -131,7 +146,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     checkProfile();
     return () => { cancelled = true; };
-  }, [user?.id, location.key]);
+  }, [user?.id]);  // Only re-run when user ID changes, not on every navigation
 
   if (loading || !profileChecked) {
     return (
