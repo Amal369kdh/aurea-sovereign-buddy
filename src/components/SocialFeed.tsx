@@ -30,9 +30,10 @@ const categoryColors: Record<string, string> = {
 interface SocialFeedProps {
   activeCategory: Category;
   onCategoryChange: (cat: Category) => void;
+  readOnly?: boolean;
 }
 
-const SocialFeed = ({ activeCategory, onCategoryChange }: SocialFeedProps) => {
+const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: SocialFeedProps) => {
   const { announcements, loading, createPost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );
