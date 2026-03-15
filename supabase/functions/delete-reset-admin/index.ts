@@ -13,7 +13,8 @@ Deno.serve(async (req) => {
   try {
     const { userId, email, password, secret } = await req.json();
 
-    if (secret !== "aurea-admin-setup-2026") {
+    const adminSecret = Deno.env.get("ADMIN_SETUP_SECRET");
+    if (!adminSecret || secret !== adminSecret) {
       return new Response(JSON.stringify({ error: "Non autorisé" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
