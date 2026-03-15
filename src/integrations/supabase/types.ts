@@ -876,8 +876,10 @@ export type Database = {
     }
     Functions: {
       cleanup_expired_announcements: { Args: never; Returns: undefined }
+      get_own_profile_status: { Args: { _user_id: string }; Returns: string }
       has_dating_profile: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_student_verified: { Args: { _user_id: string }; Returns: boolean }
       is_temoin: { Args: { _user_id: string }; Returns: boolean }
       is_verified_organization: { Args: { _user_id: string }; Returns: boolean }
     }
