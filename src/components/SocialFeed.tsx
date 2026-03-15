@@ -142,7 +142,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
             Publier
           </button>
         </div>
-      </div>
+      </div>}
 
       {/* Posts */}
       {loading ? (
