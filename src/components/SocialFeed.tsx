@@ -108,8 +108,8 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
         </button>
       </div>
 
-      {/* Compose box */}
-      <div className="mb-6 rounded-3xl border border-border bg-card p-4">
+      {/* Compose box — hidden for read-only (unverified) users */}
+      {!readOnly && <div className="mb-6 rounded-3xl border border-border bg-card p-4">
         <textarea
           value={newContent}
           onChange={(e) => setNewContent(e.target.value)}
