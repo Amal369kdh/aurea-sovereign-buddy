@@ -23,24 +23,3 @@ verify_jwt = false
 
 [functions.process-email-queue]
 verify_jwt = true
-
-[functions.auth-email-hook]
-verify_jwt = false
-
-[functions.cleanup-announcements]
-verify_jwt = false
-
-[functions.aya-chat]
-verify_jwt = false
-
-[functions.verify-student-email]
-verify_jwt = false
-
-[functions.confirm-student-email]
-verify_jwt = false
-
-[functions.city-resources]
-verify_jwt = false
-
-[functions.delete-account]
-verify_jwt = false
