@@ -44,7 +44,7 @@ const SecuritySovereign = () => {
       {/* Discreet floating button — positioned below Amal, mobile-safe z-index */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-[9999] flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 active:scale-90 cursor-pointer"
+        className="fixed bottom-20 right-6 z-[9999] flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 active:scale-90 cursor-pointer"
         aria-label="Sécurité — Numéros d'urgence"
         title="Sécurité"
       >

@@ -48,9 +48,10 @@ const DeleteAccountButton = () => {
         return;
       }
 
-      // Sign out locally and redirect
-      await supabase.auth.signOut();
-      window.location.href = "/auth";
+      // Sign out locally and force full reload regardless of signOut result
+      supabase.auth.signOut().finally(() => {
+        window.location.href = "/auth";
+      });
     } catch {
       toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
       setDeleting(false);

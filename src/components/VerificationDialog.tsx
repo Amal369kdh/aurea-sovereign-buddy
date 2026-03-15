@@ -201,8 +201,10 @@ const VerificationDialog = ({ open, onClose }: VerificationDialogProps) => {
               </div>
 
               <button
-                disabled={!clientValid}
+                type="button"
+                disabled={gateState === "sending"}
                 onClick={handleSubmit}
+                onTouchEnd={(e) => { e.preventDefault(); handleSubmit(); }}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Vérifier mon email étudiant <ArrowRight className="h-4 w-4" />
