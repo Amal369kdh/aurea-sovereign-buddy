@@ -41,17 +41,15 @@ const SecuritySovereign = () => {
 
   return (
     <>
-      {/* Discreet floating button — positioned above Amal */}
-      <motion.button
+      {/* Discreet floating button — positioned below Amal, mobile-safe z-index */}
+      <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 cursor-pointer"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-6 right-6 z-[9999] flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 active:scale-90 cursor-pointer"
         aria-label="Sécurité — Numéros d'urgence"
         title="Sécurité"
       >
         <ShieldAlert className="h-5 w-5" />
-      </motion.button>
+      </button>
 
       {/* Full-screen overlay */}
       <AnimatePresence>

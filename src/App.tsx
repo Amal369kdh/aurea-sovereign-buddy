@@ -28,10 +28,20 @@ const queryClient = new QueryClient();
  * Exchanges the token/session then waits for the auth state change before
  * redirecting — avoids the race condition that caused the infinite loader.
  */
+/** Detect mobile/tablet UA — used to show a manual redirect screen instead of
+ *  relying on React Router navigate() which can silently fail on iOS/Android
+ *  WebViews before the Supabase session is fully hydrated.
+ */
+const isMobileDevice = () =>
+  typeof window !== "undefined" &&
+  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
 const EmailConfirmHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [processing, setProcessing] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const [city, setCity] = useState<string>("ta ville");
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -49,11 +59,32 @@ const EmailConfirmHandler = () => {
     setProcessing(true);
 
     // Subscribe BEFORE exchanging the token so we catch the SIGNED_IN event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         subscription.unsubscribe();
-        // Small delay so the session is fully propagated before ProtectedRoute runs
-        setTimeout(() => navigate("/", { replace: true }), 100);
+
+        if (isMobileDevice()) {
+          // On mobile: fetch city then show the manual confirmation screen
+          // instead of navigate() which can fail on WebViews
+          if (session?.user?.id) {
+            supabase
+              .from("profiles")
+              .select("city")
+              .eq("user_id", session.user.id)
+              .maybeSingle()
+              .then(({ data }) => {
+                if (data?.city) setCity(data.city);
+                setProcessing(false);
+                setConfirmed(true);
+              });
+          } else {
+            setProcessing(false);
+            setConfirmed(true);
+          }
+        } else {
+          // On desktop: navigate works reliably
+          setTimeout(() => navigate("/", { replace: true }), 100);
+        }
       }
     });
 
@@ -70,6 +101,31 @@ const EmailConfirmHandler = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Mobile confirmation screen — shown after successful token exchange
+  if (confirmed) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-3xl gold-gradient">
+          <span className="text-2xl">✨</span>
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-extrabold text-foreground">
+            Ton email est confirmé !
+          </h1>
+          <p className="text-base text-muted-foreground">
+            <span className="font-semibold text-primary">{city}</span> t'attend — on est là à chaque étape 🎓
+          </p>
+        </div>
+        <button
+          onClick={() => { window.location.href = "/"; }}
+          className="flex items-center gap-2 rounded-2xl gold-gradient px-8 py-4 text-base font-bold text-primary-foreground shadow-lg active:scale-95 transition-transform cursor-pointer"
+        >
+          Accéder à mon espace →
+        </button>
+      </div>
+    );
+  }
 
   if (processing) {
     return (
