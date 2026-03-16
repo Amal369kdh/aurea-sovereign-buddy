@@ -36,12 +36,19 @@ function isAcademicEmail(email: string): boolean {
   return ALLOWED_PATTERNS.some((pattern) => pattern.test(domain));
 }
 
-// ─── Token generation ──────────────────────────────────────────────────────────
+// ─── Token generation & hashing ───────────────────────────────────────────────
 
 function generateToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // ─── Email HTML builder ────────────────────────────────────────────────────────
