@@ -27,8 +27,11 @@ const HubSocial = () => {
 
   // Check verification status for banner / tab gate
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
+
   useEffect(() => {
     if (!user) { setIsVerified(false); return; }
+
+    // Initial fetch
     supabase
       .from("profiles")
       .select("status")
@@ -38,7 +41,22 @@ const HubSocial = () => {
         const s = (data as { status: string } | null)?.status ?? "explorateur";
         setIsVerified(s === "temoin" || s === "admin");
       });
-  }, [user]);
+
+    // Realtime: auto-update when status changes (e.g. student email verified in another tab)
+    const channel = supabase
+      .channel(`profile-status-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          const newStatus = (payload.new as { status: string }).status;
+          setIsVerified(newStatus === "temoin" || newStatus === "admin");
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
 
   // If user clicks Rencontres/Matchs tab while not verified, redirect to hub
   const handleTabClick = (t: Tab) => {

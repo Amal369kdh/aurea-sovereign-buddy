@@ -68,10 +68,10 @@ serve(async (req) => {
       });
     }
 
-    // Mark as verified
+    // Mark as verified AND wipe the token_hash so the link is strictly one-time-use
     const { error: updateError } = await supabase
       .from("student_email_verifications")
-      .update({ verified: true })
+      .update({ verified: true, token_hash: "CONSUMED" })
       .eq("id", verification.id);
 
     if (updateError) {
