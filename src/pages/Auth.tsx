@@ -21,8 +21,9 @@ function translateAuthError(error: string): string {
     "User not found": "Aucun compte trouvé avec cet email.",
     "New password should be different from the old password": "Le nouveau mot de passe doit être différent de l'ancien.",
     "Auth session missing": "Session expirée, reconnecte-toi.",
-    "Invalid Refresh Token: Refresh Token Not Found": "Session expirée. Reconnecte-toi.",
+    "Invalid Refresh Token": "Session expirée. Reconnecte-toi.",
     "Token has expired or is invalid": "Le lien a expiré. Demande un nouveau.",
+    "Anonymous sign-ins are disabled": "La connexion anonyme est désactivée.",
   };
   for (const [key, value] of Object.entries(map)) {
     if (error.toLowerCase().includes(key.toLowerCase())) return value;
@@ -33,7 +34,7 @@ function translateAuthError(error: string): string {
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
-  
+
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,6 +43,8 @@ const Auth = () => {
   const [acceptedCgu, setAcceptedCgu] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
   const [signupEmail, setSignupEmail] = useState("");
+  // When the user already has an unconfirmed account
+  const [pendingConfirmation, setPendingConfirmation] = useState(false);
 
   if (!loading && user) return <Navigate to="/" replace />;
 
@@ -53,7 +56,70 @@ const Auth = () => {
     );
   }
 
-  // ── État post-inscription : demande de confirmation email ────────────────────
+  // ── État : email déjà inscrit mais non confirmé ──────────────────────────
+  if (pendingConfirmation) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md text-center"
+        >
+          <div className="mb-6 flex flex-col items-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
+              <MailCheck className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-3xl font-extrabold">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-8 space-y-4">
+            <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-yellow-500/10">
+              <MailCheck className="h-8 w-8 text-yellow-500" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">Compte en attente de confirmation ⏳</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Un compte existe déjà pour{" "}
+              <span className="font-semibold text-foreground">{signupEmail}</span>, mais l'email n'a pas encore été confirmé.
+              <br /><br />
+              Vérifie ta boîte mail (et tes spams) et clique sur le lien de confirmation pour activer ton compte.
+            </p>
+            <button
+              onClick={async () => {
+                const { error } = await supabase.auth.resend({
+                  type: "signup",
+                  email: signupEmail,
+                  options: { emailRedirectTo: window.location.origin },
+                });
+                if (error) {
+                  toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                } else {
+                  toast({ title: "Email renvoyé ✅", description: "Vérifie ta boîte mail." });
+                }
+              }}
+              className="w-full rounded-2xl border border-primary/30 bg-primary/10 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-colors"
+            >
+              Renvoyer l'email de confirmation
+            </button>
+          </div>
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Déjà confirmé ?{" "}
+            <button
+              onClick={() => { setPendingConfirmation(false); setMode("login"); }}
+              className="font-bold text-primary hover:underline cursor-pointer"
+            >
+              Se connecter
+            </button>
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── État post-inscription : confirmation envoyée ──────────────────────────
   if (signupDone) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -109,23 +175,29 @@ const Auth = () => {
     if (mode === "signup") {
       const { error, data } = await signUp(email, password, displayName);
       if (error) {
-        toast({ title: "Erreur", description: error, variant: "destructive" });
+        toast({ title: "Erreur", description: translateAuthError(error), variant: "destructive" });
       } else {
-        if (data?.user?.id) {
-          await supabase.from("profiles").upsert({
-            user_id: data.user.id,
-            display_name: displayName,
-            avatar_initials: displayName.slice(0, 2).toUpperCase(),
-            status: "explorateur",
-          }, { onConflict: "user_id" });
+        // Supabase returns identities:[] when the email already exists but is unconfirmed
+        if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
+          setSignupEmail(email);
+          setPendingConfirmation(true);
+        } else {
+          if (data?.user?.id) {
+            await supabase.from("profiles").upsert({
+              user_id: data.user.id,
+              display_name: displayName,
+              avatar_initials: displayName.slice(0, 2).toUpperCase(),
+              status: "explorateur",
+            }, { onConflict: "user_id" });
+          }
+          setSignupEmail(email);
+          setSignupDone(true);
         }
-        setSignupEmail(email);
-        setSignupDone(true);
       }
     } else {
       const { error } = await signIn(email, password);
       if (error) {
-        toast({ title: "Erreur", description: error, variant: "destructive" });
+        toast({ title: "Erreur", description: translateAuthError(error), variant: "destructive" });
       }
     }
 
