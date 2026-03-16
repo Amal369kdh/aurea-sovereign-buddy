@@ -37,15 +37,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    // Cross-tab sync: when another tab updates localStorage (e.g. email confirmation
-    // or password reset link opened in a new tab), refresh the session here so the
-    // original tab also reflects the new auth state.
+    // Cross-tab sync: when ANOTHER tab confirms an email or logs in, refresh session
+    // here so this tab reflects the new state.
+    // IMPORTANT: only react to NEW sessions appearing (newValue set), never to
+    // sign-outs (newValue null) — this prevents the reset-password page's local
+    // signOut from knocking out sessions in other tabs.
     const handleStorage = (e: StorageEvent) => {
-      if (e.key && e.key.includes("supabase")) {
+      if (e.key && e.key.includes("supabase") && e.newValue !== null) {
         supabase.auth.getSession().then(({ data: { session } }) => {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
+          if (session) {
+            setSession(session);
+            setUser(session.user);
+            setLoading(false);
+          }
         });
       }
     };
