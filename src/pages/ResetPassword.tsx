@@ -79,6 +79,9 @@ const ResetPassword = () => {
     } else {
       setDone(true);
       toast({ title: "Mot de passe mis à jour ✅", description: "Tu peux maintenant te connecter." });
+      // Sign out the recovery session so the original tab doesn't inherit it.
+      // The user should log in fresh with their new password.
+      await supabase.auth.signOut({ scope: "global" });
       setTimeout(() => { window.location.href = "/auth"; }, 2500);
     }
   };
