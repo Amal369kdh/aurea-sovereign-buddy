@@ -224,14 +224,16 @@ serve(async (req) => {
       );
     }
 
-    // Generate token and persist (DB trigger hashes it)
+    // Generate token, hash it in JS (no pgcrypto dependency), store only the hash
     const token = generateToken();
+    const tokenHash = await sha256Hex(token);
+
     const { error: insertError } = await serviceClient
       .from("student_email_verifications")
-      .insert({ user_id: user.id, student_email: trimmedEmail, token });
+      .insert({ user_id: user.id, student_email: trimmedEmail, token_hash: tokenHash });
 
     if (insertError) {
-      console.error("Insert verification error:", insertError);
+      console.error("Insert verification error:", JSON.stringify(insertError));
       return new Response(
         JSON.stringify({ error: "Une erreur est survenue lors de la création du token." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
