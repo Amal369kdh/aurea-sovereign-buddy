@@ -25,7 +25,7 @@ serve(async (req) => {
     const token = url.searchParams.get("token");
 
     if (!token) {
-      return new Response(htmlPage("Erreur", "Token manquant.", false), {
+      return new Response(new TextEncoder().encode(htmlPage("Erreur", "Token manquant.", false)), {
         status: 400,
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
