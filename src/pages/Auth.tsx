@@ -6,6 +6,30 @@ import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// ── Traduction des erreurs Supabase → Français ──────────────────────────────
+function translateAuthError(error: string): string {
+  const map: Record<string, string> = {
+    "Invalid login credentials": "Email ou mot de passe incorrect.",
+    "Email not confirmed": "Tu dois d'abord confirmer ton email. Vérifie ta boîte mail.",
+    "User already registered": "Un compte existe déjà avec cet email.",
+    "Password should be at least 6 characters": "Le mot de passe doit contenir au moins 6 caractères.",
+    "Signup requires a valid password": "Le mot de passe est invalide.",
+    "Unable to validate email address: invalid format": "L'adresse email n'est pas valide.",
+    "Email rate limit exceeded": "Trop de tentatives. Attends quelques minutes avant de réessayer.",
+    "For security purposes, you can only request this after": "Trop de tentatives. Attends quelques minutes avant de réessayer.",
+    "over_email_send_rate_limit": "Trop d'emails envoyés. Attends quelques minutes.",
+    "User not found": "Aucun compte trouvé avec cet email.",
+    "New password should be different from the old password": "Le nouveau mot de passe doit être différent de l'ancien.",
+    "Auth session missing": "Session expirée, reconnecte-toi.",
+    "Invalid Refresh Token: Refresh Token Not Found": "Session expirée. Reconnecte-toi.",
+    "Token has expired or is invalid": "Le lien a expiré. Demande un nouveau.",
+  };
+  for (const [key, value] of Object.entries(map)) {
+    if (error.toLowerCase().includes(key.toLowerCase())) return value;
+  }
+  return error;
+}
+
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
