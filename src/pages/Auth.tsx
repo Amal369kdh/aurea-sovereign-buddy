@@ -214,7 +214,7 @@ const Auth = () => {
                 e.preventDefault();
                 setSubmitting(true);
                 const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                  redirectTo: `${window.location.origin}/reset-password`,
+                  redirectTo: "https://aurea-student.fr/reset-password",
                 });
                 setSubmitting(false);
                 if (error) {
