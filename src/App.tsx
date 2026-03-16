@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
+import ResetPassword from "./pages/ResetPassword";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -221,9 +222,9 @@ const App = () => (
           <Sonner />
           <ErrorBoundary>
           <BrowserRouter>
-            <EmailConfirmHandler />
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
@@ -234,6 +235,8 @@ const App = () => (
               <Route path="/legal" element={<Legal />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            {/* EmailConfirmHandler en dehors des Routes pour intercepter les hash tokens */}
+            <EmailConfirmHandler />
           </BrowserRouter>
           </ErrorBoundary>
         </IntegrationProvider>

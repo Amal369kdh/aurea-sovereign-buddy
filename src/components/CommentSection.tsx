@@ -12,9 +12,10 @@ import { supabase } from "@/integrations/supabase/client";
 interface CommentSectionProps {
   announcementId: string;
   postAuthorId: string;
+  readOnly?: boolean;
 }
 
-const CommentSection = ({ announcementId, postAuthorId }: CommentSectionProps) => {
+const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: CommentSectionProps) => {
   const { user } = useAuth();
   const { comments, loading, addComment, markAsSolution } = useComments(announcementId);
   const [newComment, setNewComment] = useState("");
@@ -109,23 +110,31 @@ const CommentSection = ({ announcementId, postAuthorId }: CommentSectionProps) =
         </div>
       )}
 
-      {/* Compose comment */}
-      <div className="mt-3 flex gap-2">
-        <input
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handlePost()}
-          placeholder="Ajouter un commentaire…"
-          className="flex-1 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-        />
-        <button
-          onClick={handlePost}
-          disabled={posting || !newComment.trim()}
-          className="flex h-8 w-8 items-center justify-center rounded-xl gold-gradient text-primary-foreground disabled:opacity-40 cursor-pointer"
-        >
-          {posting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
-        </button>
-      </div>
+      {/* Compose comment — hidden for unverified users */}
+      {readOnly ? (
+        <div className="mt-3 rounded-xl border border-border/50 bg-secondary/30 px-3 py-2 text-center">
+          <p className="text-xs text-muted-foreground">
+            <span className="font-semibold text-primary">Vérifie ton email étudiant</span> pour commenter.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-3 flex gap-2">
+          <input
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handlePost()}
+            placeholder="Ajouter un commentaire…"
+            className="flex-1 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+          />
+          <button
+            onClick={handlePost}
+            disabled={posting || !newComment.trim()}
+            className="flex h-8 w-8 items-center justify-center rounded-xl gold-gradient text-primary-foreground disabled:opacity-40 cursor-pointer"
+          >
+            {posting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+          </button>
+        </div>
+      )}
 
       <SolutionChatDialog
         conversationId={solutionConvId}

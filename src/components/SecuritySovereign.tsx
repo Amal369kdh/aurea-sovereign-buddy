@@ -41,14 +41,14 @@ const SecuritySovereign = () => {
 
   return (
     <>
-      {/* Discreet floating button — positioned below Amal, mobile-safe z-index */}
+      {/* Floating button — left side, above thumb reach, won't overlap Amal or nav */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-20 right-6 z-[9999] flex h-11 w-11 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 active:scale-90 cursor-pointer"
+        className="fixed bottom-28 left-4 z-[9998] flex h-10 w-10 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 active:scale-90 cursor-pointer"
         aria-label="Sécurité — Numéros d'urgence"
         title="Sécurité"
       >
-        <ShieldAlert className="h-5 w-5" />
+        <ShieldAlert className="h-4.5 w-4.5" />
       </button>
 
       {/* Full-screen overlay */}
