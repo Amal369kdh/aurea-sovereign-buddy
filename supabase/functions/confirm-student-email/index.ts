@@ -96,14 +96,15 @@ serve(async (req) => {
       });
     }
 
-    return new Response(
-      htmlPage(
-        "Email vérifié ✅",
-        `Ton email étudiant <strong>${verification.student_email}</strong> a été vérifié avec succès ! Tu es maintenant <strong>Témoin</strong> et tu as accès à toutes les fonctionnalités. Retourne sur l'application pour continuer.`,
-        true
-      ),
-      { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }
+    const html = htmlPage(
+      "Email vérifié ✅",
+      `Ton email étudiant <strong>${verification.student_email}</strong> a été vérifié avec succès ! Tu es maintenant <strong>Témoin</strong> et tu as accès à toutes les fonctionnalités. Retourne sur l'application pour continuer.`,
+      true
     );
+    return new Response(new TextEncoder().encode(html), {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
   } catch (e) {
     console.error("confirm-student-email error:", e);
     return new Response(htmlPage("Erreur", "Une erreur inattendue s'est produite.", false), {
