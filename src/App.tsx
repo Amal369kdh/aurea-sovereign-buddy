@@ -50,6 +50,12 @@ const EmailConfirmHandler = () => {
     const hash = new URLSearchParams(location.hash.slice(1));
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
+    const hashType = hash.get("type");
+
+    // ⚠️ CRITICAL: Never handle recovery tokens here — /reset-password handles them exclusively.
+    // If we consume the token here, ResetPassword can't use it and the user gets signed in
+    // without being able to change their password (wrong-account bug).
+    if (type === "recovery" || hashType === "recovery") return;
 
     const hasToken = (tokenHash && type) || (accessToken && refreshToken);
     // ⚠️ If there is no token in the URL we do NOTHING — avoids boucle infinie
