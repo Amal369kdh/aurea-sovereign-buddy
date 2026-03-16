@@ -249,7 +249,7 @@ serve(async (req) => {
     const emailPayload = {
       message_id: messageId,
       to: trimmedEmail,
-      from: "Aurea Student",
+      from: "Aurea Student <noreply@notify.aurea-student.fr>",
       sender_domain: "notify.aurea-student.fr",
       subject: "Confirme ton email étudiant – Aurea Student",
       html: buildVerificationEmailHtml(trimmedEmail, confirmUrl),
