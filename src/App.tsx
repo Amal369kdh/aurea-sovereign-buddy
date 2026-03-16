@@ -22,50 +22,47 @@ import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
-/**
- * Handles Supabase email confirmation links that land anywhere with
- * ?token_hash=...&type=... or the older #access_token=... fragment.
- * Exchanges the token/session then waits for the auth state change before
- * redirecting — avoids the race condition that caused the infinite loader.
- */
-/** Detect mobile/tablet UA — used to show a manual redirect screen instead of
- *  relying on React Router navigate() which can silently fail on iOS/Android
- *  WebViews before the Supabase session is fully hydrated.
- */
+/** Detect mobile/tablet UA */
 const isMobileDevice = () =>
   typeof window !== "undefined" &&
   /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
+/**
+ * Handles Supabase email confirmation links (?token_hash= or #access_token=).
+ * Only runs when there is actually a token in the URL — never loops.
+ * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
+ */
 const EmailConfirmHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [processing, setProcessing] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [city, setCity] = useState<string>("ta ville");
+  // Guard: never process twice (React strict mode / remounts)
+  const handled = useRef(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tokenHash = params.get("token_hash");
     const type = params.get("type") as "signup" | "recovery" | "email_change" | null;
 
-    // Also handle hash-based legacy tokens (#access_token=...)
     const hash = new URLSearchParams(location.hash.slice(1));
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
 
     const hasToken = (tokenHash && type) || (accessToken && refreshToken);
+    // ⚠️ If there is no token in the URL we do NOTHING — avoids boucle infinie
     if (!hasToken) return;
+    if (handled.current) return;
+    handled.current = true;
 
     setProcessing(true);
 
-    // Subscribe BEFORE exchanging the token so we catch the SIGNED_IN event
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         subscription.unsubscribe();
 
         if (isMobileDevice()) {
-          // On mobile: fetch city then show the manual confirmation screen
-          // instead of navigate() which can fail on WebViews
           if (session?.user?.id) {
             supabase
               .from("profiles")
@@ -82,7 +79,6 @@ const EmailConfirmHandler = () => {
             setConfirmed(true);
           }
         } else {
-          // On desktop: navigate works reliably
           setTimeout(() => navigate("/", { replace: true }), 100);
         }
       }
@@ -96,13 +92,14 @@ const EmailConfirmHandler = () => {
       if (error) {
         subscription.unsubscribe();
         setProcessing(false);
+        // En cas d'erreur (lien expiré), on nettoie l'URL et on revient à /auth
+        window.history.replaceState({}, "", "/auth");
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // Mobile confirmation screen — shown after successful token exchange
   if (confirmed) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-center">
@@ -143,7 +140,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
-  // Track which user we last checked so navigations don't re-trigger the loader
   const checkedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -154,7 +150,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // Same user, same result — no need to re-check (avoids flash on navigation)
     if (checkedUserRef.current === user.id && profileChecked) return;
 
     setProfileChecked(false);
@@ -202,7 +197,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     checkProfile();
     return () => { cancelled = true; };
-  }, [user?.id]);  // Only re-run when user ID changes, not on every navigation
+  }, [user?.id]);
 
   if (loading || !profileChecked) {
     return (
