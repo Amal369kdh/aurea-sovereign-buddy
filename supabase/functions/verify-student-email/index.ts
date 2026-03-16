@@ -246,6 +246,18 @@ serve(async (req) => {
     // Build email payload for Lovable Cloud email queue
     const messageId = `student-verify-${user.id}-${Date.now()}`;
     const plainText = `Confirme ton email étudiant – Aurea Student\n\nClique sur ce lien pour confirmer ton adresse ${trimmedEmail} et débloquer toutes les fonctionnalités d'Aurea Student :\n\n${confirmUrl}\n\nCe lien est valable 24 heures.\n\nSi tu n'es pas à l'origine de cette demande, ignore cet email.`;
+
+    // Generate a unique unsubscribe token (required by the transactional email API)
+    const unsubTokenArr = new Uint8Array(16);
+    crypto.getRandomValues(unsubTokenArr);
+    const unsubscribeToken = Array.from(unsubTokenArr, (b) => b.toString(16).padStart(2, "0")).join("");
+
+    // Store the unsubscribe token so it can be resolved later if needed
+    await serviceClient.from("email_unsubscribe_tokens").upsert(
+      { email: trimmedEmail, token: unsubscribeToken },
+      { onConflict: "email" }
+    );
+
     const emailPayload = {
       message_id: messageId,
       to: trimmedEmail,
@@ -258,6 +270,7 @@ serve(async (req) => {
       label: "student_email_verification",
       queued_at: new Date().toISOString(),
       idempotency_key: messageId,
+      unsubscribe_token: unsubscribeToken,
     };
 
     const { error: enqueueError } = await serviceClient.rpc("enqueue_email", {
