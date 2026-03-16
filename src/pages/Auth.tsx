@@ -94,10 +94,18 @@ const Auth = () => {
                   email: signupEmail,
                   options: { emailRedirectTo: window.location.origin },
                 });
+                // If error or account was deleted from dashboard → redirect to signup
                 if (error) {
-                  toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                  if (error.message.toLowerCase().includes("user not found") || error.message.toLowerCase().includes("invalid") || error.status === 422) {
+                    setPendingConfirmation(false);
+                    setEmail(signupEmail);
+                    setMode("signup");
+                    toast({ title: "Compte introuvable", description: "Ce compte n'existe plus. Recrée-le.", variant: "destructive" });
+                  } else {
+                    toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                  }
                 } else {
-                  toast({ title: "Email renvoyé ✅", description: "Vérifie ta boîte mail." });
+                  toast({ title: "Email renvoyé ✅", description: "Vérifie ta boîte mail (et tes spams)." });
                 }
               }}
               className="w-full rounded-2xl border border-primary/30 bg-primary/10 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-colors"
