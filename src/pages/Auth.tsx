@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck } from "lucide-react";
+import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";

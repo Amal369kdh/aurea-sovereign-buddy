@@ -59,6 +59,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Force full page reload for mobile Chrome reliability (React Router navigate can fail)
+    window.location.href = "/auth";
   };
 
   return (
