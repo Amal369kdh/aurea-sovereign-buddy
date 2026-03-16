@@ -15,7 +15,7 @@ interface CommentSectionProps {
   readOnly?: boolean;
 }
 
-const CommentSection = ({ announcementId, postAuthorId }: CommentSectionProps) => {
+const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: CommentSectionProps) => {
   const { user } = useAuth();
   const { comments, loading, addComment, markAsSolution } = useComments(announcementId);
   const [newComment, setNewComment] = useState("");
