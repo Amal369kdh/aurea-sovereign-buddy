@@ -177,6 +177,90 @@ const Auth = () => {
     );
   }
 
+  // ── État : mot de passe oublié ────────────────────────────────────────────
+  if (mode === "forgot") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md text-center"
+        >
+          <div className="mb-6 flex flex-col items-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
+              <KeyRound className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-3xl font-extrabold">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+          </div>
+
+          {forgotDone ? (
+            <div className="rounded-3xl border border-border bg-card p-8 space-y-4">
+              <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-primary/10">
+                <MailCheck className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Email envoyé ✅</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Un lien de réinitialisation a été envoyé à{" "}
+                <span className="font-semibold text-foreground">{email}</span>.<br /><br />
+                Clique sur ce lien pour choisir un nouveau mot de passe. Vérifie aussi tes spams.
+              </p>
+            </div>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setSubmitting(true);
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/auth`,
+                });
+                setSubmitting(false);
+                if (error) {
+                  toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                } else {
+                  setForgotDone(true);
+                }
+              }}
+              className="space-y-4 rounded-3xl border border-border bg-card p-6"
+            >
+              <h2 className="text-lg font-bold text-foreground">Mot de passe oublié ?</h2>
+              <p className="text-sm text-muted-foreground">Saisis ton email pour recevoir un lien de réinitialisation.</p>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><ArrowRight className="h-4 w-4" /> Envoyer le lien</>}
+              </button>
+            </form>
+          )}
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            <button
+              onClick={() => { setMode("login"); setForgotDone(false); }}
+              className="font-bold text-primary hover:underline cursor-pointer"
+            >
+              ← Retour à la connexion
+            </button>
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -281,6 +365,18 @@ const Auth = () => {
               className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
           </div>
+
+          {mode === "login" && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setMode("forgot")}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
+          )}
 
           {mode === "signup" && (
             <label className="flex items-start gap-3 cursor-pointer group">
