@@ -817,6 +817,7 @@ export type Database = {
           expires_at: string
           id: string
           student_email: string
+          token: string | null
           token_hash: string
           user_id: string
           verified: boolean
@@ -826,6 +827,7 @@ export type Database = {
           expires_at?: string
           id?: string
           student_email: string
+          token?: string | null
           token_hash: string
           user_id: string
           verified?: boolean
@@ -835,6 +837,7 @@ export type Database = {
           expires_at?: string
           id?: string
           student_email?: string
+          token?: string | null
           token_hash?: string
           user_id?: string
           verified?: boolean
