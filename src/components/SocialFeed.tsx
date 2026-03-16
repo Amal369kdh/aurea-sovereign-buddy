@@ -242,7 +242,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
 
               {/* Comments section */}
               {expandedComments.has(post.id) && (
-                <CommentSection announcementId={post.id} postAuthorId={post.author_id} />
+                <CommentSection announcementId={post.id} postAuthorId={post.author_id} readOnly={readOnly} />
               )}
             </motion.div>
           ))}
