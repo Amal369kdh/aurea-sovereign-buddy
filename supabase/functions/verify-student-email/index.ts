@@ -245,6 +245,7 @@ serve(async (req) => {
 
     // Build email payload for Lovable Cloud email queue
     const messageId = `student-verify-${user.id}-${Date.now()}`;
+    const plainText = `Confirme ton email étudiant – Aurea Student\n\nClique sur ce lien pour confirmer ton adresse ${trimmedEmail} et débloquer toutes les fonctionnalités d'Aurea Student :\n\n${confirmUrl}\n\nCe lien est valable 24 heures.\n\nSi tu n'es pas à l'origine de cette demande, ignore cet email.`;
     const emailPayload = {
       message_id: messageId,
       to: trimmedEmail,
@@ -252,6 +253,7 @@ serve(async (req) => {
       sender_domain: "notify.aurea-student.fr",
       subject: "Confirme ton email étudiant – Aurea Student",
       html: buildVerificationEmailHtml(trimmedEmail, confirmUrl),
+      text: plainText,
       purpose: "transactional",
       label: "student_email_verification",
       queued_at: new Date().toISOString(),
