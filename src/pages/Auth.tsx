@@ -76,8 +76,8 @@ const Auth = () => {
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-8 space-y-4">
-            <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-yellow-500/10">
-              <MailCheck className="h-8 w-8 text-yellow-500" />
+            <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-primary/10">
+              <MailCheck className="h-8 w-8 text-primary" />
             </div>
             <h2 className="text-xl font-bold text-foreground">Compte en attente de confirmation ⏳</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
