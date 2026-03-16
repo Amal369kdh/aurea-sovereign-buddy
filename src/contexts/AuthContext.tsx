@@ -37,7 +37,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Cross-tab sync: when another tab updates localStorage (e.g. email confirmation
+    // or password reset link opened in a new tab), refresh the session here so the
+    // original tab also reflects the new auth state.
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key && e.key.includes("supabase")) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        });
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
   const signUp = async (email: string, password: string, displayName: string): Promise<{ error: string | null; data: any }> => {

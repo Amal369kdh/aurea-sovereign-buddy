@@ -43,27 +43,27 @@ const ResetPassword = () => {
 
     handled.current = true;
 
-    if (isHashRecovery) {
-      supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! }).then(({ error }) => {
+    // ⚠️ CRITICAL: Sign out any existing session FIRST to prevent a saved account
+    // in the browser from hijacking the reset link (cross-account contamination).
+    supabase.auth.signOut({ scope: "local" }).finally(async () => {
+      if (isHashRecovery) {
+        const { error } = await supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
         if (error) {
           setError("Lien expiré ou invalide. Redemande une réinitialisation.");
         } else {
-          // Clear the hash so the token can't be reused on refresh
           window.history.replaceState({}, "", window.location.pathname);
           setSessionReady(true);
         }
-      });
-    } else {
-      supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "recovery" }).then(({ error }) => {
+      } else {
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "recovery" });
         if (error) {
           setError("Lien expiré ou invalide. Redemande une réinitialisation.");
         } else {
-          // Clear the query string so the token can't be reused on refresh
           window.history.replaceState({}, "", window.location.pathname);
           setSessionReady(true);
         }
-      });
-    }
+      }
+    });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +79,9 @@ const ResetPassword = () => {
     } else {
       setDone(true);
       toast({ title: "Mot de passe mis à jour ✅", description: "Tu peux maintenant te connecter." });
+      // Sign out the recovery session so the original tab doesn't inherit it.
+      // The user should log in fresh with their new password.
+      await supabase.auth.signOut({ scope: "global" });
       setTimeout(() => { window.location.href = "/auth"; }, 2500);
     }
   };
