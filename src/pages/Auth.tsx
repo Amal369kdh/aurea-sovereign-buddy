@@ -35,7 +35,7 @@ const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -43,6 +43,7 @@ const Auth = () => {
   const [acceptedCgu, setAcceptedCgu] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
   const [signupEmail, setSignupEmail] = useState("");
+  const [forgotDone, setForgotDone] = useState(false);
   // When the user already has an unconfirmed account
   const [pendingConfirmation, setPendingConfirmation] = useState(false);
 
