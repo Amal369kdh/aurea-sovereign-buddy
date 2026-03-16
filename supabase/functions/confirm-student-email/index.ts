@@ -45,26 +45,26 @@ serve(async (req) => {
       .eq("token_hash", tokenHash)
       .single();
 
+    const enc = (html: string) => new TextEncoder().encode(html);
+    const htmlHeaders = { "Content-Type": "text/html; charset=utf-8" };
+
     if (fetchError || !verification) {
-      return new Response(htmlPage("Lien invalide", "Ce lien de vérification n'existe pas ou a déjà été utilisé.", false), {
-        status: 404,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+      return new Response(enc(htmlPage("Lien invalide", "Ce lien de vérification n'existe pas ou a déjà été utilisé.", false)), {
+        status: 404, headers: htmlHeaders,
       });
     }
 
     // Check expiry
     if (new Date(verification.expires_at) < new Date()) {
-      return new Response(htmlPage("Lien expiré", "Ce lien a expiré. Demande un nouveau lien depuis l'application.", false), {
-        status: 410,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+      return new Response(enc(htmlPage("Lien expiré", "Ce lien a expiré. Demande un nouveau lien depuis l'application.", false)), {
+        status: 410, headers: htmlHeaders,
       });
     }
 
     // Check if already verified
     if (verification.verified) {
-      return new Response(htmlPage("Déjà vérifié ✅", "Ton email étudiant a déjà été vérifié. Tu peux retourner sur l'application.", true), {
-        status: 200,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+      return new Response(enc(htmlPage("Déjà vérifié ✅", "Ton email étudiant a déjà été vérifié. Tu peux retourner sur l'application.", true)), {
+        status: 200, headers: htmlHeaders,
       });
     }
 
@@ -76,9 +76,8 @@ serve(async (req) => {
 
     if (updateError) {
       console.error("Update verification error:", updateError);
-      return new Response(htmlPage("Erreur", "Impossible de valider. Réessaie.", false), {
-        status: 500,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+      return new Response(enc(htmlPage("Erreur", "Impossible de valider. Réessaie.", false)), {
+        status: 500, headers: htmlHeaders,
       });
     }
 
@@ -90,26 +89,23 @@ serve(async (req) => {
 
     if (profileError) {
       console.error("Profile update error:", profileError);
-      return new Response(htmlPage("Erreur partielle", "Vérification enregistrée mais statut non mis à jour. Contacte le support.", false), {
-        status: 500,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+      return new Response(enc(htmlPage("Erreur partielle", "Vérification enregistrée mais statut non mis à jour. Contacte le support.", false)), {
+        status: 500, headers: htmlHeaders,
       });
     }
 
-    const html = htmlPage(
-      "Email vérifié ✅",
-      `Ton email étudiant <strong>${verification.student_email}</strong> a été vérifié avec succès ! Tu es maintenant <strong>Témoin</strong> et tu as accès à toutes les fonctionnalités. Retourne sur l'application pour continuer.`,
-      true
+    return new Response(
+      enc(htmlPage(
+        "Email vérifié ✅",
+        `Ton email étudiant <strong>${verification.student_email}</strong> a été vérifié avec succès ! Tu es maintenant <strong>Témoin</strong> et tu as accès à toutes les fonctionnalités. Retourne sur l'application pour continuer.`,
+        true
+      )),
+      { status: 200, headers: htmlHeaders }
     );
-    return new Response(new TextEncoder().encode(html), {
-      status: 200,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
-    });
   } catch (e) {
     console.error("confirm-student-email error:", e);
-    return new Response(htmlPage("Erreur", "Une erreur inattendue s'est produite.", false), {
-      status: 500,
-      headers: { "Content-Type": "text/html; charset=utf-8" },
+    return new Response(new TextEncoder().encode(htmlPage("Erreur", "Une erreur inattendue s'est produite.", false)), {
+      status: 500, headers: { "Content-Type": "text/html; charset=utf-8" },
     });
   }
 });

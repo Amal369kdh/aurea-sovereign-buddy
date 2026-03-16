@@ -246,7 +246,7 @@ const Profile = () => {
                   Explorateur
                 </span>
               )}
-              <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-muted-foreground">
+              <span className="rounded-full bg-muted px-3 py-0.5 text-xs font-semibold text-muted-foreground">
                 ✦ {profile.points_social} pts
               </span>
             </div>
