@@ -17,12 +17,12 @@ const corsHeaders = {
 }
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirm your email',
-  invite: "You've been invited",
-  magiclink: 'Your login link',
-  recovery: 'Reset your password',
-  email_change: 'Confirm your new email',
-  reauthentication: 'Your verification code',
+  signup: 'Confirme ton adresse email – Aurea Student',
+  invite: "Tu as été invité(e) sur Aurea Student",
+  magiclink: 'Ton lien de connexion – Aurea Student',
+  recovery: 'Réinitialise ton mot de passe – Aurea Student',
+  email_change: 'Confirme ton nouvel email – Aurea Student',
+  reauthentication: 'Ton code de vérification – Aurea Student',
 }
 
 // Template mapping
