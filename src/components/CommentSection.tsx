@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface CommentSectionProps {
   announcementId: string;
   postAuthorId: string;
+  readOnly?: boolean;
 }
 
 const CommentSection = ({ announcementId, postAuthorId }: CommentSectionProps) => {
