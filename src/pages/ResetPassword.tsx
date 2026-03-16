@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { KeyRound, Lock, ArrowRight, Loader2, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,37 +17,52 @@ const ResetPassword = () => {
   const [done, setDone] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
   const [error, setError] = useState("");
+  // Guard: consume the token only ONCE (React StrictMode double-invoke fix)
+  const handled = useRef(false);
 
-  // Supabase envoie le token via le hash (#access_token=...) ou via ?token_hash=
   useEffect(() => {
+    if (handled.current) return;
+
     const hash = new URLSearchParams(location.hash.slice(1));
     const accessToken = hash.get("access_token");
     const refreshToken = hash.get("refresh_token");
-    const type = hash.get("type");
+    const hashType = hash.get("type");
 
     const params = new URLSearchParams(location.search);
     const tokenHash = params.get("token_hash");
     const qType = params.get("type");
 
-    if (accessToken && refreshToken && type === "recovery") {
-      supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken }).then(({ error }) => {
+    const isHashRecovery = !!accessToken && !!refreshToken && hashType === "recovery";
+    const isQueryRecovery = !!tokenHash && qType === "recovery";
+
+    if (!isHashRecovery && !isQueryRecovery) {
+      // No recovery token at all → back to login
+      navigate("/auth", { replace: true });
+      return;
+    }
+
+    handled.current = true;
+
+    if (isHashRecovery) {
+      supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! }).then(({ error }) => {
         if (error) {
           setError("Lien expiré ou invalide. Redemande une réinitialisation.");
         } else {
-          setSessionReady(true);
-        }
-      });
-    } else if (tokenHash && qType === "recovery") {
-      supabase.auth.verifyOtp({ token_hash: tokenHash, type: "recovery" }).then(({ error }) => {
-        if (error) {
-          setError("Lien expiré ou invalide. Redemande une réinitialisation.");
-        } else {
+          // Clear the hash so the token can't be reused on refresh
+          window.history.replaceState({}, "", window.location.pathname);
           setSessionReady(true);
         }
       });
     } else {
-      // No valid recovery token — redirect to forgot password
-      navigate("/auth", { replace: true });
+      supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "recovery" }).then(({ error }) => {
+        if (error) {
+          setError("Lien expiré ou invalide. Redemande une réinitialisation.");
+        } else {
+          // Clear the query string so the token can't be reused on refresh
+          window.history.replaceState({}, "", window.location.pathname);
+          setSessionReady(true);
+        }
+      });
     }
   }, []);
 
