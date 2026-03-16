@@ -1,276 +1,317 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import * as React from 'npm:react@18.3.1'
+import { renderAsync } from 'npm:@react-email/components@0.0.22'
+import { parseEmailWebhookPayload } from 'npm:@lovable.dev/email-js'
+import { WebhookError, verifyWebhookRequest } from 'npm:@lovable.dev/webhooks-js'
+import { createClient } from 'npm:@supabase/supabase-js@2'
+import { SignupEmail } from '../_shared/email-templates/signup.tsx'
+import { InviteEmail } from '../_shared/email-templates/invite.tsx'
+import { MagicLinkEmail } from '../_shared/email-templates/magic-link.tsx'
+import { RecoveryEmail } from '../_shared/email-templates/recovery.tsx'
+import { EmailChangeEmail } from '../_shared/email-templates/email-change.tsx'
+import { ReauthenticationEmail } from '../_shared/email-templates/reauthentication.tsx'
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-// ─── HTML Template ────────────────────────────────────────────────────────────
-
-function buildEmailHtml(title: string, intro: string, ctaLabel: string, ctaUrl: string): string {
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title}</title>
-</head>
-<body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;padding:40px 16px;">
-    <tr>
-      <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#0d1117;border-radius:16px;overflow:hidden;border:1px solid #1e2530;">
-
-          <!-- Header -->
-          <tr>
-            <td align="center" style="padding:32px 32px 24px;">
-              <div style="display:inline-flex;align-items:center;gap:10px;">
-                <div style="width:36px;height:36px;background:linear-gradient(135deg,#D4A853,#C49B4A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:36px;text-align:center;">♛</div>
-                <span style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">
-                  <span style="background:linear-gradient(135deg,#D4A853,#F0C060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:#D4A853;">Aurea</span>
-                  <span style="color:#f1f5f9;"> Student</span>
-                </span>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Divider -->
-          <tr>
-            <td style="padding:0 32px;">
-              <div style="height:1px;background:linear-gradient(90deg,transparent,#D4A85340,transparent);"></div>
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:28px 32px 8px;">
-              <h1 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#f1f5f9;line-height:1.4;">${title}</h1>
-              <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;line-height:1.7;">${intro}</p>
-
-              <!-- CTA Button -->
-              <table cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center" style="border-radius:12px;background:linear-gradient(135deg,#D4A853,#C49B4A);">
-                    <a href="${ctaUrl}"
-                       style="display:inline-block;padding:14px 28px;font-size:14px;font-weight:700;color:#0d1117;text-decoration:none;border-radius:12px;letter-spacing:0.2px;">
-                      ${ctaLabel} →
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-          <!-- URL fallback -->
-          <tr>
-            <td style="padding:20px 32px 8px;">
-              <p style="margin:0;font-size:11px;color:#475569;line-height:1.6;">
-                Si le bouton ne fonctionne pas, copie ce lien dans ton navigateur :<br />
-                <a href="${ctaUrl}" style="color:#D4A853;word-break:break-all;">${ctaUrl}</a>
-              </p>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="padding:20px 32px 28px;">
-              <div style="height:1px;background:linear-gradient(90deg,transparent,#1e2530,transparent);margin-bottom:16px;"></div>
-              <p style="margin:0;font-size:11px;color:#334155;text-align:center;line-height:1.6;">
-                Tu reçois cet email car un compte a été créé ou une action a été demandée sur <strong style="color:#475569;">Aurea Student</strong>.<br />
-                Si tu n'es pas à l'origine de cette demande, ignore simplement cet email.
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-lovable-signature, x-lovable-timestamp, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 }
 
-// ─── Send via Resend ───────────────────────────────────────────────────────────
-
-async function sendEmail(to: string, subject: string, html: string, resendApiKey: string) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "L'équipe Aurea <onboarding@resend.dev>",
-      to: [to],
-      subject,
-      html,
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Resend error ${res.status}: ${body}`);
-  }
-
-  return await res.json();
+const EMAIL_SUBJECTS: Record<string, string> = {
+  signup: 'Confirm your email',
+  invite: "You've been invited",
+  magiclink: 'Your login link',
+  recovery: 'Reset your password',
+  email_change: 'Confirm your new email',
+  reauthentication: 'Your verification code',
 }
 
-// ─── Main Handler ──────────────────────────────────────────────────────────────
+// Template mapping
+const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
+  signup: SignupEmail,
+  invite: InviteEmail,
+  magiclink: MagicLinkEmail,
+  recovery: RecoveryEmail,
+  email_change: EmailChangeEmail,
+  reauthentication: ReauthenticationEmail,
+}
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+// Configuration
+const SITE_NAME = "aurea-student"
+const SENDER_DOMAIN = "notify.aurea-student.fr"
+const ROOT_DOMAIN = "aurea-student.fr"
+const FROM_DOMAIN = "notify.aurea-student.fr" // Domain shown in From address (may be root or sender subdomain)
+
+// Sample data for preview mode ONLY (not used in actual email sending).
+// URLs are baked in at scaffold time from the project's real data.
+// The sample email uses a fixed placeholder (RFC 6761 .test TLD) so the Go backend
+// can always find-and-replace it with the actual recipient when sending test emails,
+// even if the project's domain has changed since the template was scaffolded.
+const SAMPLE_PROJECT_URL = "https://aurea-student.lovable.app"
+const SAMPLE_EMAIL = "user@example.test"
+const SAMPLE_DATA: Record<string, object> = {
+  signup: {
+    siteName: SITE_NAME,
+    siteUrl: SAMPLE_PROJECT_URL,
+    recipient: SAMPLE_EMAIL,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  magiclink: {
+    siteName: SITE_NAME,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  recovery: {
+    siteName: SITE_NAME,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  invite: {
+    siteName: SITE_NAME,
+    siteUrl: SAMPLE_PROJECT_URL,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  email_change: {
+    siteName: SITE_NAME,
+    email: SAMPLE_EMAIL,
+    newEmail: SAMPLE_EMAIL,
+    confirmationUrl: SAMPLE_PROJECT_URL,
+  },
+  reauthentication: {
+    token: '123456',
+  },
+}
+
+// Preview endpoint handler - returns rendered HTML without sending email
+async function handlePreview(req: Request): Promise<Response> {
+  const previewCorsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, content-type',
   }
 
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: previewCorsHeaders })
+  }
+
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+  const authHeader = req.headers.get('Authorization')
+
+  if (!apiKey || authHeader !== `Bearer ${apiKey}`) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  let type: string
   try {
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendApiKey) {
-      console.error("RESEND_API_KEY not configured");
-      return new Response(JSON.stringify({ error: "Email service not configured" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const payload = await req.json();
-
-    // ── Supabase Auth Hook v2 payload format ──────────────────────────────────
-    // Top-level: { type, user, data: { email_action_type?, token?, token_hash?, redirect_to?, site_url?, confirmation_url? } }
-    // Legacy v1 fallback: { user, email_data: { email_action_type, ... } }
-    // ─────────────────────────────────────────────────────────────────────────
-
-    // Detect payload version
-    const isV2 = typeof payload?.type === "string" && payload?.data !== undefined;
-    const isV1 = payload?.email_data !== undefined;
-
-    let emailActionType: string | undefined;
-    let userEmail: string | undefined;
-    let confirmationUrl: string | undefined;
-    let tokenHash: string | undefined;
-    let redirectTo: string | undefined;
-    let siteUrl: string | undefined;
-
-    if (isV2) {
-      // Auth Hook v2 format
-      emailActionType = payload.type; // e.g. "signup", "recovery", "email_change_new", "invite", "magiclink"
-      userEmail = payload.user?.email;
-      const d = payload.data ?? {};
-      confirmationUrl = d.confirmation_url;
-      tokenHash = d.token_hash;
-      redirectTo = d.redirect_to;
-      siteUrl = d.site_url ?? Deno.env.get("SUPABASE_URL")?.replace("/auth/v1", "");
-    } else if (isV1) {
-      // Legacy v1 format (kept for backwards compat)
-      emailActionType = payload.email_data?.email_action_type;
-      userEmail = payload.user?.email;
-      const d = payload.email_data ?? {};
-      confirmationUrl = d.confirmation_url;
-      tokenHash = d.token_hash;
-      redirectTo = d.redirect_to;
-      siteUrl = d.site_url;
-    }
-
-    console.log("auth-email-hook | version:", isV2 ? "v2" : isV1 ? "v1" : "unknown", "| type:", emailActionType, "| to:", userEmail);
-
-    if (!userEmail || !emailActionType) {
-      console.error("Invalid payload — missing email or type. Raw payload:", JSON.stringify(payload));
-      return new Response(JSON.stringify({ error: "Invalid payload: missing email or action type" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Build the action URL
-    const actionUrl =
-      confirmationUrl ??
-      `${siteUrl}/auth/v1/verify?token=${tokenHash}&type=${emailActionType}&redirect_to=${redirectTo ?? siteUrl}`;
-
-    let subject: string;
-    let html: string;
-
-    // Normalize type variations between v1 and v2
-    const normalizedType = emailActionType.replace("email_change_new", "email_change").replace("email_change_current", "email_change");
-
-    switch (normalizedType) {
-      case "signup":
-      case "email_confirmation":
-        subject = "Confirme ton adresse email – Aurea Student";
-        html = buildEmailHtml(
-          "Confirme ton adresse email 📧",
-          `Bienvenue dans notre cercle.<br /><br />
-           Pour activer ton compte <strong style="color:#f1f5f9;">Aurea Student</strong> et accéder à toutes les ressources pour ton installation à Grenoble, confirme ton adresse email en cliquant sur le bouton ci-dessous.<br /><br />
-           Ce lien est valable <strong style="color:#f1f5f9;">24 heures</strong>.`,
-          "Confirmer mon adresse email",
-          actionUrl
-        );
-        break;
-
-      case "recovery":
-        subject = "Réinitialise ton mot de passe – Aurea Student";
-        html = buildEmailHtml(
-          "Réinitialisation de ton mot de passe 🔑",
-          `Tu as demandé à réinitialiser le mot de passe de ton compte <strong style="color:#f1f5f9;">Aurea Student</strong>.<br /><br />
-           Clique sur le bouton ci-dessous pour choisir un nouveau mot de passe. Ce lien est valable <strong style="color:#f1f5f9;">1 heure</strong>.<br /><br />
-           Si tu n'es pas à l'origine de cette demande, tu peux ignorer cet email — ton mot de passe reste inchangé.`,
-          "Réinitialiser mon mot de passe",
-          actionUrl
-        );
-        break;
-
-      case "invite":
-        subject = "Tu es invité(e) sur Aurea Student 🎓";
-        html = buildEmailHtml(
-          "Invitation sur Aurea Student 🎓",
-          `Tu as été invité(e) à rejoindre <strong style="color:#f1f5f9;">Aurea Student</strong>, la plateforme qui aide les étudiants à s'installer à Grenoble.<br /><br />
-           Clique sur le bouton ci-dessous pour créer ton compte et rejoindre la communauté.`,
-          "Accepter l'invitation",
-          actionUrl
-        );
-        break;
-
-      case "magiclink":
-        subject = "Ton lien de connexion – Aurea Student";
-        html = buildEmailHtml(
-          "Connexion sans mot de passe 🔗",
-          `Utilise ce lien à usage unique pour te connecter à <strong style="color:#f1f5f9;">Aurea Student</strong>.<br /><br />
-           Ce lien expire dans <strong style="color:#f1f5f9;">1 heure</strong> et ne peut être utilisé qu'une seule fois.`,
-          "Me connecter",
-          actionUrl
-        );
-        break;
-
-      case "email_change":
-        subject = "Confirme ton nouvel email – Aurea Student";
-        html = buildEmailHtml(
-          "Changement d'adresse email 📬",
-          `Tu as demandé à changer l'adresse email associée à ton compte <strong style="color:#f1f5f9;">Aurea Student</strong>.<br /><br />
-           Clique sur le bouton ci-dessous pour confirmer cette modification.`,
-          "Confirmer le changement",
-          actionUrl
-        );
-        break;
-
-      default:
-        console.log("Unhandled email action type:", emailActionType);
-        return new Response(JSON.stringify({ message: "Event type not handled" }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-    }
-
-    await sendEmail(userEmail, subject, html, resendApiKey);
-    console.log(`Email sent: ${emailActionType} → ${userEmail}`);
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    console.error("auth-email-hook error:", err);
-    return new Response(
-      JSON.stringify({ error: "Internal server error", detail: String(err) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    const body = await req.json()
+    type = body.type
+  } catch (error) {
+    return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+      status: 400,
+      headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+    })
   }
-});
+
+  const EmailTemplate = EMAIL_TEMPLATES[type]
+
+  if (!EmailTemplate) {
+    return new Response(JSON.stringify({ error: `Unknown email type: ${type}` }), {
+      status: 400,
+      headers: { ...previewCorsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  const sampleData = SAMPLE_DATA[type] || {}
+  const html = await renderAsync(React.createElement(EmailTemplate, sampleData))
+
+  return new Response(html, {
+    status: 200,
+    headers: { ...previewCorsHeaders, 'Content-Type': 'text/html; charset=utf-8' },
+  })
+}
+
+// Webhook handler - verifies signature and sends email
+async function handleWebhook(req: Request): Promise<Response> {
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+
+  if (!apiKey) {
+    console.error('LOVABLE_API_KEY not configured')
+    return new Response(
+      JSON.stringify({ error: 'Server configuration error' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Verify signature + timestamp, then parse payload.
+  let payload: any
+  let run_id = ''
+  try {
+    const verified = await verifyWebhookRequest({
+      req,
+      secret: apiKey,
+      parser: parseEmailWebhookPayload,
+    })
+    payload = verified.payload
+    run_id = payload.run_id
+  } catch (error) {
+    if (error instanceof WebhookError) {
+      switch (error.code) {
+        case 'invalid_signature':
+        case 'missing_timestamp':
+        case 'invalid_timestamp':
+        case 'stale_timestamp':
+          console.error('Invalid webhook signature', { error: error.message })
+          return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          })
+        case 'invalid_payload':
+        case 'invalid_json':
+          console.error('Invalid webhook payload', { error: error.message })
+          return new Response(
+            JSON.stringify({ error: 'Invalid webhook payload' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+      }
+    }
+
+    console.error('Webhook verification failed', { error })
+    return new Response(
+      JSON.stringify({ error: 'Invalid webhook payload' }),
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+  if (!run_id) {
+    console.error('Webhook payload missing run_id')
+    return new Response(
+      JSON.stringify({ error: 'Invalid webhook payload' }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
+  if (payload.version !== '1') {
+    console.error('Unsupported payload version', { version: payload.version, run_id })
+    return new Response(
+      JSON.stringify({ error: `Unsupported payload version: ${payload.version}` }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
+  // The email action type is in payload.data.action_type (e.g., "signup", "recovery")
+  // payload.type is the hook event type ("auth")
+  const emailType = payload.data.action_type
+  console.log('Received auth event', { emailType, email: payload.data.email, run_id })
+
+  const EmailTemplate = EMAIL_TEMPLATES[emailType]
+  if (!EmailTemplate) {
+    console.error('Unknown email type', { emailType, run_id })
+    return new Response(
+      JSON.stringify({ error: `Unknown email type: ${emailType}` }),
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+  // Build template props from payload.data (HookData structure)
+  const templateProps = {
+    siteName: SITE_NAME,
+    siteUrl: `https://${ROOT_DOMAIN}`,
+    recipient: payload.data.email,
+    confirmationUrl: payload.data.url,
+    token: payload.data.token,
+    email: payload.data.email,
+    newEmail: payload.data.new_email,
+  }
+
+  // Render React Email to HTML and plain text
+  const html = await renderAsync(React.createElement(EmailTemplate, templateProps))
+  const text = await renderAsync(React.createElement(EmailTemplate, templateProps), {
+    plainText: true,
+  })
+
+  // Enqueue email for async processing by the dispatcher (process-email-queue).
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  const messageId = crypto.randomUUID()
+
+  // Log pending BEFORE enqueue so we have a record even if enqueue crashes
+  await supabase.from('email_send_log').insert({
+    message_id: messageId,
+    template_name: emailType,
+    recipient_email: payload.data.email,
+    status: 'pending',
+  })
+
+  const { error: enqueueError } = await supabase.rpc('enqueue_email', {
+    queue_name: 'auth_emails',
+    payload: {
+      run_id,
+      message_id: messageId,
+      to: payload.data.email,
+      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      sender_domain: SENDER_DOMAIN,
+      subject: EMAIL_SUBJECTS[emailType] || 'Notification',
+      html,
+      text,
+      purpose: 'transactional',
+      label: emailType,
+      queued_at: new Date().toISOString(),
+    },
+  })
+
+  if (enqueueError) {
+    console.error('Failed to enqueue auth email', { error: enqueueError, run_id, emailType })
+    await supabase.from('email_send_log').insert({
+      message_id: messageId,
+      template_name: emailType,
+      recipient_email: payload.data.email,
+      status: 'failed',
+      error_message: 'Failed to enqueue email',
+    })
+    return new Response(JSON.stringify({ error: 'Failed to enqueue email' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  console.log('Auth email enqueued', { emailType, email: payload.data.email, run_id })
+
+  return new Response(
+    JSON.stringify({ success: true, queued: true }),
+    { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+  )
+}
+
+Deno.serve(async (req) => {
+  const url = new URL(req.url)
+
+  // Handle CORS preflight for main endpoint
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
+  // Route to preview handler for /preview path
+  if (url.pathname.endsWith('/preview')) {
+    return handlePreview(req)
+  }
+
+  // Main webhook handler
+  try {
+    return await handleWebhook(req)
+  } catch (error) {
+    console.error('Webhook handler error:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+})
