@@ -7,6 +7,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// ─── Academic domain validation ────────────────────────────────────────────────
+
 const ALLOWED_PATTERNS = [
   /(^|\.)edu$/i,
   /(^|\.)edu\.[a-z]{2}$/i,
@@ -34,48 +36,106 @@ function isAcademicEmail(email: string): boolean {
   return ALLOWED_PATTERNS.some((pattern) => pattern.test(domain));
 }
 
+// ─── Token generation ──────────────────────────────────────────────────────────
+
 function generateToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function sendVerificationEmail(to: string, confirmUrl: string, resendApiKey: string) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Amal <onboarding@resend.dev>",
-      to: [to],
-      subject: "Confirme ton email étudiant – Amal",
-      html: `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
-          <h1 style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px;">Vérifie ton email étudiant 🎓</h1>
-          <p style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 24px;">
-            Clique sur le bouton ci-dessous pour confirmer ton adresse <strong>${to}</strong> et débloquer toutes les fonctionnalités d'Amal.
-          </p>
-          <a href="${confirmUrl}" style="display: inline-block; background: linear-gradient(135deg, #D4A853, #C49B4A); color: #fff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 15px;">
-            Confirmer mon email ✅
-          </a>
-          <p style="font-size: 13px; color: #999; margin-top: 24px; line-height: 1.5;">
-            Ce lien expire dans 24 heures. Si tu n'as pas fait cette demande, ignore cet email.
-          </p>
-        </div>
-      `,
-    }),
-  });
+// ─── Email HTML builder ────────────────────────────────────────────────────────
 
-  if (!res.ok) {
-    const errorBody = await res.text();
-    console.error("Resend error:", res.status, errorBody);
-    throw new Error("Une erreur est survenue lors de l'envoi de l'email.");
-  }
+function buildVerificationEmailHtml(studentEmail: string, confirmUrl: string): string {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirme ton email étudiant – Aurea Student</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#0d1117;border-radius:16px;overflow:hidden;border:1px solid #1e2530;">
 
-  return await res.json();
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:32px 32px 24px;">
+              <div style="display:inline-flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;background:linear-gradient(135deg,#D4A853,#C49B4A);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:36px;text-align:center;">♛</div>
+                <span style="font-size:22px;font-weight:800;letter-spacing:-0.5px;">
+                  <span style="background:linear-gradient(135deg,#D4A853,#F0C060);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:#D4A853;">Aurea</span>
+                  <span style="color:#f1f5f9;"> Student</span>
+                </span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 32px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#D4A85340,transparent);"></div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:28px 32px 8px;">
+              <h1 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#f1f5f9;line-height:1.4;">Vérifie ton email étudiant 🎓</h1>
+              <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;line-height:1.7;">
+                Clique sur le bouton ci-dessous pour confirmer ton adresse
+                <strong style="color:#f1f5f9;">${studentEmail}</strong>
+                et débloquer toutes les fonctionnalités d'<strong style="color:#f1f5f9;">Aurea Student</strong>
+                (Hub Social, Rencontres, messagerie privée et toutes tes démarches d'installation).<br /><br />
+                Ce lien est valable <strong style="color:#f1f5f9;">24 heures</strong>.
+              </p>
+
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="border-radius:12px;background:linear-gradient(135deg,#D4A853,#C49B4A);">
+                    <a href="${confirmUrl}"
+                       style="display:inline-block;padding:14px 28px;font-size:14px;font-weight:700;color:#0d1117;text-decoration:none;border-radius:12px;letter-spacing:0.2px;">
+                      Confirmer mon email étudiant →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- URL fallback -->
+          <tr>
+            <td style="padding:20px 32px 8px;">
+              <p style="margin:0;font-size:11px;color:#475569;line-height:1.6;">
+                Si le bouton ne fonctionne pas, copie ce lien dans ton navigateur :<br />
+                <a href="${confirmUrl}" style="color:#D4A853;word-break:break-all;">${confirmUrl}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px 28px;">
+              <div style="height:1px;background:linear-gradient(90deg,transparent,#1e2530,transparent);margin-bottom:16px;"></div>
+              <p style="margin:0;font-size:11px;color:#334155;text-align:center;line-height:1.6;">
+                Tu reçois cet email car une vérification d'email étudiant a été demandée sur <strong style="color:#475569;">Aurea Student</strong>.<br />
+                Si tu n'es pas à l'origine de cette demande, ignore simplement cet email.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
+
+// ─── Main handler ──────────────────────────────────────────────────────────────
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -107,7 +167,6 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const authHeader = req.headers.get("Authorization");
 
     if (!authHeader) {
@@ -116,6 +175,7 @@ serve(async (req) => {
       });
     }
 
+    // Authenticate the calling user
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -127,6 +187,8 @@ serve(async (req) => {
     }
 
     const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Rate-limit: max 3 requests per 24h per user
     const { data: recentRequests } = await serviceClient
       .from("student_email_verifications")
       .select("id")
@@ -140,6 +202,7 @@ serve(async (req) => {
       );
     }
 
+    // Guard: email not already verified by another account
     const { data: existingVerified } = await serviceClient
       .from("student_email_verifications")
       .select("user_id")
@@ -154,40 +217,64 @@ serve(async (req) => {
       );
     }
 
+    // Generate token and persist (DB trigger hashes it)
     const token = generateToken();
-    // Insert with plaintext token — the DB trigger will hash it and clear plaintext
-    await serviceClient.from("student_email_verifications").insert({
-      user_id: user.id,
-      student_email: trimmedEmail,
-      token,
-    });
+    const { error: insertError } = await serviceClient
+      .from("student_email_verifications")
+      .insert({ user_id: user.id, student_email: trimmedEmail, token });
 
-    // Build confirm URL with the original plaintext token (before it was hashed)
+    if (insertError) {
+      console.error("Insert verification error:", insertError);
+      return new Response(
+        JSON.stringify({ error: "Une erreur est survenue lors de la création du token." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Build confirmation URL using the plaintext token (before DB hashing)
     const confirmUrl = `${supabaseUrl}/functions/v1/confirm-student-email?token=${token}`;
 
-    // Send email via Resend if API key is configured
-    if (resendApiKey) {
-      await sendVerificationEmail(trimmedEmail, confirmUrl, resendApiKey);
-      console.log(`Verification email sent to ${trimmedEmail}`);
+    // Build email payload for Lovable Cloud email queue
+    const messageId = `student-verify-${user.id}-${Date.now()}`;
+    const emailPayload = {
+      message_id: messageId,
+      to: trimmedEmail,
+      from: "Aurea Student",
+      sender_domain: "notify.aurea-student.fr",
+      subject: "Confirme ton email étudiant – Aurea Student",
+      html: buildVerificationEmailHtml(trimmedEmail, confirmUrl),
+      purpose: "transactional",
+      label: "student_email_verification",
+      queued_at: new Date().toISOString(),
+      idempotency_key: messageId,
+    };
 
+    const { error: enqueueError } = await serviceClient.rpc("enqueue_email", {
+      queue_name: "transactional_emails",
+      payload: emailPayload,
+    });
+
+    if (enqueueError) {
+      console.error("Enqueue email error:", enqueueError);
+      // Fallback: return the confirm URL so the user isn't blocked
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Email de vérification envoyé",
-          email_sent: true,
+          message: "Lien de vérification généré (email indisponible temporairement)",
+          email_sent: false,
+          confirm_url: confirmUrl,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Fallback: return link (dev mode)
-    console.log(`Verification link for ${trimmedEmail}: ${confirmUrl}`);
+    console.log(`Verification email enqueued for ${trimmedEmail} (message_id: ${messageId})`);
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Lien de vérification généré",
-        email_sent: false,
-        confirm_url: confirmUrl,
+        message: "Email de vérification envoyé",
+        email_sent: true,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
