@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck } from "lucide-react";
+import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -35,7 +35,7 @@ const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
 
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -43,6 +43,7 @@ const Auth = () => {
   const [acceptedCgu, setAcceptedCgu] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
   const [signupEmail, setSignupEmail] = useState("");
+  const [forgotDone, setForgotDone] = useState(false);
   // When the user already has an unconfirmed account
   const [pendingConfirmation, setPendingConfirmation] = useState(false);
 
@@ -93,10 +94,18 @@ const Auth = () => {
                   email: signupEmail,
                   options: { emailRedirectTo: window.location.origin },
                 });
+                // If error or account was deleted from dashboard → redirect to signup
                 if (error) {
-                  toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                  if (error.message.toLowerCase().includes("user not found") || error.message.toLowerCase().includes("invalid") || error.status === 422) {
+                    setPendingConfirmation(false);
+                    setEmail(signupEmail);
+                    setMode("signup");
+                    toast({ title: "Compte introuvable", description: "Ce compte n'existe plus. Recrée-le.", variant: "destructive" });
+                  } else {
+                    toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                  }
                 } else {
-                  toast({ title: "Email renvoyé ✅", description: "Vérifie ta boîte mail." });
+                  toast({ title: "Email renvoyé ✅", description: "Vérifie ta boîte mail (et tes spams)." });
                 }
               }}
               className="w-full rounded-2xl border border-primary/30 bg-primary/10 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-colors"
@@ -161,6 +170,90 @@ const Auth = () => {
               className="font-bold text-primary hover:underline cursor-pointer"
             >
               Se connecter
+            </button>
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ── État : mot de passe oublié ────────────────────────────────────────────
+  if (mode === "forgot") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md text-center"
+        >
+          <div className="mb-6 flex flex-col items-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
+              <KeyRound className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-3xl font-extrabold">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+          </div>
+
+          {forgotDone ? (
+            <div className="rounded-3xl border border-border bg-card p-8 space-y-4">
+              <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-primary/10">
+                <MailCheck className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Email envoyé ✅</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Un lien de réinitialisation a été envoyé à{" "}
+                <span className="font-semibold text-foreground">{email}</span>.<br /><br />
+                Clique sur ce lien pour choisir un nouveau mot de passe. Vérifie aussi tes spams.
+              </p>
+            </div>
+          ) : (
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setSubmitting(true);
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: `${window.location.origin}/auth`,
+                });
+                setSubmitting(false);
+                if (error) {
+                  toast({ title: "Erreur", description: translateAuthError(error.message), variant: "destructive" });
+                } else {
+                  setForgotDone(true);
+                }
+              }}
+              className="space-y-4 rounded-3xl border border-border bg-card p-6"
+            >
+              <h2 className="text-lg font-bold text-foreground">Mot de passe oublié ?</h2>
+              <p className="text-sm text-muted-foreground">Saisis ton email pour recevoir un lien de réinitialisation.</p>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><ArrowRight className="h-4 w-4" /> Envoyer le lien</>}
+              </button>
+            </form>
+          )}
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            <button
+              onClick={() => { setMode("login"); setForgotDone(false); }}
+              className="font-bold text-primary hover:underline cursor-pointer"
+            >
+              ← Retour à la connexion
             </button>
           </p>
         </motion.div>
@@ -272,6 +365,18 @@ const Auth = () => {
               className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
           </div>
+
+          {mode === "login" && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setMode("forgot")}
+                className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
+          )}
 
           {mode === "signup" && (
             <label className="flex items-start gap-3 cursor-pointer group">
