@@ -235,17 +235,18 @@ const Profile = () => {
           </div>
           <div className="flex flex-col items-center gap-1.5">
             <p className="text-lg font-extrabold text-foreground">{profile.display_name || "—"}</p>
-            <div className="flex items-center gap-2">
-              {profile.is_verified && (
+          <div className="flex items-center gap-2">
+              {(profile.status === "temoin" || profile.status === "admin" || profile.is_verified) ? (
                 <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-0.5 text-xs font-bold text-emerald-400">
                   <ShieldCheck className="h-3 w-3" />
-                  Témoin
+                  {profile.status === "admin" ? "Admin" : "Témoin ✅"}
+                </span>
+              ) : (
+                <span className="rounded-full border border-border bg-secondary px-3 py-0.5 text-xs font-semibold text-muted-foreground">
+                  Explorateur
                 </span>
               )}
-              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
-                {statusLabel[profile.status] ?? profile.status}
-              </span>
-              <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-muted-foreground">
+              <span className="rounded-full bg-muted px-3 py-0.5 text-xs font-semibold text-muted-foreground">
                 ✦ {profile.points_social} pts
               </span>
             </div>
