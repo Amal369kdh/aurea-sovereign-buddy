@@ -139,9 +139,18 @@ serve(async (req) => {
   }
 });
 
-function htmlPage(title: string, message: string, success: boolean): string {
+function htmlPage(title: string, message: string, success: boolean, userId?: string): string {
   const color = success ? "#22c55e" : "#ef4444";
   const icon = success ? "&#9989;" : "&#10060;";
+  // Script: signal all open tabs of the app that verification is complete
+  const signalScript = success && userId ? `
+  <script>
+    try {
+      // Signal the opener/parent tab via localStorage so it refreshes without reload
+      localStorage.setItem('aurea_student_verified', '${userId}');
+      setTimeout(function() { localStorage.removeItem('aurea_student_verified'); }, 5000);
+    } catch(e) {}
+  </script>` : "";
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -176,6 +185,7 @@ function htmlPage(title: string, message: string, success: boolean): string {
   </style>
 </head>
 <body>
+  ${signalScript}
   <div class="card">
     <div class="icon">${icon}</div>
     <h1>${title}</h1>
@@ -183,4 +193,5 @@ function htmlPage(title: string, message: string, success: boolean): string {
   </div>
 </body>
 </html>`;
+}
 }
