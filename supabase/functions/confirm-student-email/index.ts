@@ -194,4 +194,3 @@ function htmlPage(title: string, message: string, success: boolean, userId?: str
 </body>
 </html>`;
 }
-}
