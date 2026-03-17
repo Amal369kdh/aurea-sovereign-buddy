@@ -119,15 +119,17 @@ serve(async (req) => {
     }
 
     const appUrl = "https://aurea-student.fr";
+    const userId = verification.user_id;
 
-    return new Response(
-      htmlPage(
-        "Email v&#233;rifi&#233; &#10003;",
-        `Ton email &#233;tudiant <strong>${verification.student_email}</strong> a &#233;t&#233; v&#233;rifi&#233; avec succ&#232;s&#160;! Tu es maintenant <strong>T&#233;moin</strong> et tu as acc&#232;s &#224; toutes les fonctionnalit&#233;s.<br><br><a href="${appUrl}" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#D4A853,#C49B4A);color:#0d1117;border-radius:0.75rem;font-weight:700;text-decoration:none;font-size:0.875rem;">Acc&#233;der &#224; mon espace &#8594;</a>`,
-        true
-      ),
-      { status: 200, headers: htmlHeaders }
+    // Page with auto-close script that signals the opener tab via localStorage
+    const successHtml = htmlPage(
+      "Email v&#233;rifi&#233; &#10003;",
+      `Ton email &#233;tudiant <strong>${verification.student_email}</strong> a &#233;t&#233; v&#233;rifi&#233; avec succ&#232;s&#160;! Tu es maintenant <strong>T&#233;moin</strong> et tu as acc&#232;s &#224; toutes les fonctionnalit&#233;s.<br><br><a href="${appUrl}" id="appLink" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#D4A853,#C49B4A);color:#0d1117;border-radius:0.75rem;font-weight:700;text-decoration:none;font-size:0.875rem;">Acc&#233;der &#224; mon espace &#8594;</a>`,
+      true,
+      userId
     );
+
+    return new Response(successHtml, { status: 200, headers: htmlHeaders });
   } catch (e) {
     console.error("confirm-student-email error:", e);
     return new Response(
