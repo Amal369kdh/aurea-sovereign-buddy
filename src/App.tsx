@@ -33,6 +33,13 @@ const isMobileDevice = () =>
  * Only runs when there is actually a token in the URL — never loops.
  * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
  */
+/**
+ * Handles Supabase email confirmation links (?token_hash= or #access_token=).
+ * Only runs when there is actually a token in the URL — never loops.
+ * Renders a FULL-SCREEN overlay (z-50) to prevent the underlying route from
+ * showing through during processing and on the success/confirmation screen.
+ * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
+ */
 const EmailConfirmHandler = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +48,8 @@ const EmailConfirmHandler = () => {
   const [city, setCity] = useState<string>("ta ville");
   // Guard: never process twice (React strict mode / remounts)
   const handled = useRef(false);
+  // Whether this component should render at all (token present)
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -53,13 +62,12 @@ const EmailConfirmHandler = () => {
     const hashType = hash.get("type");
 
     // ⚠️ CRITICAL: Never handle recovery tokens here — /reset-password handles them exclusively.
-    // If we consume the token here, ResetPassword can't use it and the user gets signed in
-    // without being able to change their password (wrong-account bug).
     if (type === "recovery" || hashType === "recovery") return;
 
-    const hasToken = (tokenHash && type) || (accessToken && refreshToken);
-    // ⚠️ If there is no token in the URL we do NOTHING — avoids boucle infinie
-    if (!hasToken) return;
+    const tokenPresent = !!(tokenHash && type) || !!(accessToken && refreshToken);
+    // If there is no token in the URL we do NOTHING
+    if (!tokenPresent) return;
+    setHasToken(true);
     if (handled.current) return;
     handled.current = true;
 
@@ -68,6 +76,8 @@ const EmailConfirmHandler = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         subscription.unsubscribe();
+        // Clean the token from the URL so refresh doesn't re-trigger
+        window.history.replaceState({}, "", window.location.pathname);
 
         if (isMobileDevice()) {
           if (session?.user?.id) {
@@ -86,12 +96,13 @@ const EmailConfirmHandler = () => {
             setConfirmed(true);
           }
         } else {
+          // Desktop: redirect directly, don't show confirmed screen
           setTimeout(() => navigate("/", { replace: true }), 100);
         }
       }
     });
 
-    const exchange = tokenHash && type
+    const exchange = (tokenHash && type)
       ? supabase.auth.verifyOtp({ token_hash: tokenHash, type })
       : supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
 
@@ -99,6 +110,7 @@ const EmailConfirmHandler = () => {
       if (error) {
         subscription.unsubscribe();
         setProcessing(false);
+        setHasToken(false);
         // En cas d'erreur (lien expiré), on nettoie l'URL et on revient à /auth
         window.history.replaceState({}, "", "/auth");
       }
@@ -107,9 +119,12 @@ const EmailConfirmHandler = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Don't render anything if there's no token — avoids overlapping with underlying route
+  if (!hasToken && !processing && !confirmed) return null;
+
   if (confirmed) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-center">
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background px-6 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-3xl gold-gradient">
           <span className="text-2xl">✨</span>
         </div>
@@ -133,7 +148,7 @@ const EmailConfirmHandler = () => {
 
   if (processing) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
