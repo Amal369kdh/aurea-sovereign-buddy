@@ -67,7 +67,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
       options: {
         data: { display_name: displayName },
-        emailRedirectTo: window.location.origin,
+        // Toujours pointer vers le domaine de production pour éviter
+        // les redirections vers l'URL interne de Lovable
+        emailRedirectTo: "https://aurea-student.fr",
       },
     });
     return { error: error?.message ?? null, data };
