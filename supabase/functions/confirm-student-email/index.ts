@@ -22,7 +22,7 @@ serve(async (req) => {
 
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
-  const APP_URL = "https://aurea-student.lovable.app";
+  const APP_URL = "https://aurea-student.fr";
 
   // ── GET: browser clicked the email link ──────────────────────────────────────
   // Immediately redirect to the app which will call us back via POST
