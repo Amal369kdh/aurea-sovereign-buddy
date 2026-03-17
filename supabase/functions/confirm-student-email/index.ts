@@ -20,7 +20,11 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const htmlHeaders = { "Content-Type": "text/html; charset=utf-8" };
+  // Force UTF-8 + no sniffing so browsers never misread the encoding
+  const htmlHeaders = {
+    "Content-Type": "text/html; charset=utf-8",
+    "X-Content-Type-Options": "nosniff",
+  };
 
   try {
     const url = new URL(req.url);
@@ -48,23 +52,38 @@ serve(async (req) => {
       .single();
 
     if (fetchError || !verification) {
-      return new Response(htmlPage("Lien invalide", "Ce lien de vérification n'existe pas ou a déjà été utilisé.", false), {
-        status: 404, headers: htmlHeaders,
-      });
+      return new Response(
+        htmlPage(
+          "Lien invalide",
+          "Ce lien de v&#233;rification n&#8217;existe pas ou a d&#233;j&#224; &#233;t&#233; utilis&#233;.",
+          false
+        ),
+        { status: 404, headers: htmlHeaders }
+      );
     }
 
     // Check expiry
     if (new Date(verification.expires_at) < new Date()) {
-      return new Response(htmlPage("Lien expiré", "Ce lien a expiré. Demande un nouveau lien depuis l'application.", false), {
-        status: 410, headers: htmlHeaders,
-      });
+      return new Response(
+        htmlPage(
+          "Lien expir&#233;",
+          "Ce lien a expir&#233;. Demande un nouveau lien depuis l&#8217;application.",
+          false
+        ),
+        { status: 410, headers: htmlHeaders }
+      );
     }
 
     // Check if already verified
     if (verification.verified) {
-      return new Response(htmlPage("Déjà vérifié ✅", "Ton email étudiant a déjà été vérifié. Tu peux retourner sur l'application.", true), {
-        status: 200, headers: htmlHeaders,
-      });
+      return new Response(
+        htmlPage(
+          "D&#233;j&#224; v&#233;rifi&#233; &#10003;",
+          "Ton email &#233;tudiant a d&#233;j&#224; &#233;t&#233; v&#233;rifi&#233;. Tu peux retourner sur l&#8217;application.",
+          true
+        ),
+        { status: 200, headers: htmlHeaders }
+      );
     }
 
     // Mark as verified AND wipe the token_hash so the link is strictly one-time-use
@@ -75,9 +94,10 @@ serve(async (req) => {
 
     if (updateError) {
       console.error("Update verification error:", updateError);
-      return new Response(htmlPage("Erreur", "Impossible de valider. Réessaie.", false), {
-        status: 500, headers: htmlHeaders,
-      });
+      return new Response(
+        htmlPage("Erreur", "Impossible de valider. R&#233;essaie.", false),
+        { status: 500, headers: htmlHeaders }
+      );
     }
 
     // Update profile status to 'temoin'
@@ -88,40 +108,48 @@ serve(async (req) => {
 
     if (profileError) {
       console.error("Profile update error:", profileError);
-      return new Response(htmlPage("Erreur partielle", "Vérification enregistrée mais statut non mis à jour. Contacte le support.", false), {
-        status: 500, headers: htmlHeaders,
-      });
+      return new Response(
+        htmlPage(
+          "Erreur partielle",
+          "V&#233;rification enregistr&#233;e mais statut non mis &#224; jour. Contacte le support.",
+          false
+        ),
+        { status: 500, headers: htmlHeaders }
+      );
     }
+
+    const appUrl = "https://aurea-student.fr";
 
     return new Response(
       htmlPage(
-        "Email vérifié ✅",
-        `Ton email étudiant <strong>${verification.student_email}</strong> a été vérifié avec succès ! Tu es maintenant <strong>Témoin</strong> et tu as accès à toutes les fonctionnalités. Retourne sur l'application pour continuer.`,
+        "Email v&#233;rifi&#233; &#10003;",
+        `Ton email &#233;tudiant <strong>${verification.student_email}</strong> a &#233;t&#233; v&#233;rifi&#233; avec succ&#232;s&#160;! Tu es maintenant <strong>T&#233;moin</strong> et tu as acc&#232;s &#224; toutes les fonctionnalit&#233;s.<br><br><a href="${appUrl}" style="display:inline-block;margin-top:1rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#D4A853,#C49B4A);color:#0d1117;border-radius:0.75rem;font-weight:700;text-decoration:none;font-size:0.875rem;">Acc&#233;der &#224; mon espace &#8594;</a>`,
         true
       ),
       { status: 200, headers: htmlHeaders }
     );
   } catch (e) {
     console.error("confirm-student-email error:", e);
-    return new Response(htmlPage("Erreur", "Une erreur inattendue s'est produite.", false), {
-      status: 500, headers: htmlHeaders,
-    });
+    return new Response(
+      htmlPage("Erreur", "Une erreur inattendue s&#8217;est produite.", false),
+      { status: 500, headers: htmlHeaders }
+    );
   }
 });
 
 function htmlPage(title: string, message: string, success: boolean): string {
   const color = success ? "#22c55e" : "#ef4444";
-  const icon = success ? "✅" : "❌";
+  const icon = success ? "&#9989;" : "&#10060;";
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #0a0e1a;
       color: #e2e8f0;
       display: flex;
@@ -136,6 +164,7 @@ function htmlPage(title: string, message: string, success: boolean): string {
       border-radius: 1.25rem;
       padding: 2.5rem;
       max-width: 420px;
+      width: 100%;
       text-align: center;
     }
     .icon { font-size: 3rem; margin-bottom: 1rem; }
