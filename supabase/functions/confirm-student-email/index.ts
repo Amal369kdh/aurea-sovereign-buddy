@@ -22,7 +22,7 @@ serve(async (req) => {
 
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
-  const APP_URL = "https://aurea-student.lovable.app";
+  const APP_URL = "https://aurea-student.fr";
 
   // ── GET: browser clicked the email link ──────────────────────────────────────
   // Immediately redirect to the app which will call us back via POST
@@ -52,13 +52,33 @@ serve(async (req) => {
 
       const tokenHash = await sha256Hex(postToken);
 
+      // ── Étape 1 : vérifier d'abord que le token existe et n'est pas expiré ────
       const { data: verification, error: fetchError } = await supabase
         .from("student_email_verifications")
         .select("id, user_id, student_email, verified, expires_at")
         .eq("token_hash", tokenHash)
-        .single();
+        .maybeSingle();
 
+      // Token introuvable : soit invalide, soit déjà consommé par un appel parallèle
+      // → On cherche si un enregistrement "verified=true" pour ce user existe déjà
+      // (pour retourner un succès idempotent au lieu d'une erreur)
       if (fetchError || !verification) {
+        // Tenter de récupérer via le token brut (stocké en clair pour l'idempotence)
+        const { data: consumed } = await supabase
+          .from("student_email_verifications")
+          .select("id, user_id, student_email, verified")
+          .eq("token", postToken)
+          .eq("verified", true)
+          .maybeSingle();
+
+        if (consumed) {
+          // Race condition gagnée par un appel parallèle — succès idempotent
+          return new Response(
+            JSON.stringify({ success: true, already_verified: true, user_id: consumed.user_id }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
         return new Response(JSON.stringify({ error: "invalid_token" }), {
           status: 404,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -72,7 +92,7 @@ serve(async (req) => {
         });
       }
 
-      // Already verified — idempotent success
+      // Déjà vérifié (appel idempotent normal)
       if (verification.verified) {
         return new Response(
           JSON.stringify({ success: true, already_verified: true, user_id: verification.user_id }),
@@ -80,11 +100,17 @@ serve(async (req) => {
         );
       }
 
-      // Consume the token and mark as verified
-      const { error: updateVerifError } = await supabase
+      // ── Étape 2 : Consommer le token de façon atomique ────────────────────────
+      // UPDATE atomique : ne réussit que si token_hash correspond ET verified=false.
+      // Si React StrictMode envoie 2 requêtes en parallèle, une seule gagnera le UPDATE.
+      // L'autre trouvera 0 lignes et retournera un succès idempotent.
+      const { data: consumed, error: updateVerifError } = await supabase
         .from("student_email_verifications")
         .update({ verified: true, token_hash: "CONSUMED" })
-        .eq("id", verification.id);
+        .eq("id", verification.id)
+        .eq("verified", false) // ← condition atomique : ne passe qu'une fois
+        .select("id, user_id, student_email")
+        .maybeSingle();
 
       if (updateVerifError) {
         console.error("Update verification error:", updateVerifError);
@@ -94,11 +120,20 @@ serve(async (req) => {
         });
       }
 
-      // Promote profile to temoin
+      // 0 lignes retournées → un appel parallèle a déjà consommé le token → succès idempotent
+      if (!consumed) {
+        return new Response(
+          JSON.stringify({ success: true, already_verified: true, user_id: verification.user_id }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // ── Étape 3 : Promouvoir le profil en "temoin" ────────────────────────────
+      // Cette opération est idempotente (UPDATE sur un profil déjà "temoin" est sans effet)
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ status: "temoin", is_verified: true })
-        .eq("user_id", verification.user_id);
+        .eq("user_id", consumed.user_id);
 
       if (profileError) {
         console.error("Profile update error:", profileError);
@@ -109,7 +144,7 @@ serve(async (req) => {
       }
 
       return new Response(
-        JSON.stringify({ success: true, user_id: verification.user_id, student_email: verification.student_email }),
+        JSON.stringify({ success: true, user_id: consumed.user_id, student_email: consumed.student_email }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } catch (e) {
