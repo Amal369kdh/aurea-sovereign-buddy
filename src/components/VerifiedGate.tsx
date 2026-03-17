@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,21 +53,60 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   const [gateState, setGateState] = useState<GateState>("idle");
   const [email, setEmail] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  const loadProfile = async (uid: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("status, suspended_until")
+      .eq("user_id", uid)
+      .maybeSingle();
+    const profileData = data as { status: string; suspended_until: string | null } | null;
+    setStatus(profileData?.status ?? "explorateur");
+    setSuspendedUntil(profileData?.suspended_until ?? null);
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
-    supabase
-      .from("profiles")
-      .select("status, suspended_until")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        const profileData = data as { status: string; suspended_until: string | null } | null;
-        setStatus(profileData?.status ?? "explorateur");
-        setSuspendedUntil(profileData?.suspended_until ?? null);
-        setLoading(false);
-      });
-  }, [user]);
+
+    loadProfile(user.id);
+
+    // Realtime subscription: detect when is_verified/status changes (e.g. after clicking confirmation link)
+    const ch = supabase
+      .channel(`profile-verify-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          const newRow = payload.new as { status: string; suspended_until: string | null; is_verified: boolean };
+          if (newRow.status === "temoin" || newRow.is_verified) {
+            setStatus("temoin");
+            setSuspendedUntil(newRow.suspended_until);
+            refreshProfile();
+            toast({
+              title: "Email vérifié ✅",
+              description: "Ton statut est maintenant Témoin. Toutes les fonctionnalités sont débloquées !",
+            });
+          }
+        }
+      )
+      .subscribe();
+    channelRef.current = ch;
+
+    // Cross-tab sync: detect verification done in another tab/window
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "aurea_student_verified" && e.newValue === user.id) {
+        loadProfile(user.id).then(() => refreshProfile());
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      ch.unsubscribe();
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, [user?.id]);
 
   if (loading) return null;
 
