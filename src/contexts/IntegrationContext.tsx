@@ -427,6 +427,7 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
 
   const loadProfileData = useCallback(async () => {
     if (!user) return;
+    // Force fresh fetch — no cache so restrictions s'appliquent immédiatement
     const { data: profile } = await supabase
       .from("profiles")
       .select("is_in_france, nationality, status")
@@ -472,7 +473,24 @@ export const IntegrationProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadData();
-  }, [user, loadProfileData]);
+
+    // ── Realtime: mise à jour instantanée du statut sans rechargement ──────────
+    const channel = supabase
+      .channel(`integration-profile-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          const updated = payload.new as { status: string; is_in_france: boolean | null; nationality: string };
+          setIsInFranceState(updated.is_in_france ?? null);
+          setIsFrench(updated.nationality === "🇫🇷 Française");
+          setIsTemoin(updated.status === "temoin" || updated.status === "admin");
+        }
+      )
+      .subscribe();
+
+    return () => { channel.unsubscribe(); };
+  }, [user?.id, loadProfileData]);
 
   const refreshProfile = useCallback(async () => {
     await loadProfileData();
