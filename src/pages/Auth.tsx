@@ -92,7 +92,7 @@ const Auth = () => {
                 const { error } = await supabase.auth.resend({
                   type: "signup",
                   email: signupEmail,
-                  options: { emailRedirectTo: window.location.origin },
+                  options: { emailRedirectTo: "https://aurea-student.fr" },
                 });
                 // If error or account was deleted from dashboard → redirect to signup
                 if (error) {
