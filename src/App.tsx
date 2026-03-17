@@ -235,6 +235,50 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+/**
+ * AppRouter détecte la présence d'un token de confirmation Supabase
+ * (token_hash + type OU access_token dans le hash) DÈS le premier render,
+ * avant que les Routes ne se montent.
+ * Si un token est présent → on affiche UNIQUEMENT EmailConfirmHandler,
+ * ce qui empêche tout overlap entre la page d'auth et le dashboard.
+ * Si pas de token → rendu normal des Routes.
+ */
+const AppRouter = () => {
+  const loc = window.location;
+  const params = new URLSearchParams(loc.search);
+  const hash = new URLSearchParams(loc.hash.slice(1));
+
+  const hasConfirmToken =
+    // token Supabase dans les query params (signup, email_change…)
+    (!!params.get("token_hash") && !!params.get("type") && params.get("type") !== "recovery") ||
+    // token dans le hash (ancien format)
+    (!!hash.get("access_token") && !!hash.get("refresh_token") && hash.get("type") !== "recovery");
+
+  if (hasConfirmToken) {
+    // Aucune route ne se monte — EmailConfirmHandler gère tout
+    return <EmailConfirmHandler />;
+  }
+
+  return (
+    <>
+      <Routes>
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+        <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
+        <Route path="/hub-social" element={<ProtectedRoute><HubSocial /></ProtectedRoute>} />
+        <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+        <Route path="/legal" element={<Legal />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -243,24 +287,9 @@ const App = () => (
           <Toaster />
           <Sonner />
           <ErrorBoundary>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-              <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
-              <Route path="/hub-social" element={<ProtectedRoute><HubSocial /></ProtectedRoute>} />
-              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-              <Route path="/legal" element={<Legal />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            {/* EmailConfirmHandler en dehors des Routes pour intercepter les hash tokens */}
-            <EmailConfirmHandler />
-          </BrowserRouter>
+            <BrowserRouter>
+              <AppRouter />
+            </BrowserRouter>
           </ErrorBoundary>
         </IntegrationProvider>
       </AuthProvider>
