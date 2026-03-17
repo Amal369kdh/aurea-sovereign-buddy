@@ -989,6 +989,15 @@ export type Database = {
       }
     }
     Functions: {
+      check_profile_update_allowed: {
+        Args: {
+          p_new_is_premium: boolean
+          p_new_is_verified: boolean
+          p_new_status: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       cleanup_expired_announcements: { Args: never; Returns: undefined }
       delete_email: {
         Args: { message_id: number; queue_name: string }
