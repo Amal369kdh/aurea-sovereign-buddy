@@ -242,7 +242,7 @@ serve(async (req) => {
 
     // Build confirmation URL pointing to the APP (not the function directly)
     // The app's /verify-email page will call the function via POST — no raw HTML in browser
-    const APP_URL = "https://aurea-student.lovable.app";
+    const APP_URL = "https://aurea-student.fr";
     const confirmUrl = `${APP_URL}/verify-email?token=${token}`;
 
     // Build email payload for Lovable Cloud email queue
