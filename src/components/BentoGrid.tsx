@@ -194,14 +194,14 @@ const BentoTile = ({
 
 /* ─── Default tiles ─── ordre chronologique pour un étudiant arrivant en France */
 const defaultTiles = (city: string) => [
-  // ÉTAPE 1 — Trouver un logement (avant même d'arriver)
+  // ÉTAPE 1 — Trouver un logement
   {
     step: 1,
     title: "Logement",
     subtitle: "Résidences CROUS & plateformes locales",
     icon: Home,
     accentClass: "bg-warning/15 text-warning",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
@@ -210,28 +210,28 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "SeLoger Étudiant", sub: "Colocations et studios", href: "https://www.seloger.com" },
     ] as QuickLink[],
   },
-  // ÉTAPE 2 — Titre de séjour & préfecture (arrivée = premier passage obligatoire)
+  // ÉTAPE 2 — Titre de séjour & préfecture
   {
     step: 2,
     title: "Préfecture",
     subtitle: "Titre de séjour & RDV en ligne",
     icon: Landmark,
     accentClass: "bg-info/15 text-info",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: MapPin, label: `Préfecture de ${city}`, sub: "Trouver l'adresse", href: `https://maps.google.com/?q=préfecture+${city}` },
       { icon: Globe, label: "Prendre RDV en ligne", sub: "Titre de séjour étudiant", href: "https://www.prefectures-regions.gouv.fr" },
     ] as QuickLink[],
   },
-  // ÉTAPE 3 — Aides financières & CAF (dès l'arrivée)
+  // ÉTAPE 3 — Aides financières & CAF
   {
     step: 3,
     title: "Aides & Administratif",
     subtitle: "CAF, bourses, CROUS & papiers",
     icon: ClipboardCheck,
     accentClass: "gold-gradient text-primary-foreground",
-    className: "lg:col-span-2",
+    className: "",
     lockable: true,
     links: [
       { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
@@ -241,14 +241,14 @@ const defaultTiles = (city: string) => [
       { icon: Landmark, label: "Aide d'urgence CROUS", sub: "Si tu es en difficulté financière", href: "https://www.etudiant.gouv.fr/fr/aides-specifiques-702" },
     ] as QuickLink[],
   },
-  // ÉTAPE 4 — Ouvrir un compte bancaire
+  // ÉTAPE 4 — Banque
   {
     step: 4,
     title: "Banque",
     subtitle: "Ouvrir un compte étudiant",
     icon: Landmark,
     accentClass: "bg-primary/15 text-primary",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: Globe, label: "Hello Bank", sub: "Compte gratuit étudiant", href: "https://www.hellobank.fr" },
@@ -258,14 +258,14 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
     ] as QuickLink[],
   },
-  // ÉTAPE 5 — Santé (médecin traitant, SSE, urgences)
+  // ÉTAPE 5 — Santé
   {
     step: 5,
     title: "Santé",
     subtitle: "Soins, urgences & bien-être",
     icon: Stethoscope,
     accentClass: "bg-destructive/15 text-destructive",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: Stethoscope, label: "Médecins secteur 1", sub: "Sans avance de frais — Annuaire Ameli", href: "https://annuairesante.ameli.fr/" },
@@ -274,14 +274,14 @@ const defaultTiles = (city: string) => [
       { icon: Heart, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" },
     ] as QuickLink[],
   },
-  // ÉTAPE 6 — Vie pratique au quotidien
+  // ÉTAPE 6 — Vie pratique
   {
     step: 6,
     title: "Vie pratique",
     subtitle: "Transport, repas à 1€ & sport",
     icon: Bus,
     accentClass: "bg-success/15 text-success",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: Bus, label: `Transport ${city}`, sub: "Abonnement étudiant réduit", href: `https://maps.google.com/?q=transport+étudiant+${city}` },
@@ -296,7 +296,7 @@ const defaultTiles = (city: string) => [
     subtitle: "Jobs, stages, alternance & carrière",
     icon: Briefcase,
     accentClass: "bg-info/15 text-info",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: Briefcase, label: "Jobs étudiants", sub: "Offres vérifiées — 20h/sem max", href: "https://www.jobaviz.fr/" },
@@ -312,7 +312,7 @@ const defaultTiles = (city: string) => [
     subtitle: "Aide sociale, psycho & juridique",
     icon: HeartHandshake,
     accentClass: "bg-destructive/10 text-destructive",
-    className: "lg:col-span-1",
+    className: "",
     lockable: true,
     links: [
       { icon: Phone, label: "Assistante sociale CROUS", sub: `04 76 57 44 00 — ${city}`, href: "tel:+33476574400" },
@@ -555,7 +555,7 @@ const BentoGrid = () => {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid gap-4 lg:grid-cols-2"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
           >
             {tiles.map((t) => (
               <BentoTile
@@ -565,7 +565,7 @@ const BentoGrid = () => {
                 icon={t.icon}
                 accentClass={t.accentClass}
                 links={t.links}
-                className={t.className}
+                className=""
                 locked={false}
                 onNavigate={navigate}
                 onUnlock={() => setVerifyOpen(true)}
