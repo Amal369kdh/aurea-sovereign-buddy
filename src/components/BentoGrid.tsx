@@ -555,7 +555,7 @@ const BentoGrid = () => {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid gap-4 lg:grid-cols-2"
+            className="grid grid-cols-1 gap-3 sm:grid-cols-2"
           >
             {tiles.map((t) => (
               <BentoTile
@@ -565,7 +565,7 @@ const BentoGrid = () => {
                 icon={t.icon}
                 accentClass={t.accentClass}
                 links={t.links}
-                className={t.className}
+                className=""
                 locked={false}
                 onNavigate={navigate}
                 onUnlock={() => setVerifyOpen(true)}

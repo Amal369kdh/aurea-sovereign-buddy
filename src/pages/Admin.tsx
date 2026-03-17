@@ -410,34 +410,81 @@ const Admin = () => {
 
   // ─── Tab content renderers ────────────────────────────────────────────────
 
-  const renderOverview = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <KpiCard label="Utilisateurs total" value={kpi.total} icon="👥" />
-        <KpiCard label="Nouveaux cette semaine" value={kpi.newWeek} icon="🆕" />
-        <KpiCard label="Témoins vérifiés" value={kpi.verified} icon="✅" />
-        <KpiCard label="Revenus estimés (€/mois)" value={`${kpi.premiumRevenue} €`} icon="💰" />
-        <KpiCard label="Messages Amal utilisés" value={kpi.ayaMsgToday} icon="🤖" />
-      </div>
-      <Section title="Répartition des statuts">
-        {(["explorateur", "temoin", "gold", "admin"] as const).map((s) => {
-          const count = users.filter((u) => u.status === s).length;
-          const pct = kpi.total > 0 ? Math.round((count / kpi.total) * 100) : 0;
-          return (
-            <div key={s} className="mb-3 last:mb-0">
-              <div className="mb-1 flex justify-between text-sm">
-                <span className="font-semibold text-foreground capitalize">{s}</span>
-                <span className="text-muted-foreground">{count} ({pct}%)</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full gold-gradient transition-all" style={{ width: `${pct}%` }} />
-              </div>
+  const renderOverview = () => {
+    // Calcul des utilisateurs avec ≥5 signalements (depuis les reports déjà chargés)
+    const reportCountByUser = reports.reduce<Record<string, number>>((acc, r) => {
+      if (r.reported_user_id) {
+        acc[r.reported_user_id] = (acc[r.reported_user_id] ?? 0) + 1;
+      }
+      return acc;
+    }, {});
+    const flaggedUsers = Object.entries(reportCountByUser)
+      .filter(([, count]) => count >= 5)
+      .map(([userId, count]) => ({
+        userId,
+        count,
+        displayName: users.find((u) => u.user_id === userId)?.display_name ?? userId.slice(0, 8),
+      }));
+
+    return (
+      <div className="space-y-4">
+        {/* Alerte utilisateurs très signalés */}
+        {flaggedUsers.length > 0 && (
+          <div className="rounded-3xl border border-destructive/40 bg-destructive/5 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <span className="text-sm font-bold text-destructive">
+                {flaggedUsers.length} utilisateur{flaggedUsers.length > 1 ? "s" : ""} avec ≥5 signalements
+              </span>
             </div>
-          );
-        })}
-      </Section>
-    </div>
-  );
+            <div className="space-y-2">
+              {flaggedUsers.map(({ userId, count, displayName }) => (
+                <div key={userId} className="flex items-center justify-between rounded-2xl bg-destructive/10 px-4 py-2">
+                  <span className="text-sm font-semibold text-foreground">{displayName}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-destructive/20 px-2.5 py-0.5 text-xs font-bold text-destructive">
+                      {count} signalements
+                    </span>
+                    <button
+                      onClick={() => setTab("moderation")}
+                      className="rounded-xl border border-destructive/30 px-2.5 py-1 text-xs font-bold text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      Gérer →
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <KpiCard label="Utilisateurs total" value={kpi.total} icon="👥" />
+          <KpiCard label="Nouveaux cette semaine" value={kpi.newWeek} icon="🆕" />
+          <KpiCard label="Témoins vérifiés" value={kpi.verified} icon="✅" />
+          <KpiCard label="Revenus estimés (€/mois)" value={`${kpi.premiumRevenue} €`} icon="💰" />
+          <KpiCard label="Messages Amal utilisés" value={kpi.ayaMsgToday} icon="🤖" />
+        </div>
+        <Section title="Répartition des statuts">
+          {(["explorateur", "temoin", "gold", "admin"] as const).map((s) => {
+            const count = users.filter((u) => u.status === s).length;
+            const pct = kpi.total > 0 ? Math.round((count / kpi.total) * 100) : 0;
+            return (
+              <div key={s} className="mb-3 last:mb-0">
+                <div className="mb-1 flex justify-between text-sm">
+                  <span className="font-semibold text-foreground capitalize">{s}</span>
+                  <span className="text-muted-foreground">{count} ({pct}%)</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full gold-gradient transition-all" style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </Section>
+      </div>
+    );
+  };
 
   const renderUsers = () => (
     <div className="space-y-3">
