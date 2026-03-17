@@ -109,21 +109,22 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
       </div>
 
       {/* Compose box — hidden for read-only (unverified) users */}
-      {!readOnly && <div className="mb-6 rounded-3xl border border-border bg-card p-4">
-        <textarea
-          value={newContent}
-          onChange={(e) => setNewContent(e.target.value)}
-          placeholder="Partage quelque chose avec la communauté…"
-          className="w-full resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-          rows={3}
-        />
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex gap-2">
+      {!readOnly && (
+        <div className="mb-6 rounded-3xl border border-border bg-card p-4">
+          <textarea
+            value={newContent}
+            onChange={(e) => setNewContent(e.target.value)}
+            placeholder="Partage quelque chose avec la communauté…"
+            className="w-full resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            rows={3}
+          />
+          {/* Category chips — scrollable on mobile */}
+          <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-none pb-1">
             {(["general", "entraide", "sorties", "logement"] as AnnouncementCategory[]).map((cat) => (
               <button
                 key={cat}
                 onClick={() => setNewCategory(cat)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                   newCategory === cat
                     ? "gold-gradient text-primary-foreground"
                     : "bg-secondary text-secondary-foreground"
@@ -133,16 +134,19 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
               </button>
             ))}
           </div>
-          <button
-            onClick={handlePost}
-            disabled={posting || !newContent.trim()}
-            className="flex items-center gap-2 rounded-2xl gold-gradient px-5 py-2.5 text-sm font-bold text-primary-foreground transition-all disabled:opacity-50 cursor-pointer"
-          >
-            {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            Publier
-          </button>
+          {/* Send button — full width on mobile, right-aligned on desktop */}
+          <div className="mt-3 flex justify-end">
+            <button
+              onClick={handlePost}
+              disabled={posting || !newContent.trim()}
+              className="flex items-center gap-2 rounded-2xl gold-gradient px-5 py-2.5 text-sm font-bold text-primary-foreground transition-all disabled:opacity-50 cursor-pointer"
+            >
+              {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Publier
+            </button>
+          </div>
         </div>
-      </div>}
+      )}
 
       {/* Posts */}
       {loading ? (
