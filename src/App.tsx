@@ -19,6 +19,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
