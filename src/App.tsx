@@ -248,6 +248,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
               <Route path="/hub-social" element={<ProtectedRoute><HubSocial /></ProtectedRoute>} />
