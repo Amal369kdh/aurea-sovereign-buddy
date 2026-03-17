@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Users, ArrowRight } from "lucide-react";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +24,7 @@ const SocialPulse = () => {
       .select("display_name, avatar_initials, city, university, is_verified")
       .eq("status", "temoin")
       .eq("is_verified", true)
-      .order("updated_at", { ascending: false })
+      .order("points_social", { ascending: false })
       .limit(6)
       .then(({ data }) => {
         setStudents(data ?? []);
@@ -37,13 +37,13 @@ const SocialPulse = () => {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold text-foreground">Social Pulse</h2>
-          <p className="text-xs text-muted-foreground">Étudiants Témoins prêts à aider dans ta ville</p>
+          <p className="text-xs text-muted-foreground">Étudiants Témoins actifs dans ta ville</p>
         </div>
         <button
           onClick={() => navigate("/hub-social")}
           className="flex items-center gap-1 text-xs font-medium text-primary cursor-pointer hover:underline"
         >
-          Voir tout <ArrowRight className="h-3 w-3" />
+          Voir le Hub <ArrowRight className="h-3 w-3" />
         </button>
       </div>
 
@@ -66,7 +66,9 @@ const SocialPulse = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1, duration: 0.4 }}
-              className="flex shrink-0 flex-col items-center gap-2 rounded-3xl border border-border bg-secondary/40 px-5 py-4 transition-all hover:border-primary/30 hover:bg-secondary cursor-pointer"
+              // Purement décoratif : pas de cursor-pointer, pas de onClick
+              // Le seul moyen d'interagir est via le Hub Social (publications → solution)
+              className="flex shrink-0 flex-col items-center gap-2 rounded-3xl border border-border bg-secondary/40 px-5 py-4"
             >
               <div className="relative">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
@@ -79,13 +81,21 @@ const SocialPulse = () => {
               <p className="text-xs font-semibold text-foreground whitespace-nowrap">{s.display_name ?? "Anonyme"}</p>
               <p className="text-[10px] text-muted-foreground">{s.university ?? s.city ?? ""}</p>
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                Témoin
+                Témoin ✓
               </span>
             </motion.div>
           ))
         )}
       </div>
 
+      {/* Note informative : pas de contact direct */}
+      <p className="mt-3 text-[10px] text-muted-foreground text-center leading-relaxed">
+        Tu vois qui est actif ici 👀 — Pour échanger, publie dans le{" "}
+        <button onClick={() => navigate("/hub-social")} className="font-semibold text-primary hover:underline cursor-pointer">
+          Hub Social
+        </button>{" "}
+        et utilise la fonction <span className="font-semibold">Solution trouvée</span>.
+      </p>
     </div>
   );
 };
