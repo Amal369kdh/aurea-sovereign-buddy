@@ -27,7 +27,7 @@ const OBJECTIFS = [
   { id: "diplome", label: "🎓 Obtenir mon diplôme" },
   { id: "job", label: "💼 Trouver un job/stage" },
   { id: "reseau", label: "🤝 Développer mon réseau" },
-  { id: "papiers", label: "📄 Régulariser mes papiers" },
+  { id: "rencontres", label: "🧑‍🤝‍🧑 Rencontrer d'autres étudiants" },
   { id: "logement", label: "🏠 Trouver un logement" },
   { id: "sante", label: "🏥 M'occuper de ma santé" },
 ];
