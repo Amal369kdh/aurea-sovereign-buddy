@@ -19,6 +19,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -247,6 +248,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
               <Route path="/mon-dossier" element={<ProtectedRoute><MonDossier /></ProtectedRoute>} />
               <Route path="/hub-social" element={<ProtectedRoute><HubSocial /></ProtectedRoute>} />

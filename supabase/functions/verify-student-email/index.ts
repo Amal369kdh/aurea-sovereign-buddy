@@ -240,8 +240,10 @@ serve(async (req) => {
       );
     }
 
-    // Build confirmation URL using the plaintext token (before DB hashing)
-    const confirmUrl = `${supabaseUrl}/functions/v1/confirm-student-email?token=${token}`;
+    // Build confirmation URL pointing to the APP (not the function directly)
+    // The app's /verify-email page will call the function via POST — no raw HTML in browser
+    const APP_URL = "https://aurea-student.lovable.app";
+    const confirmUrl = `${APP_URL}/verify-email?token=${token}`;
 
     // Build email payload for Lovable Cloud email queue
     const messageId = `student-verify-${user.id}-${Date.now()}`;
