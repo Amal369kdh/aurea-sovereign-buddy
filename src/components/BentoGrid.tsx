@@ -214,14 +214,15 @@ const defaultTiles = (city: string) => [
   {
     step: 2,
     title: "Préfecture",
-    subtitle: "Titre de séjour & RDV en ligne",
+    subtitle: "Titre de séjour — ANEF & Bâtiment MUSE",
     icon: Landmark,
     accentClass: "bg-info/15 text-info",
     className: "",
     lockable: true,
     links: [
-      { icon: MapPin, label: `Préfecture de ${city}`, sub: "Trouver l'adresse", href: `https://maps.google.com/?q=préfecture+${city}` },
-      { icon: Globe, label: "Prendre RDV en ligne", sub: "Titre de séjour étudiant", href: "https://www.prefectures-regions.gouv.fr" },
+      { icon: Globe, label: "Portail ANEF — VLS-TS en ligne", sub: "Validation du titre de séjour • 75 €", href: "https://administration-etrangers-en-france.interieur.gouv.fr/" },
+      { icon: MapPin, label: "Bâtiment MUSE (antenne campus)", sub: "80 allée Ampère, Domaine Universitaire • ex-ISSO", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Grenoble" },
+      { icon: MapPin, label: "Préfecture de l'Isère", sub: "Place de Verdun, Grenoble • retrait carte de séjour", href: "https://maps.google.com/?q=Préfecture+Isère+Place+de+Verdun+Grenoble" },
     ] as QuickLink[],
   },
   // ÉTAPE 3 — Aides financières & CAF
