@@ -440,6 +440,46 @@ const Profile = () => {
             {saving ? "Sauvegarde…" : "Sauvegarder"}
           </button>
         </motion.div>
+
+        {/* ── Profil Rencontres ── */}
+        {datingProfile && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Section title="Profil Rencontres">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 rounded-2xl bg-primary/5 border border-primary/20 px-4 py-3">
+                  <Heart className="h-4 w-4 shrink-0 text-primary fill-primary" />
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold text-foreground">Je cherche</p>
+                    <p className="text-xs text-muted-foreground">{lookingForLabels[datingProfile.looking_for] || datingProfile.looking_for}</p>
+                  </div>
+                  <span className={`rounded-xl px-3 py-1 text-xs font-bold ${datingProfile.is_active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                    {datingProfile.is_active ? "Actif" : "Inactif"}
+                  </span>
+                </div>
+                {datingProfile.bio && (
+                  <div className="rounded-2xl bg-secondary/50 px-4 py-3">
+                    <p className="text-xs font-semibold text-foreground mb-1">Bio</p>
+                    <p className="text-xs text-muted-foreground italic">"{datingProfile.bio}"</p>
+                  </div>
+                )}
+                <button
+                  onClick={() => navigate("/hub-social")}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/30 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5 cursor-pointer"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Voir les Rencontres
+                </button>
+              </div>
+            </Section>
+          </motion.div>
+        )}
+
+        {/* ── Danger zone ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <Section title="Zone de danger">
+            <DeleteAccountButton />
+          </Section>
+        </motion.div>
       </div>
     </div>
   );
