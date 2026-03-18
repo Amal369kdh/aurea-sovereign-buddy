@@ -122,7 +122,7 @@ const Profile = () => {
   useEffect(() => {
     if (!user) return;
     const fetchAll = async () => {
-      const [profileRes, univRes] = await Promise.all([
+      const [profileRes, univRes, datingRes] = await Promise.all([
         supabase
           .from("profiles")
           .select(
@@ -131,6 +131,7 @@ const Profile = () => {
           .eq("user_id", user.id)
           .maybeSingle(),
         supabase.from("universities").select("id, name, city").order("name"),
+        supabase.from("dating_profiles").select("id, bio, looking_for, show_me, is_active").eq("user_id", user.id).maybeSingle(),
       ]);
 
       if (univRes.data) setUniversities(univRes.data);
