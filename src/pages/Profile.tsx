@@ -78,6 +78,20 @@ const inputClass =
 const selectClass =
   "w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer";
 
+type DatingProfileData = {
+  id: string;
+  bio: string | null;
+  looking_for: string;
+  show_me: string;
+  is_active: boolean;
+};
+
+const lookingForLabels: Record<string, string> = {
+  amitie: "🤝 Amitié",
+  relation: "❤️ Relation",
+  les_deux: "💫 Les deux",
+};
+
 const Profile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -85,6 +99,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [universities, setUniversities] = useState<{ id: string; name: string; city: string }[]>([]);
+  const [datingProfile, setDatingProfile] = useState<DatingProfileData | null>(null);
 
   const [profile, setProfile] = useState<ProfileData>({
     display_name: "",
