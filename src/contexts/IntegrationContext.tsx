@@ -180,17 +180,23 @@ const allPhases: ChecklistPhase[] = [
       {
         id: "telephone", label: "Forfait téléphone français", done: false,
         link: "https://www.free.fr/forfait-mobile/",
-        tip: "Free Mobile à 2 € ou 19,99 € — sans engagement, idéal pour commencer.",
+        tip: "Free Mobile recommandé en ville — Bouygues si tu vas souvent en montagne.",
         guide: {
           steps: [
-            "Va dans une boutique Free, SFR, Orange ou Bouygues avec ton passeport",
-            "Choisis un forfait sans engagement (Free 2€ ou 19,99€ recommandé)",
-            "Active la carte SIM dans ton téléphone",
-            "Tu auras un numéro français immédiatement",
+            "Vérifie d'abord que ton téléphone est débloqué (désimlocké)",
+            "Choisis ton opérateur selon tes besoins (voir conseils ci-dessous)",
+            "Va en boutique avec ton passeport ou commande en ligne",
+            "Active la carte SIM — tu auras un numéro français immédiatement",
+            "Si besoin d'un dépannage transport : envoie un SMS au 93123 pour acheter un ticket de bus",
           ],
           documents: ["Passeport ou pièce d'identité", "RIB français (ou carte bancaire pour le premier paiement)"],
           deadline: "Dès l'arrivée — un numéro français est demandé partout",
-          pitfalls: ["Vérifie que ton téléphone est débloqué (désimlocké)", "Le forfait à 2€ de Free inclut 2h d'appels — suffisant pour commencer"],
+          pitfalls: [
+            "Free est le moins cher mais capte mal en zone montagneuse (Vercors, Chartreuse, Belledonne)",
+            "Bouygues Telecom : meilleur rapport qualité/prix/réseau à Grenoble, bonne couverture montagne",
+            "Orange : le meilleur réseau mais plus cher — à réserver si tu travailles en zone rurale",
+            "SFR : couverture correcte, moins bon rapport qualité/prix que Bouygues à Grenoble",
+          ],
         },
       },
       {
