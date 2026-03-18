@@ -307,17 +307,22 @@ const allPhases: ChecklistPhase[] = [
       {
         id: "medecin", label: "Choisir un médecin traitant", done: false,
         link: "https://annuairesante.ameli.fr/",
-        tip: "Trouve un médecin secteur 1 (sans dépassement) sur Ameli.",
+        tip: "Priorité au Centre de Santé MUSE sur le campus — médecins secteur 1, sans avance de frais.",
         guide: {
           steps: [
-            "Va sur annuairesante.ameli.fr",
-            "Cherche un médecin généraliste secteur 1 (conventionné, pas de dépassement)",
+            "Première option (recommandée) : Centre de Santé MUSE — Bâtiment MUSE, 80 allée Ampère, Domaine Universitaire",
+            "Sinon, cherche sur annuairesante.ameli.fr un médecin généraliste secteur 1 (sans dépassement)",
             "Appelle pour vérifier qu'il accepte de nouveaux patients",
             "Lors de la première consultation, remplis le formulaire de déclaration de médecin traitant",
+            "Demande la Complémentaire Santé Solidaire (C2S) sur ameli.fr — gratuite ou quasi gratuite selon revenus",
           ],
-          documents: ["Carte Vitale ou attestation provisoire", "Pièce d'identité"],
-          deadline: "Dans les 2 premiers mois — nécessaire pour le remboursement optimal",
-          pitfalls: ["Sans médecin traitant, tu es moins bien remboursé (30% au lieu de 70%)", "Un médecin secteur 1 = consultation à 26,50 € remboursée à 70%", "Si tu ne trouves pas, demande au service santé de ta fac"],
+          documents: ["Carte Vitale ou attestation provisoire Ameli", "Pièce d'identité"],
+          deadline: "Dans les 2 premiers mois — obligatoire pour le remboursement optimal (70% au lieu de 30%)",
+          pitfalls: [
+            "Sans médecin traitant déclaré, tes consultations sont remboursées à seulement 30%",
+            "La C2S (ex-CMU-C) remplace entièrement la mutuelle — vérifie d'abord ton éligibilité sur ameli.fr avant de payer une mutuelle",
+            "Si tu n'es pas éligible C2S, contacte les partenaires Aurea pour une offre mutuelle étudiante",
+          ],
         },
       },
       {
