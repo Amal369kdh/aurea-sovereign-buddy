@@ -13,12 +13,24 @@ const emergencyNumbers = [
   { label: "Prévention suicide", number: "3114", color: "text-info" },
 ];
 
-const buildSafePlaces = (city: string) => [
-  { name: "Commissariat de Police", address: city, type: "Police", mapsQuery: "commissariat police " + city },
-  { name: "Hôpital — Urgences", address: city, type: "Hôpital", mapsQuery: "urgences hôpital " + city },
-  { name: "CROUS — Service social", address: city, type: "Social", mapsQuery: "CROUS service social " + city },
-  { name: "Service santé étudiants", address: city, type: "Campus", mapsQuery: "service santé étudiants " + city },
-];
+const buildSafePlaces = (city: string) => {
+  const isGrenoble = city.toLowerCase().includes("grenoble");
+  if (isGrenoble) {
+    return [
+      { name: "Commissariat Central de Grenoble", address: "12 rue Lesdiguières, Grenoble", type: "Police", mapsQuery: "Commissariat Police Grenoble 12 rue Lesdiguières" },
+      { name: "CHU Grenoble Alpes — Urgences", address: "Avenue Maquis du Grésivaudan, La Tronche", type: "Hôpital", mapsQuery: "CHU Grenoble Alpes Urgences La Tronche" },
+      { name: "Centre de Santé MUSE (journée)", address: "Bâtiment MUSE, 80 allée Ampère, Domaine Universitaire", type: "Campus", mapsQuery: "Centre Santé MUSE Domaine Universitaire Grenoble" },
+      { name: "Secours Catholique (urgence sociale)", address: "10 rue Sergent Bobillot, Grenoble", type: "Social", mapsQuery: "Secours Catholique 10 rue Sergent Bobillot Grenoble" },
+      { name: "CROUS — Assistante sociale", address: "351 allée Berlioz, Domaine Universitaire", type: "CROUS", mapsQuery: "CROUS Grenoble 351 allée Berlioz" },
+    ];
+  }
+  return [
+    { name: "Commissariat de Police", address: city, type: "Police", mapsQuery: "commissariat police " + city },
+    { name: "Hôpital — Urgences", address: city, type: "Hôpital", mapsQuery: "urgences hôpital " + city },
+    { name: "CROUS — Service social", address: city, type: "Social", mapsQuery: "CROUS service social " + city },
+    { name: "Service santé étudiants", address: city, type: "Campus", mapsQuery: "service santé étudiants " + city },
+  ];
+};
 
 const SecuritySovereign = () => {
   const { user } = useAuth();
