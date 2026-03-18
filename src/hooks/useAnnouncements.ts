@@ -55,15 +55,26 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
       return;
     }
 
-    // Fetch author profiles (vue publique)
+    // Fetch author profiles (vue publique + status pour identifier les admins)
     const authorIds = [...new Set(posts.map((p) => p.author_id))];
-    const { data: profiles } = await supabase
-      .from("profiles_public")
-      .select("user_id, display_name, avatar_initials, university, is_verified")
-      .in("user_id", authorIds);
+    const [{ data: profiles }, { data: statusProfiles }] = await Promise.all([
+      supabase
+        .from("profiles_public")
+        .select("user_id, display_name, avatar_initials, university, is_verified, status")
+        .in("user_id", authorIds),
+      // Fallback: lire le status directement pour les admins (profiles_public peut ne pas avoir status)
+      supabase
+        .from("profiles")
+        .select("user_id, status, display_name, avatar_initials, university")
+        .in("user_id", authorIds),
+    ]);
 
     const profileMap = new Map(
       (profiles || []).map((p) => [p.user_id, p])
+    );
+    // Merge status from direct profiles query for admins
+    const statusMap = new Map(
+      (statusProfiles || []).map((p) => [p.user_id, p])
     );
 
     // Fetch my likes
@@ -76,6 +87,10 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
 
     const mapped: Announcement[] = posts.map((post) => {
       const profile = profileMap.get(post.author_id);
+      const statusProfile = statusMap.get(post.author_id);
+      const status = (profile as { status?: string } | undefined)?.status || statusProfile?.status || "explorateur";
+      const isAdmin = status === "admin";
+      const isTemoinOrAdmin = status === "temoin" || isAdmin;
       return {
         id: post.id,
         content: post.content,
@@ -85,10 +100,11 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
         is_pinned: post.is_pinned ?? false,
         created_at: post.created_at,
         author_id: post.author_id,
-        author_name: profile?.display_name || "Anonyme",
-        author_initials: profile?.avatar_initials || "??",
-        author_university: profile?.university || null,
-        author_verified: profile?.is_verified || false,
+        // Admins affichent "Équipe Aurea", témoins affichent leur nom
+        author_name: isAdmin ? "Équipe Aurea" : (profile?.display_name || statusProfile?.display_name || "Anonyme"),
+        author_initials: isAdmin ? "AU" : (profile?.avatar_initials || statusProfile?.avatar_initials || "?"),
+        author_university: isAdmin ? null : (profile?.university || statusProfile?.university || null),
+        author_verified: isTemoinOrAdmin,
         liked_by_me: likedSet.has(post.id),
       };
     });

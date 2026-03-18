@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, ShieldCheck, Save } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck, Save, Heart, Sparkles } from "lucide-react";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 const NATIONALITIES = [
   "🇫🇷 Française",
@@ -77,6 +78,20 @@ const inputClass =
 const selectClass =
   "w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer";
 
+type DatingProfileData = {
+  id: string;
+  bio: string | null;
+  looking_for: string;
+  show_me: string;
+  is_active: boolean;
+};
+
+const lookingForLabels: Record<string, string> = {
+  amitie: "🤝 Amitié",
+  relation: "❤️ Relation",
+  les_deux: "💫 Les deux",
+};
+
 const Profile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -84,6 +99,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [universities, setUniversities] = useState<{ id: string; name: string; city: string }[]>([]);
+  const [datingProfile, setDatingProfile] = useState<DatingProfileData | null>(null);
 
   const [profile, setProfile] = useState<ProfileData>({
     display_name: "",
@@ -106,7 +122,7 @@ const Profile = () => {
   useEffect(() => {
     if (!user) return;
     const fetchAll = async () => {
-      const [profileRes, univRes] = await Promise.all([
+      const [profileRes, univRes, datingRes] = await Promise.all([
         supabase
           .from("profiles")
           .select(
@@ -115,9 +131,11 @@ const Profile = () => {
           .eq("user_id", user.id)
           .maybeSingle(),
         supabase.from("universities").select("id, name, city").order("name"),
+        supabase.from("dating_profiles").select("id, bio, looking_for, show_me, is_active").eq("user_id", user.id).maybeSingle(),
       ]);
 
       if (univRes.data) setUniversities(univRes.data);
+      if (datingRes.data) setDatingProfile(datingRes.data as DatingProfileData);
 
       if (profileRes.data) {
         const d = profileRes.data;
@@ -237,7 +255,7 @@ const Profile = () => {
             <p className="text-lg font-extrabold text-foreground">{profile.display_name || "—"}</p>
           <div className="flex items-center gap-2">
               {(profile.status === "temoin" || profile.status === "admin" || profile.is_verified) ? (
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-0.5 text-xs font-bold text-emerald-400">
+                <span className="flex items-center gap-1 rounded-full bg-success/15 px-3 py-0.5 text-xs font-bold text-success">
                   <ShieldCheck className="h-3 w-3" />
                   {profile.status === "admin" ? "Admin" : "Témoin ✅"}
                 </span>
@@ -421,6 +439,46 @@ const Profile = () => {
             {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
             {saving ? "Sauvegarde…" : "Sauvegarder"}
           </button>
+        </motion.div>
+
+        {/* ── Profil Rencontres ── */}
+        {datingProfile && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Section title="Profil Rencontres">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 rounded-2xl bg-primary/5 border border-primary/20 px-4 py-3">
+                  <Heart className="h-4 w-4 shrink-0 text-primary fill-primary" />
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold text-foreground">Je cherche</p>
+                    <p className="text-xs text-muted-foreground">{lookingForLabels[datingProfile.looking_for] || datingProfile.looking_for}</p>
+                  </div>
+                  <span className={`rounded-xl px-3 py-1 text-xs font-bold ${datingProfile.is_active ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"}`}>
+                    {datingProfile.is_active ? "Actif" : "Inactif"}
+                  </span>
+                </div>
+                {datingProfile.bio && (
+                  <div className="rounded-2xl bg-secondary/50 px-4 py-3">
+                    <p className="text-xs font-semibold text-foreground mb-1">Bio</p>
+                    <p className="text-xs text-muted-foreground italic">"{datingProfile.bio}"</p>
+                  </div>
+                )}
+                <button
+                  onClick={() => navigate("/hub-social")}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/30 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5 cursor-pointer"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Voir les Rencontres
+                </button>
+              </div>
+            </Section>
+          </motion.div>
+        )}
+
+        {/* ── Danger zone ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+          <Section title="Zone de danger">
+            <DeleteAccountButton />
+          </Section>
         </motion.div>
       </div>
     </div>

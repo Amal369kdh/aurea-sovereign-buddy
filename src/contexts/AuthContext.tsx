@@ -25,10 +25,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Si un autre onglet supprime le compte ou se déconnecte via Supabase Auth,
+      // cet event SIGNED_OUT sera émis dans TOUS les onglets automatiquement.
+      // On force alors une redirection propre pour éviter la boucle infinie.
+      if (event === "SIGNED_OUT" && !session) {
+        // Seulement si la page courante n'est pas déjà /auth
+        if (!window.location.pathname.startsWith("/auth") && !window.location.pathname.startsWith("/reset-password")) {
+          window.location.href = "/auth";
+        }
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -40,8 +50,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Cross-tab sync: when ANOTHER tab confirms an email or logs in, refresh session
     // here so this tab reflects the new state.
     // IMPORTANT: only react to NEW sessions appearing (newValue set), never to
-    // sign-outs (newValue null) — this prevents the reset-password page's local
-    // signOut from knocking out sessions in other tabs.
+    // sign-outs (newValue null from storage) — the Supabase Auth SIGNED_OUT event
+    // above already handles cross-tab logouts/deletions properly.
     const handleStorage = (e: StorageEvent) => {
       if (e.key && e.key.includes("supabase") && e.newValue !== null) {
         supabase.auth.getSession().then(({ data: { session } }) => {

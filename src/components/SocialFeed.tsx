@@ -268,7 +268,11 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
               {/* Author row */}
               <div className="mb-3 flex items-center gap-3">
                 <div className="relative">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold ${
+                    post.author_name === "Équipe Aurea"
+                      ? "gold-gradient text-primary-foreground"
+                      : "bg-muted text-foreground"
+                  }`}>
                     {post.author_verified ? post.author_initials : "?"}
                   </div>
                   {post.author_verified && (
@@ -283,11 +287,17 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
                       {post.author_verified ? post.author_name : "Anonyme"}
                     </span>
                     {post.author_verified && (
-                      <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
+                      post.author_name === "Équipe Aurea" ? (
+                        <Badge className="h-5 border-0 gold-gradient text-[10px] text-primary-foreground">Admin</Badge>
+                      ) : (
+                        <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
+                      )
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {post.author_verified ? (post.author_university || "Université") : "Vérifié ton email pour voir les profils"} ·{" "}
+                    {post.author_verified
+                      ? (post.author_name === "Équipe Aurea" ? "Aurea Student" : (post.author_university || "Université"))
+                      : "Vérifie ton email pour voir les profils"}{" "}·{" "}
                     {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: fr })}
                   </p>
                 </div>
