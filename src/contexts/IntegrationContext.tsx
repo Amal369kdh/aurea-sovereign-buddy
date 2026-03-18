@@ -225,19 +225,25 @@ const allPhases: ChecklistPhase[] = [
       {
         id: "vls-ts", label: "Validation du VLS-TS (titre de séjour)", done: false, hasAya: true,
         link: "https://administration-etrangers-en-france.interieur.gouv.fr/",
-        tip: "À faire dans les 3 premiers mois après ton arrivée — paiement de 75 €.",
+        tip: "100% en ligne sur l'ANEF — ou en physique au Bâtiment MUSE (80 allée Ampère, Domaine Universitaire).",
         guide: {
           steps: [
-            "Va sur administration-etrangers-en-france.interieur.gouv.fr",
+            "Va sur administration-etrangers-en-france.interieur.gouv.fr (portail ANEF)",
             "Crée un compte et choisis « Valider mon VLS-TS »",
             "Renseigne ta date d'arrivée en France et ton adresse",
             "Paye le timbre fiscal de 75 € (par carte bancaire en ligne)",
-            "Télécharge la confirmation de validation",
-            "Conserve précieusement cette confirmation — c'est ton titre de séjour",
+            "Télécharge la confirmation de validation — c'est ton titre de séjour",
+            "Si tu as besoin d'une aide physique : Bâtiment MUSE (ex-ISSO), 80 allée Ampère — c'est le hub administratif du campus",
+            "Pour le retrait physique de la carte de séjour : MUSE ou Préfecture, place de Verdun",
           ],
           documents: ["Passeport avec le visa VLS-TS", "Adresse en France", "Carte bancaire pour le paiement de 75 €"],
           deadline: "IMPÉRATIF : dans les 3 premiers mois après l'arrivée en France",
-          pitfalls: ["Si tu dépasses les 3 mois, tu seras en situation irrégulière", "Le timbre fiscal de 75 € n'est PAS remboursable", "Garde une copie numérique de la confirmation sur ton téléphone"],
+          pitfalls: [
+            "Si tu dépasses les 3 mois, tu seras en situation irrégulière",
+            "Le timbre fiscal de 75 € n'est PAS remboursable",
+            "Garde une copie numérique de la confirmation sur ton téléphone — elle fait foi autant que la carte physique",
+            "MUSE regroupe : préfecture, santé, CROUS — une seule adresse pour tout régler sur le campus",
+          ],
         },
       },
       {
