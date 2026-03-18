@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, ShieldCheck, Save } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck, Save, Heart, Sparkles } from "lucide-react";
+import DeleteAccountButton from "@/components/DeleteAccountButton";
 
 const NATIONALITIES = [
   "🇫🇷 Française",
