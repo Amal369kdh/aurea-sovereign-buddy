@@ -283,11 +283,17 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
                       {post.author_verified ? post.author_name : "Anonyme"}
                     </span>
                     {post.author_verified && (
-                      <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
+                      post.author_name === "Équipe Aurea" ? (
+                        <Badge className="h-5 border-0 gold-gradient text-[10px] text-primary-foreground">Admin</Badge>
+                      ) : (
+                        <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
+                      )
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {post.author_verified ? (post.author_university || "Université") : "Vérifié ton email pour voir les profils"} ·{" "}
+                    {post.author_verified
+                      ? (post.author_name === "Équipe Aurea" ? "Aurea Student" : (post.author_university || "Université"))
+                      : "Vérifie ton email pour voir les profils"}{" "}·{" "}
                     {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: fr })}
                   </p>
                 </div>
