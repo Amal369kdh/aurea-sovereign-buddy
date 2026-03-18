@@ -135,6 +135,7 @@ const Profile = () => {
       ]);
 
       if (univRes.data) setUniversities(univRes.data);
+      if (datingRes.data) setDatingProfile(datingRes.data as DatingProfileData);
 
       if (profileRes.data) {
         const d = profileRes.data;
