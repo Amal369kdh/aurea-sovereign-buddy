@@ -255,7 +255,7 @@ const Profile = () => {
             <p className="text-lg font-extrabold text-foreground">{profile.display_name || "—"}</p>
           <div className="flex items-center gap-2">
               {(profile.status === "temoin" || profile.status === "admin" || profile.is_verified) ? (
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-0.5 text-xs font-bold text-emerald-400">
+                <span className="flex items-center gap-1 rounded-full bg-success/15 px-3 py-0.5 text-xs font-bold text-success">
                   <ShieldCheck className="h-3 w-3" />
                   {profile.status === "admin" ? "Admin" : "Témoin ✅"}
                 </span>
