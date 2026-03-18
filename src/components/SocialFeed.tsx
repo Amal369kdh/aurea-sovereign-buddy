@@ -268,7 +268,11 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
               {/* Author row */}
               <div className="mb-3 flex items-center gap-3">
                 <div className="relative">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold ${
+                    post.author_name === "Équipe Aurea"
+                      ? "gold-gradient text-primary-foreground"
+                      : "bg-muted text-foreground"
+                  }`}>
                     {post.author_verified ? post.author_initials : "?"}
                   </div>
                   {post.author_verified && (
