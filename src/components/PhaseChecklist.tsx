@@ -86,6 +86,26 @@ const PhaseChecklist = () => {
       <h2 className="text-xl font-extrabold text-foreground">Parcours d'intégration</h2>
       <p className="text-sm text-muted-foreground">Coche chaque étape et suis les liens pour avancer dans tes démarches.</p>
 
+      {/* Read-only banner for non-verified students */}
+      {isReadOnly && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
+        >
+          <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
+          <p className="flex-1 text-xs text-primary/80">
+            <span className="font-semibold text-primary">Mode lecture</span> — Vérifie ton email étudiant pour cocher tes démarches et suivre ta progression.
+          </p>
+          <button
+            onClick={() => setVerifyOpen(true)}
+            className="shrink-0 rounded-full gold-gradient px-3 py-1.5 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
+          >
+            Vérifier
+          </button>
+        </motion.div>
+      )}
+
       {/* Location toggle — hidden for French nationals */}
       {!isFrench && (
         <div className="rounded-2xl border border-border bg-card p-4">
