@@ -217,11 +217,24 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
               </button>
             ))}
           </div>
+          {/* Validation min chars for Entraide */}
+          {isEntrade && newContent.trim().length > 0 && (
+            <div className={`mt-2 flex items-center justify-between text-xs transition-colors ${isEntraideTooShort ? "text-destructive" : "text-success"}`}>
+              <span>
+                {isEntraideTooShort
+                  ? `Entraide : min. ${MIN_ENTRAIDE_CHARS} caractères pour gagner des points (${charCount}/${MIN_ENTRAIDE_CHARS})`
+                  : `✓ Longueur suffisante (${charCount} caractères)`}
+              </span>
+              <span className={`font-bold tabular-nums ${isEntraideTooShort ? "text-destructive" : "text-success"}`}>
+                {charCount}/{MIN_ENTRAIDE_CHARS}
+              </span>
+            </div>
+          )}
           {/* Send button */}
           <div className="mt-3 flex justify-end">
             <button
               onClick={handlePost}
-              disabled={posting || !newContent.trim()}
+              disabled={posting || !canPost}
               className="flex items-center gap-2 rounded-2xl gold-gradient px-5 py-2.5 text-sm font-bold text-primary-foreground transition-all disabled:opacity-50 cursor-pointer"
             >
               {posting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

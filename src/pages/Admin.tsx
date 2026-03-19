@@ -466,12 +466,15 @@ const Admin = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <KpiCard label="Utilisateurs total" value={kpi.total} icon="👥" />
-          <KpiCard label="Nouveaux cette semaine" value={kpi.newWeek} icon="🆕" />
-          <KpiCard label="Témoins vérifiés" value={kpi.verified} icon="✅" />
-          <KpiCard label="Revenus estimés (€/mois)" value={`${kpi.premiumRevenue} €`} icon="💰" />
-          <KpiCard label="Messages Amal utilisés" value={kpi.ayaMsgToday} icon="🤖" />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <KpiCard label="Inscrits total" value={kpi.total} icon="👥" />
+          <KpiCard label="Nouveaux / semaine" value={`+${kpi.newWeek}`} icon="🆕" />
+          <KpiCard label="Témoins vérifiés" value={`${kpi.verified} (${kpi.verifiedRate}%)`} icon="✅" />
+          <KpiCard label="Premium actifs" value={`${kpi.premiumCount} · ${kpi.premiumRevenue} €/mois`} icon="💰" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+          <KpiCard label="Publications aujourd'hui" value={kpi.postsToday} icon="📝" />
+          <KpiCard label="Messages Amal (total)" value={kpi.ayaMsgToday} icon="🤖" />
         </div>
         <Section title="Répartition des statuts">
           {(["explorateur", "temoin", "gold", "admin"] as const).map((s) => {
