@@ -199,7 +199,7 @@ const Admin = () => {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes, postsTodayRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -212,6 +212,7 @@ const Admin = () => {
         supabase.from("reports").select("id, reporter_id, reported_user_id, reported_announcement_id, reason, details, status, created_at").eq("status", "pending").order("created_at", { ascending: false }).limit(50),
         supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
         supabase.from("profiles").select("aya_messages_used").gt("aya_messages_used", 0),
+        supabase.from("announcements").select("id", { count: "exact", head: true }).gte("created_at", todayStart.toISOString()),
       ]);
 
     if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
@@ -250,14 +251,21 @@ const Admin = () => {
       setLeague(sorted);
     }
 
+    const totalUsers = profilesRes.data?.length ?? 0;
+    const verifiedCount = verifiedRes.count ?? 0;
+    const premiumCount = premiumRes.count ?? 0;
     const ayaMsgToday = ayaTodayRes.data?.reduce((sum, p) => sum + (p.aya_messages_used ?? 0), 0) ?? 0;
+    const verifiedRate = totalUsers > 0 ? Math.round((verifiedCount / totalUsers) * 100) : 0;
 
     setKpi({
-      total: profilesRes.data?.length ?? 0,
+      total: totalUsers,
       newWeek: newUsersRes.count ?? 0,
-      verified: verifiedRes.count ?? 0,
-      premiumRevenue: (premiumRes.count ?? 0) * 9,
+      verified: verifiedCount,
+      premiumRevenue: premiumCount * 9,
       ayaMsgToday,
+      postsToday: postsTodayRes.count ?? 0,
+      verifiedRate,
+      premiumCount,
     });
 
     setLoading(false);
