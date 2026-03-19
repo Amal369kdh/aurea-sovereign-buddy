@@ -331,7 +331,7 @@ const Onboarding = () => {
           )}
           <button
             onClick={isLast ? handleFinish : () => setStep((s) => s + 1)}
-            disabled={!canNext() || submitting}
+            disabled={!canNext() || submitting || (isLast && !nameConfirmed)}
             className="flex flex-1 items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer"
           >
             {submitting ? (
