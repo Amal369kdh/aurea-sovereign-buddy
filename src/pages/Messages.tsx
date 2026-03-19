@@ -11,9 +11,12 @@ import SecuritySovereign from "@/components/SecuritySovereign";
 import AmalTrigger from "@/components/AyaTrigger";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import VerifiedGate from "@/components/VerifiedGate";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const Messages = () => {
   const { user } = useAuth();
+  const { flags } = useFeatureFlags();
+  const messagingEnabled = flags["messaging"] !== false;
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>();
   const { conversations, messages, loading, isTemoin, sendMessage } = useMessages(selectedUserId);
   const [draft, setDraft] = useState("");
@@ -40,6 +43,13 @@ const Messages = () => {
     <div className="flex min-h-screen bg-background">
       <AppSidebar />
       <main className="flex-1 flex overflow-hidden">
+        {!messagingEnabled ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center px-6">
+            <span className="text-4xl">🔒</span>
+            <p className="text-lg font-bold text-foreground">Messagerie temporairement désactivée</p>
+            <p className="text-sm text-muted-foreground">Cette fonctionnalité est momentanément indisponible.</p>
+          </div>
+        ) : (
         <VerifiedGate featureName="la Messagerie privée">
           {/* Conversations list */}
           <div className="flex flex-1 overflow-hidden">
@@ -182,6 +192,7 @@ const Messages = () => {
             </div>
           </div>
         </VerifiedGate>
+        )}
       </main>
 
       <SecuritySovereign />

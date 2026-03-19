@@ -147,7 +147,11 @@ const Onboarding = () => {
     setSubmitting(false);
   };
 
+  const [nameConfirmed, setNameConfirmed] = useState(false);
   const isLast = step === STEPS.length - 1;
+
+  // Derive display name from auth metadata for the warning
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "ton pseudo";
 
   if (loading || !profileReady) {
     return (
@@ -281,6 +285,35 @@ const Onboarding = () => {
                     />
                   ))}
                 </div>
+                {/* Name-lock warning — shown only on the last step */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 rounded-2xl border border-warning/40 bg-warning/10 p-4"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 shrink-0 text-warning mt-0.5" />
+                    <div>
+                      <p className="text-sm font-bold text-warning">
+                        ⚠️ Ton pseudo est définitif
+                      </p>
+                      <p className="mt-1 text-xs text-warning/80">
+                        Le nom affiché <strong>"{displayName}"</strong> ne pourra <strong>plus être modifié</strong> après validation. C'est le nom que verront les autres membres.
+                      </p>
+                      <label className="mt-3 flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={nameConfirmed}
+                          onChange={(e) => setNameConfirmed(e.target.checked)}
+                          className="h-4 w-4 rounded"
+                        />
+                        <span className="text-xs font-semibold text-warning">
+                          J'ai compris, je veux garder ce pseudo
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </motion.div>
               </StepLayout>
             )}
           </motion.div>
@@ -298,7 +331,7 @@ const Onboarding = () => {
           )}
           <button
             onClick={isLast ? handleFinish : () => setStep((s) => s + 1)}
-            disabled={!canNext() || submitting}
+            disabled={!canNext() || submitting || (isLast && !nameConfirmed)}
             className="flex flex-1 items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40 cursor-pointer"
           >
             {submitting ? (

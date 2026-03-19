@@ -22,6 +22,7 @@ const HubSocial = () => {
   const [goldOpen, setGoldOpen] = useState(false);
   const { matches, isPremium } = useDating();
   const { flags } = useFeatureFlags();
+  const hubSocialEnabled = flags["hub_social"] !== false;
   const datingEnabled = flags["dating"] !== false;
   const { user } = useAuth();
 
@@ -69,6 +70,15 @@ const HubSocial = () => {
       <AppSidebar />
 
       <main className="flex-1 overflow-y-auto">
+        {/* Hub Social disabled gate */}
+        {!hubSocialEnabled ? (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-6">
+            <span className="text-4xl">🔒</span>
+            <p className="text-lg font-bold text-foreground">Hub Social temporairement désactivé</p>
+            <p className="text-sm text-muted-foreground">Cette fonctionnalité est momentanément indisponible. Revenez bientôt.</p>
+          </div>
+        ) : (
+          <>
         {/* Header */}
         <div className="border-b border-border px-6 py-5">
           <h1 className="text-2xl font-extrabold text-foreground">Hub Social</h1>
@@ -160,6 +170,8 @@ const HubSocial = () => {
             <DatingMatches matches={matches} isPremium={isPremium} onGoldClick={() => setGoldOpen(true)} />
           )}
         </div>
+          </>
+        )}
       </main>
 
       <SecuritySovereign />

@@ -2,9 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import AmalChat from "./AmalChat";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const AmalTrigger = () => {
   const [open, setOpen] = useState(false);
+  const { flags } = useFeatureFlags();
+  const amalEnabled = flags["amal_chat"] !== false;
+
+  if (!amalEnabled) return null;
 
   return (
     <>

@@ -275,12 +275,22 @@ const Profile = () => {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <Section title="Informations de base">
             <FieldRow label="Prénom / Pseudo">
-              <input
-                className={inputClass}
-                value={profile.display_name}
-                onChange={(e) => set("display_name", e.target.value)}
-                placeholder="Ton prénom ou pseudo"
-              />
+              <div className="relative">
+                <input
+                  className={`${inputClass} pr-10 bg-secondary/60 cursor-not-allowed text-muted-foreground`}
+                  value={profile.display_name}
+                  readOnly
+                  disabled
+                  placeholder="Ton prénom ou pseudo"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/60">
+                  🔒
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
+                <span>⚠️</span>
+                <span>Le pseudo est définitif et ne peut pas être modifié.</span>
+              </p>
             </FieldRow>
             <FieldRow label="Ville">
               <input
