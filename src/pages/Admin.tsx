@@ -821,7 +821,7 @@ const Admin = () => {
             <div className="mt-3 flex flex-wrap gap-2">
               <button
                 onClick={() => warnUser(r.id, r.reported_user_id)}
-                className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-500 hover:bg-amber-500/20 transition-colors"
+                className="rounded-full border border-warning/40 bg-warning/10 px-3 py-1 text-xs font-bold text-warning hover:bg-warning/20 transition-colors"
               >
                 ⚠️ Avertir
               </button>
