@@ -75,8 +75,14 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
   const [goldOpen, setGoldOpen] = useState(false);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
 
+  const MIN_ENTRAIDE_CHARS = 50;
+  const isEntrade = newCategory === "entraide";
+  const charCount = newContent.trim().length;
+  const isEntraideTooShort = isEntrade && charCount > 0 && charCount < MIN_ENTRAIDE_CHARS;
+  const canPost = newContent.trim().length > 0 && !isEntraideTooShort;
+
   const handlePost = async () => {
-    if (!newContent.trim()) return;
+    if (!canPost) return;
     setPosting(true);
     await createPost(newContent.trim(), newCategory);
     setNewContent("");
