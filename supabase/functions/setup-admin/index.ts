@@ -77,8 +77,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.error("Error:", err);
-    return new Response(JSON.stringify({ error: "Erreur interne: " + (err as Error).message }), {
+    console.error('[setup-admin] error:', err);
+    return new Response(JSON.stringify({ error: 'Une erreur est survenue.' }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
