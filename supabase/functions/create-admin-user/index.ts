@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
     });
 
     if (createError) {
-      return new Response(JSON.stringify({ error: createError.message }), {
+      console.error('[create-admin-user] create error:', createError);
+      return new Response(JSON.stringify({ error: 'Une erreur est survenue.' }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
