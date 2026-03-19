@@ -203,10 +203,14 @@ const defaultTiles = (city: string) => [
     accentClass: "bg-warning/15 text-warning",
     className: "",
     lockable: true,
+    // ⚠️ Alerte renouvellement CROUS 2026 (Grenoble only for now)
+    _alerte: city.toLowerCase() === "grenoble"
+      ? "⚠️ Renouvellement CROUS 2026 : du 10 mars au 4 mai. Sur messervices.etudiant.gouv.fr → Cité'U → Grenoble → « Mon logement actuel » → « Demander mon renouvellement ». Passé le 4 mai = perte de ta chambre pour la rentrée."
+      : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://lokaviz.fr" },
-      { icon: Home, label: "Simulateur APL", sub: "Calcule ton aide au logement en 2 min", href: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation" },
+      { icon: Home, label: "Simulateur APL (CAF)", sub: "Calcule ton aide au logement en 2 min", href: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation" },
       { icon: Globe, label: "SeLoger Étudiant", sub: "Colocations et studios", href: "https://www.seloger.com" },
     ] as QuickLink[],
   },
@@ -225,11 +229,11 @@ const defaultTiles = (city: string) => [
       { icon: MapPin, label: "Préfecture de l'Isère", sub: "Place de Verdun, Grenoble • retrait carte de séjour", href: "https://maps.google.com/?q=Préfecture+Isère+Place+de+Verdun+Grenoble" },
     ] as QuickLink[],
   },
-  // ÉTAPE 3 — Aides financières & CAF
+  // ÉTAPE 3 — Aides financières & administratif (APL retiré — il est dans Logement)
   {
     step: 3,
     title: "Aides & Administratif",
-    subtitle: "CAF, bourses, CROUS & papiers",
+    subtitle: "Bourses, budget & inscription fac",
     icon: ClipboardCheck,
     accentClass: "gold-gradient text-primary-foreground",
     className: "",
@@ -237,8 +241,8 @@ const defaultTiles = (city: string) => [
     links: [
       { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
       { icon: HandCoins, label: "Bourse CROUS (DSE)", sub: "Demande en ligne — deadline octobre", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
-      { icon: Home, label: "CAF — Aide au logement", sub: "APL, ALS, ALF — simulation gratuite", href: "https://www.caf.fr" },
-      { icon: Calculator, label: "Simulateur de budget", sub: "Estime tes dépenses mensuelles", route: "/" },
+      { icon: GraduationCap, label: "Inscription universitaire", sub: "Dossier parcoursup ou admission directe", href: "https://www.parcoursup.fr/" },
+      { icon: Calculator, label: "Simulateur de budget étudiant", sub: "Estime tes dépenses mensuelles", href: "https://www.etudiant.gouv.fr/fr/simulateur-de-budget-1428" },
       { icon: Landmark, label: "Aide d'urgence CROUS", sub: "Si tu es en difficulté financière", href: "https://www.etudiant.gouv.fr/fr/aides-specifiques-702" },
     ] as QuickLink[],
   },
@@ -259,7 +263,7 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
     ] as QuickLink[],
   },
-  // ÉTAPE 5 — Santé
+  // ÉTAPE 5 — Santé (point de repère unique = Bâtiment MUSE à Grenoble)
   {
     step: 5,
     title: "Santé",
@@ -270,7 +274,10 @@ const defaultTiles = (city: string) => [
     lockable: true,
     links: [
       { icon: Stethoscope, label: "Médecins secteur 1", sub: "Sans avance de frais — Annuaire Ameli", href: "https://annuairesante.ameli.fr/" },
-      { icon: MapPin, label: "Centre santé universitaire", sub: `Gratuit — SSE de ton campus à ${city}`, href: `https://maps.google.com/?q=Service+santé+étudiants+${city}` },
+      ...(city.toLowerCase() === "grenoble"
+        ? [{ icon: MapPin as React.ElementType, label: "Centre de Santé Étudiant — MUSE", sub: "80 allée Ampère, St-Martin-d'Hères • Secteur 1, sans avance de frais", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Saint-Martin-d%27Hères" }]
+        : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+      ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       { icon: Heart, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" },
     ] as QuickLink[],
