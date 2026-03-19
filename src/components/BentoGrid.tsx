@@ -126,6 +126,7 @@ const BentoTile = ({
                 </div>
               )}
               {conseil && (
+                <div className="flex items-start gap-2 rounded-2xl bg-primary/5 border border-primary/10 px-4 py-3 mb-1">
                   <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary mt-0.5" />
                   <p className="text-xs text-muted-foreground leading-relaxed">{conseil}</p>
                 </div>
