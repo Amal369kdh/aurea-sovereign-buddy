@@ -1,4 +1,5 @@
-import { MapPin, ShieldCheck, LogOut, Settings, User, CalendarClock } from "lucide-react";
+import { MapPin, LogOut, Settings, User, CalendarClock } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 import { useNavigate } from "react-router-dom";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 import {
