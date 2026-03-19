@@ -55,27 +55,18 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
       return;
     }
 
-    // Fetch author profiles (vue publique + status pour identifier les admins)
+    // Fetch author profiles via la vue publique (accessible à tous les auth)
     const authorIds = [...new Set(posts.map((p) => p.author_id))];
-    const [{ data: profiles }, { data: statusProfiles }] = await Promise.all([
-      supabase
-        .from("profiles_public")
-        .select("user_id, display_name, avatar_initials, university, is_verified, status")
-        .in("user_id", authorIds),
-      // Fallback: lire le status directement pour les admins (profiles_public peut ne pas avoir status)
-      supabase
-        .from("profiles")
-        .select("user_id, status, display_name, avatar_initials, university")
-        .in("user_id", authorIds),
-    ]);
+    const { data: profiles } = await supabase
+      .from("profiles_public")
+      .select("user_id, display_name, avatar_initials, university, is_verified, status")
+      .in("user_id", authorIds);
 
     const profileMap = new Map(
       (profiles || []).map((p) => [p.user_id, p])
     );
-    // Merge status from direct profiles query for admins
-    const statusMap = new Map(
-      (statusProfiles || []).map((p) => [p.user_id, p])
-    );
+    // statusMap kept for compat (same source now)
+    const statusMap = profileMap;
 
     // Fetch my likes
     const { data: myLikes } = await supabase
