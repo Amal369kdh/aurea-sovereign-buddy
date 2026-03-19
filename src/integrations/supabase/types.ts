@@ -989,6 +989,10 @@ export type Database = {
       }
     }
     Functions: {
+      check_and_increment_aya_usage: {
+        Args: { p_is_premium: boolean; p_limit: number; p_user_id: string }
+        Returns: Json
+      }
       check_profile_update_allowed: {
         Args: {
           p_new_is_premium: boolean
