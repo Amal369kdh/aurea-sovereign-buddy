@@ -147,9 +147,8 @@ const Onboarding = () => {
     setSubmitting(false);
   };
 
-  const isLast = step === STEPS.length - 1;
-  // Show name-lock warning on the last step
   const [nameConfirmed, setNameConfirmed] = useState(false);
+  const isLast = step === STEPS.length - 1;
 
   // Derive display name from auth metadata for the warning
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "ton pseudo";
