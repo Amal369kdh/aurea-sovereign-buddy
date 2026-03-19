@@ -11,9 +11,12 @@ import SecuritySovereign from "@/components/SecuritySovereign";
 import AmalTrigger from "@/components/AyaTrigger";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import VerifiedGate from "@/components/VerifiedGate";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const Messages = () => {
   const { user } = useAuth();
+  const { flags } = useFeatureFlags();
+  const messagingEnabled = flags["messaging"] !== false;
   const [selectedUserId, setSelectedUserId] = useState<string | undefined>();
   const { conversations, messages, loading, isTemoin, sendMessage } = useMessages(selectedUserId);
   const [draft, setDraft] = useState("");
