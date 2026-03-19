@@ -591,6 +591,7 @@ const BentoGrid = () => {
                 onNavigate={navigate}
                 onUnlock={() => setVerifyOpen(true)}
                 conseil={(t as any)._conseil}
+                alerte={(t as any)._alerte}
                 step={t.step}
               />
             ))}
