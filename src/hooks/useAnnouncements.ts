@@ -65,8 +65,24 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
     const profileMap = new Map(
       (profiles || []).map((p) => [p.user_id, p])
     );
-    // statusMap kept for compat (same source now)
-    const statusMap = profileMap;
+
+    // Pour les auteurs dont le profil n'est pas dans la vue publique (admins vus par d'autres),
+    // on récupère leur statut via la fonction sécurisée get_own_profile_status n'est pas applicable ici,
+    // donc on détermine le statut admin par le fait que l'auteur a posté (les admins peuvent toujours poster).
+    // On identifie les auteurs manquants et on fait une requête séparée pour leur statut.
+    const missingAuthorIds = authorIds.filter((id) => !profileMap.has(id));
+    const adminStatusMap = new Map<string, boolean>();
+
+    if (missingAuthorIds.length > 0) {
+      // Vérifie via RPC is_admin pour chaque auteur manquant
+      const adminChecks = await Promise.all(
+        missingAuthorIds.map(async (id) => {
+          const { data } = await supabase.rpc("is_admin", { _user_id: id });
+          return { id, isAdmin: !!data };
+        })
+      );
+      adminChecks.forEach(({ id, isAdmin }) => adminStatusMap.set(id, isAdmin));
+    }
 
     // Fetch my likes
     const { data: myLikes } = await supabase
@@ -78,9 +94,8 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
 
     const mapped: Announcement[] = posts.map((post) => {
       const profile = profileMap.get(post.author_id);
-      const statusProfile = statusMap.get(post.author_id);
-      const status = (profile as { status?: string } | undefined)?.status || statusProfile?.status || "explorateur";
-      const isAdmin = status === "admin";
+      const status = (profile as { status?: string } | undefined)?.status || "explorateur";
+      const isAdmin = status === "admin" || adminStatusMap.get(post.author_id) === true;
       const isTemoinOrAdmin = status === "temoin" || isAdmin;
       return {
         id: post.id,
@@ -92,9 +107,9 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
         created_at: post.created_at,
         author_id: post.author_id,
         // Admins affichent "Équipe Aurea", témoins affichent leur nom
-        author_name: isAdmin ? "Équipe Aurea" : (profile?.display_name || statusProfile?.display_name || "Anonyme"),
-        author_initials: isAdmin ? "AU" : (profile?.avatar_initials || statusProfile?.avatar_initials || "?"),
-        author_university: isAdmin ? null : (profile?.university || statusProfile?.university || null),
+        author_name: isAdmin ? "Équipe Aurea" : (profile?.display_name || "Anonyme"),
+        author_initials: isAdmin ? "AU" : (profile?.avatar_initials || "?"),
+        author_university: isAdmin ? null : (profile?.university || null),
         author_verified: isTemoinOrAdmin,
         liked_by_me: likedSet.has(post.id),
       };
