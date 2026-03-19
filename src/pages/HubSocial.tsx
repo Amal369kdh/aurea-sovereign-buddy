@@ -22,6 +22,7 @@ const HubSocial = () => {
   const [goldOpen, setGoldOpen] = useState(false);
   const { matches, isPremium } = useDating();
   const { flags } = useFeatureFlags();
+  const hubSocialEnabled = flags["hub_social"] !== false;
   const datingEnabled = flags["dating"] !== false;
   const { user } = useAuth();
 
