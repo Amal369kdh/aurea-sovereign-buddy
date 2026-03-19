@@ -46,10 +46,10 @@ const TILE_CHECKLIST_MAP: Record<string, string> = {
 
 /* ─── Tile component ─── */
 const BentoTile = ({
-  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil, step,
+  title, subtitle, icon: Icon, accentClass, links, className = "", locked = false, onNavigate, onUnlock, conseil, step, alerte,
 }: {
   title: string; subtitle: string; icon: React.ElementType; accentClass: string;
-  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string; step?: number;
+  links: QuickLink[]; className?: string; locked?: boolean; onNavigate: (path: string) => void; onUnlock?: () => void; conseil?: string; step?: number; alerte?: string;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const checklistLabel = TILE_CHECKLIST_MAP[title];
