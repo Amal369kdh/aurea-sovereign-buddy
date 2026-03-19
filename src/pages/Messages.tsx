@@ -192,6 +192,7 @@ const Messages = () => {
             </div>
           </div>
         </VerifiedGate>
+        )}
       </main>
 
       <SecuritySovereign />
