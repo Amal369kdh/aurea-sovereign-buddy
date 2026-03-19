@@ -1,4 +1,5 @@
-import { MapPin, ShieldCheck, LogOut, Settings, User, CalendarClock } from "lucide-react";
+import { MapPin, LogOut, Settings, User, CalendarClock } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 import { useNavigate } from "react-router-dom";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 import {
@@ -45,10 +46,13 @@ const DashboardHeader = () => {
     <header className="px-6 py-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight">
-            <span className="gold-text">Aurea</span>{" "}
-            <span className="text-foreground">Student</span>
-          </h1>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Aurea Student" className="h-9 w-9 rounded-xl object-cover" />
+            <h1 className="text-2xl font-extrabold tracking-tight">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+          </div>
           <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
             <span>{profile.city ?? "France"}, France</span>
