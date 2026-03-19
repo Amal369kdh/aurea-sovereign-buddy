@@ -118,8 +118,14 @@ const BentoTile = ({
             className="overflow-hidden"
           >
             <div className="space-y-2 px-6 pb-4">
+              {/* Alerte urgence (ex: renouvellement CROUS) */}
+              {alerte && (
+                <div className="flex items-start gap-2 rounded-2xl bg-destructive/5 border border-destructive/20 px-4 py-3 mb-1">
+                  <span className="text-sm shrink-0 mt-0.5">⚠️</span>
+                  <p className="text-xs text-destructive/90 leading-relaxed font-medium">{alerte.replace(/^⚠️\s*/, "")}</p>
+                </div>
+              )}
               {conseil && (
-                <div className="flex items-start gap-2 rounded-2xl bg-primary/5 border border-primary/10 px-4 py-3 mb-1">
                   <Sparkles className="h-3.5 w-3.5 shrink-0 text-primary mt-0.5" />
                   <p className="text-xs text-muted-foreground leading-relaxed">{conseil}</p>
                 </div>
