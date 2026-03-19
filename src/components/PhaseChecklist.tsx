@@ -78,6 +78,9 @@ const PhaseChecklist = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Non-verified foreign students can read everything, but cannot check tasks
+  const isReadOnly = !isTemoin && !isFrench;
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-extrabold text-foreground">Parcours d'intégration</h2>
