@@ -170,6 +170,8 @@ const HubSocial = () => {
             <DatingMatches matches={matches} isPremium={isPremium} onGoldClick={() => setGoldOpen(true)} />
           )}
         </div>
+          </>
+        )}
       </main>
 
       <SecuritySovereign />
