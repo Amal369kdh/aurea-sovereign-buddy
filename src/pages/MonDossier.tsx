@@ -5,7 +5,6 @@ import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import VerifiedGate from "@/components/VerifiedGate";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const MonDossier = () => {
@@ -19,10 +18,10 @@ const MonDossier = () => {
         <DashboardHeader />
         <div className="px-6 pb-28">
           {dossierEnabled ? (
-            <VerifiedGate featureName="Mon Dossier">
+            <>
               <PhaseChecklist />
               <AlphaVault />
-            </VerifiedGate>
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-center">
               <span className="text-4xl">🔒</span>
