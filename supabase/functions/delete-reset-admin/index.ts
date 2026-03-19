@@ -68,7 +68,8 @@ Deno.serve(async (req) => {
       .eq("user_id", newUserId);
 
     if (updateError) {
-      return new Response(JSON.stringify({ error: "User created but profile update failed: " + updateError.message }), {
+      console.error('[delete-reset-admin] profile update failed:', updateError);
+      return new Response(JSON.stringify({ error: 'Une erreur est survenue.' }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -78,8 +79,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.error("Error:", err);
-    return new Response(JSON.stringify({ error: "Erreur interne: " + err.message }), {
+    console.error('[delete-reset-admin] error:', err);
+    return new Response(JSON.stringify({ error: 'Une erreur est survenue.' }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

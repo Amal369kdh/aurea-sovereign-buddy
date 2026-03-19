@@ -85,7 +85,7 @@ export function useMessages(selectedUserId?: string) {
     }
 
     const { data: profiles } = await supabase
-      .from("profiles")
+      .from("profiles_public")
       .select("user_id, display_name, avatar_initials, is_verified")
       .in("user_id", userIds);
 
