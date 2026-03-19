@@ -505,7 +505,7 @@ const Admin = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-foreground">{u.display_name ?? "—"}</span>
-                {u.is_verified && <ShieldCheck className="h-4 w-4 text-emerald-500" />}
+                {u.is_verified && <ShieldCheck className="h-4 w-4 text-success" />}
                 {u.is_premium && <Crown className="h-4 w-4 text-primary" />}
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
