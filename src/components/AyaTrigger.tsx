@@ -12,6 +12,7 @@ const AmalTrigger = () => {
   if (!amalEnabled) return null;
 
   return (
+    <>
       <motion.button
         data-amal-trigger
         className="fixed bottom-24 right-6 z-[9998] flex h-14 w-14 items-center justify-center rounded-full gold-gradient shadow-lg animate-pulse-gold cursor-pointer"
