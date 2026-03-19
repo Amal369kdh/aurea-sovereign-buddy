@@ -237,12 +237,15 @@ const PhaseChecklist = () => {
                         const isExpanded = expandedItem === `${phase.id}:${item.id}`;
                         return (
                         <div key={item.id} className={`rounded-2xl border border-border/50 overflow-hidden ${item.locked ? "bg-muted/30" : "bg-secondary/20"}`}>
-                          <motion.div
-                            layout
-                            className={`group flex items-center gap-3 px-4 py-3 transition-colors ${
-                              item.locked ? "cursor-default opacity-70" : "cursor-pointer hover:bg-secondary/40"
-                            }`}
-                            onClick={() => !item.locked && toggleTask(phase.id, item.id)}
+                           <motion.div
+                             layout
+                             className={`group flex items-center gap-3 px-4 py-3 transition-colors ${
+                               item.locked || isReadOnly ? "cursor-default opacity-70" : "cursor-pointer hover:bg-secondary/40"
+                             }`}
+                             onClick={() => {
+                               if (isReadOnly) { setVerifyOpen(true); return; }
+                               if (!item.locked) toggleTask(phase.id, item.id);
+                             }}
                           >
                             <motion.div
                               animate={item.done && !item.locked ? { scale: [1, 1.3, 1] } : {}}
