@@ -98,7 +98,7 @@ serve(async (req) => {
     const messagesUsed = profile.aya_messages_used || 0;
     const remaining = isPremium ? Infinity : Math.max(0, FREE_MESSAGE_LIMIT - messagesUsed);
 
-    // If check_only, return status
+    // If check_only, return status (lecture seule, pas d'incrément)
     if (check_only) {
       return new Response(JSON.stringify({
         remaining,
@@ -112,8 +112,13 @@ serve(async (req) => {
       });
     }
 
-    // Check limit for non-premium
-    if (!isPremium && messagesUsed >= FREE_MESSAGE_LIMIT) {
+    // Vérification atomique + incrément (évite la race condition)
+    const { data: usageCheck, error: usageError } = await supabase.rpc(
+      "check_and_increment_aya_usage",
+      { p_user_id: user.id, p_is_premium: isPremium, p_limit: FREE_MESSAGE_LIMIT }
+    );
+
+    if (usageError || !usageCheck?.allowed) {
       return new Response(JSON.stringify({
         error: "limit_reached",
         remaining: 0,
@@ -122,14 +127,6 @@ serve(async (req) => {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-    }
-
-    // Increment counter for non-premium
-    if (!isPremium) {
-      await supabase
-        .from("profiles")
-        .update({ aya_messages_used: messagesUsed + 1 })
-        .eq("user_id", user.id);
     }
 
     // Build context
