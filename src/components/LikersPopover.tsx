@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Crown, Heart, Loader2, Lock } from "lucide-react";
+import { Crown, Heart, Loader2, Lock, ShieldAlert } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +10,7 @@ interface LikersPopoverProps {
   likedByMe: boolean;
   onToggleLike: () => void;
   onGoldClick: () => void;
+  isVerified?: boolean;
 }
 
 interface LikerProfile {

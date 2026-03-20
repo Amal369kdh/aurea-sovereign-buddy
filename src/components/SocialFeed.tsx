@@ -60,6 +60,7 @@ interface SocialFeedProps {
   activeCategory: Category;
   onCategoryChange: (cat: Category) => void;
   readOnly?: boolean;
+  isVerified?: boolean;
 }
 
 const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: SocialFeedProps) => {
