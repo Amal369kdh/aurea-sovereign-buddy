@@ -132,6 +132,9 @@ const Profile = () => {
     points_social: 0,
     status: "explorateur",
     avatar_initials: "?",
+    faculte: "",
+    type_formation: "",
+    diplome_vise: "",
   });
 
   useEffect(() => {
@@ -141,7 +144,7 @@ const Profile = () => {
         supabase
           .from("profiles")
           .select(
-            "display_name, city, university, university_id, nationality, visa_type, logement_situation, mutuelle, budget_monthly, revenus_monthly, objectifs, is_verified, points_social, status, avatar_initials"
+            "display_name, city, university, university_id, nationality, visa_type, logement_situation, mutuelle, budget_monthly, revenus_monthly, objectifs, is_verified, points_social, status, avatar_initials, faculte, type_formation, diplome_vise"
           )
           .eq("user_id", user.id)
           .maybeSingle(),
@@ -153,7 +156,7 @@ const Profile = () => {
       if (datingRes.data) setDatingProfile(datingRes.data as DatingProfileData);
 
       if (profileRes.data) {
-        const d = profileRes.data;
+        const d = profileRes.data as any;
         setProfile({
           display_name: d.display_name ?? "",
           city: d.city ?? "",
@@ -170,6 +173,9 @@ const Profile = () => {
           points_social: d.points_social ?? 0,
           status: d.status ?? "explorateur",
           avatar_initials: d.avatar_initials ?? "?",
+          faculte: d.faculte ?? "",
+          type_formation: d.type_formation ?? "",
+          diplome_vise: d.diplome_vise ?? "",
         });
       }
       setLoading(false);
