@@ -29,7 +29,7 @@ const OBJECTIFS = [
   { id: "reseau", label: "🤝 Développer mon réseau" },
   { id: "rencontres", label: "🧑‍🤝‍🧑 Rencontrer d'autres étudiants" },
   { id: "logement", label: "🏠 Trouver un logement" },
-  { id: "sante", label: "🏥 M'occuper de ma santé" },
+  { id: "sante", label: "🏥 Gérer ma santé & mutuelle" },
 ];
 
 type StepKey = "nationality" | "location" | "city" | "university" | "objectifs";
