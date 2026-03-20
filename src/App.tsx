@@ -185,59 +185,65 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 6; // max ~9s (500+1000+1500+2000+2500+3000ms)
+    // Max 5 attempts × 800ms = 4s max, well within the 10s hard timeout
+    const maxAttempts = 5;
 
-    // Hard safety timeout: if still loading after 8s, force proceed
+    // Hard safety timeout: never block UI more than 10s
     const hardTimeout = setTimeout(() => {
-      if (!cancelled && !profileChecked) {
+      if (!cancelled) {
+        console.warn("[ProtectedRoute] Hard timeout — forcing through");
         setTimedOut(true);
         setNeedsOnboarding(false);
         setProfileChecked(true);
       }
-    }, 8000);
+    }, 10000);
 
     const checkProfile = async () => {
       try {
         const { data } = await supabase
           .from("profiles")
-          .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
+          .select("nationality, city, university, objectifs, is_in_france, onboarding_step, student_status")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (cancelled) return;
 
-        if (!data && attempts < maxAttempts) {
-          attempts++;
-          setTimeout(checkProfile, 500 * attempts);
-          return;
-        }
-
         if (!data) {
+          if (attempts < maxAttempts) {
+            attempts++;
+            setTimeout(checkProfile, 800);
+            return;
+          }
+          // After max retries and still no profile → send to onboarding to create it
+          clearTimeout(hardTimeout);
           setNeedsOnboarding(true);
           setProfileChecked(true);
-          clearTimeout(hardTimeout);
           return;
         }
 
         const isFrench = data.nationality === "🇫🇷 Française";
         const objectifs = data.objectifs as string[] | null;
+
+        // A profile is complete if all required fields are present
+        // For French students, is_in_france is always true (set during onboarding)
+        // For non-French, we need explicit is_in_france value
         const incomplete =
           !data.nationality ||
           !data.city ||
           !data.university ||
           !objectifs ||
           objectifs.length === 0 ||
-          (!isFrench && data.is_in_france === null);
+          (!isFrench && data.is_in_france === null && data.onboarding_step === null);
 
+        clearTimeout(hardTimeout);
         setNeedsOnboarding(incomplete);
         setProfileChecked(true);
-        clearTimeout(hardTimeout);
       } catch {
-        // Network error: force proceed rather than spin forever
+        // Network error: let through rather than spin forever
         if (!cancelled) {
+          clearTimeout(hardTimeout);
           setNeedsOnboarding(false);
           setProfileChecked(true);
-          clearTimeout(hardTimeout);
         }
       }
     };
