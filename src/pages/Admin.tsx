@@ -174,7 +174,7 @@ const Admin = () => {
   const [refreshingCity, setRefreshingCity] = useState<string | null>(null);
 
   // Form states
-  const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "" });
+  const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "", url: "" });
   const [newDomain, setNewDomain] = useState({ domain: "", university_name: "" });
   const [newResource, setNewResource] = useState({ title: "", url: "", category: "social" });
 
