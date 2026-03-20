@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
+import Partners from "./pages/Partners";
 import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import ResetPassword from "./pages/ResetPassword";

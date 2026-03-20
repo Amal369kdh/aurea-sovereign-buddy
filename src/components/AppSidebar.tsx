@@ -12,6 +12,7 @@ import {
   Settings,
   Crown,
   ShieldAlert,
+  Handshake,
 } from "lucide-react";
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { icon: FolderLock, label: "Mon Dossier", path: "/mon-dossier" },
   { icon: Users, label: "Hub Social", path: "/hub-social" },
   { icon: MessageCircle, label: "Messages", path: "/messages" },
+  { icon: Handshake, label: "Partenaires", path: "/partners" },
   { icon: Sparkles, label: "Amal IA", path: "#" },
   { icon: Settings, label: "Réglages", path: "/profile" },
 ];
