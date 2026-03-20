@@ -109,7 +109,7 @@ const Legal = () => {
 
           <H3>4. Compte utilisateur</H3>
           <P>
-            L'utilisateur est responsable de la confidentialité de ses identifiants. Tout accès frauduleux doit être signalé immédiatement à <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>. Aurea Student se réserve le droit de suspendre ou supprimer tout compte en cas de comportement contraire aux présentes CGU.
+            L'utilisateur est responsable de la confidentialité de ses identifiants. Tout accès frauduleux doit être signalé immédiatement à <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>. Aurea Student se réserve le droit de suspendre ou supprimer tout compte en cas de comportement contraire aux présentes CGU.
           </P>
           <P>
             Le pseudo (nom d'affichage) choisi à l'inscription est définitif et ne peut pas être modifié ultérieurement.
