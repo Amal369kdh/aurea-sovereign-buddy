@@ -64,6 +64,7 @@ const VISA_OPTIONS: { value: AdminInfo["visa_type"]; label: string }[] = [
 const AlphaVault = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [info, setInfo] = useState<AdminInfo>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
