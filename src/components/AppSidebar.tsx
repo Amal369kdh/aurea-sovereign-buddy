@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   Handshake,
 } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
