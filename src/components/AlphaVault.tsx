@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FileText, ExternalLink, Save, Loader2, Calendar,
-  CreditCard, Shield, Clock, HelpCircle, CheckCircle, Home, Heart,
+  CreditCard, Shield, Clock, HelpCircle, CheckCircle, Home, Heart, Handshake,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";

@@ -185,12 +185,44 @@ const BentoTile = ({
 
             {/* Bannière partenaires — Banque */}
             {title === "Banque" && !locked && (
-              <div className="mx-6 mb-4 flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5">
+              <button
+                onClick={() => onNavigate("/partners")}
+                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10 cursor-pointer"
+              >
                 <span className="text-sm">🤝</span>
-                <p className="text-xs text-primary/80 leading-snug">
-                  <span className="font-semibold text-primary">Comparateur de comptes étudiants</span> arrive bientôt ⚡
+                <p className="flex-1 text-xs text-primary/80 leading-snug">
+                  <span className="font-semibold text-primary">Offres partenaires & comparateur de comptes étudiants</span> — voir tout ⚡
                 </p>
-              </div>
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-primary/60" />
+              </button>
+            )}
+
+            {/* Bannière partenaires — Santé */}
+            {title === "Santé" && !locked && (
+              <button
+                onClick={() => onNavigate("/partners")}
+                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-green-500/20 bg-green-500/5 px-4 py-2.5 text-left transition-colors hover:bg-green-500/10 cursor-pointer"
+              >
+                <span className="text-sm">🛡️</span>
+                <p className="flex-1 text-xs text-green-600/80 dark:text-green-400/80 leading-snug">
+                  <span className="font-semibold">Mutuelle étudiante partenaire</span> — comparatif LMDE, HEYME, April arrive bientôt
+                </p>
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-green-500/60" />
+              </button>
+            )}
+
+            {/* Bannière partenaires — Mon Avenir */}
+            {title === "Mon Avenir" && !locked && (
+              <button
+                onClick={() => onNavigate("/partners")}
+                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-violet-500/20 bg-violet-500/5 px-4 py-2.5 text-left transition-colors hover:bg-violet-500/10 cursor-pointer"
+              >
+                <span className="text-sm">💼</span>
+                <p className="flex-1 text-xs text-violet-600/80 dark:text-violet-400/80 leading-snug">
+                  <span className="font-semibold">Jobs étudiants & alternance partenaires</span> — offres exclusives bientôt
+                </p>
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-violet-500/60" />
+              </button>
             )}
           </motion.div>
         )}
