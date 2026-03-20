@@ -173,8 +173,8 @@ const BentoTile = ({
               </button>
             )}
 
-            {/* Bannière partenaires — Logement */}
-            {title === "Logement" && !locked && (
+            {/* Bannière partenaires — Spot logement */}
+            {title === "Ton spot 🏡" && !locked && (
               <div className="mx-6 mb-4 flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5">
                 <span className="text-sm">🤝</span>
                 <p className="text-xs text-primary/80 leading-snug">
@@ -183,8 +183,8 @@ const BentoTile = ({
               </div>
             )}
 
-            {/* Bannière partenaires — Banque */}
-            {title === "Banque" && !locked && (
+            {/* Bannière partenaires — Cash flow (Banque) */}
+            {title === "Cash flow mode 💸" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10 cursor-pointer"
@@ -197,8 +197,8 @@ const BentoTile = ({
               </button>
             )}
 
-            {/* Bannière partenaires — Santé */}
-            {title === "Santé" && !locked && (
+            {/* Bannière partenaires — 100% couvert (Santé) */}
+            {title === "100% couvert 🛡️" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-success/20 bg-success/5 px-4 py-2.5 text-left transition-colors hover:bg-success/10 cursor-pointer"
@@ -211,8 +211,8 @@ const BentoTile = ({
               </button>
             )}
 
-            {/* Bannière partenaires — Mon Avenir */}
-            {title === "Mon Avenir" && !locked && (
+            {/* Bannière partenaires — Level up carrière */}
+            {title === "Level up ta carrière 🚀" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-info/20 bg-info/5 px-4 py-2.5 text-left transition-colors hover:bg-info/10 cursor-pointer"
