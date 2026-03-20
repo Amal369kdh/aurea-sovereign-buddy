@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert, Handshake, Bell } from "lucide-react";
-import { motion } from "framer-motion";
+import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert, Handshake } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotifications } from "@/hooks/useNotifications";
+import NotificationBell from "@/components/NotificationBell";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },

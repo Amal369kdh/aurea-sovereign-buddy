@@ -1,4 +1,5 @@
 import { MapPin, LogOut, Settings, User, CalendarClock } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import logo from "@/assets/logo.jpg";
 import { useNavigate } from "react-router-dom";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
