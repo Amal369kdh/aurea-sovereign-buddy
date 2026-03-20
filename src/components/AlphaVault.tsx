@@ -289,6 +289,19 @@ const AlphaVault = () => {
               className="w-full rounded-xl border border-border bg-secondary/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
           )}
+          {/* Bannière partenaire mutuelle */}
+          {!info.mutuelle && (
+            <button
+              onClick={() => navigate("/partners")}
+              className="mt-2 flex w-full items-center gap-2 rounded-xl border border-success/20 bg-success/5 px-3 py-2 text-left transition-colors hover:bg-success/10 cursor-pointer"
+            >
+              <Handshake className="h-3.5 w-3.5 shrink-0 text-success" />
+              <p className="flex-1 text-xs text-success/80 leading-snug">
+                <span className="font-semibold">Comparateur mutuelle</span> — LMDE, HEYME bientôt
+              </p>
+              <ExternalLink className="h-3 w-3 shrink-0 text-success/50" />
+            </button>
+          )}
         </motion.div>
 
         {/* Budget mensuel */}
