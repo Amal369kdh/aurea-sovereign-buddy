@@ -77,8 +77,12 @@ const Onboarding = () => {
         return;
       }
 
-      // Fallback: create empty profile
-      await supabase.from("profiles").insert({ user_id: user.id });
+      // Fallback: try to create empty profile, then unblock regardless
+      try {
+        await supabase.from("profiles").insert({ user_id: user.id });
+      } catch {
+        // ignore — might already exist or RLS blocks it
+      }
       if (!cancelled) setProfileReady(true);
     };
 
