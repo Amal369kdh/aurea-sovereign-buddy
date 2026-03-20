@@ -135,6 +135,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
     return () => {
       ch.unsubscribe();
       window.removeEventListener("storage", handleStorage);
+      stopPolling();
     };
   }, [user?.id]);
 
