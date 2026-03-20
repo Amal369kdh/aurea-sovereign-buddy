@@ -236,7 +236,7 @@ const Legal = () => {
             <li><strong className="text-foreground">Limitation</strong> : limiter le traitement de vos données</li>
           </ul>
           <P>
-            Pour exercer ces droits, contactez-nous à <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>. Nous répondrons dans un délai maximum d'un mois. Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a>.
+            Pour exercer ces droits, contactez-nous à <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>. Nous répondrons dans un délai maximum d'un mois. Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a>.
           </P>
 
           <H3>8. Cookies et traceurs</H3>
