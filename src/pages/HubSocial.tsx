@@ -155,7 +155,7 @@ const HubSocial = () => {
           </AnimatePresence>
 
           {tab === "hub" ? (
-            <SocialFeed activeCategory={category} onCategoryChange={setCategory} readOnly={!isVerified} />
+            <SocialFeed activeCategory={category} onCategoryChange={setCategory} readOnly={!isVerified} isVerified={!!isVerified} />
           ) : tab === "rencontres" ? (
             datingEnabled ? (
               <DatingGrid onConnectClick={() => setGoldOpen(true)} />

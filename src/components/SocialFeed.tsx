@@ -357,6 +357,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
                   likedByMe={post.liked_by_me}
                   onToggleLike={() => toggleLike(post.id, post.liked_by_me)}
                   onGoldClick={() => setGoldOpen(true)}
+                  isVerified={isVerified}
                 />
                 <button
                   onClick={() => {
