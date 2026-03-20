@@ -201,7 +201,7 @@ const Admin = () => {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes, postsTodayRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes, postsTodayRes, clicksRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -215,11 +215,20 @@ const Admin = () => {
         supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
         supabase.from("profiles").select("aya_messages_used").gt("aya_messages_used", 0),
         supabase.from("announcements").select("id", { count: "exact", head: true }).gte("created_at", todayStart.toISOString()),
+        (supabase as any).from("partner_link_clicks").select("partner_id"),
       ]);
 
     if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
     if (featuresRes.data) setFeatures(featuresRes.data as FeatureFlag[]);
-    if (partnersRes.data) setPartners(partnersRes.data as Partner[]);
+    if (partnersRes.data) {
+      const clickMap: Record<string, number> = {};
+      if (clicksRes?.data) {
+        for (const c of clicksRes.data) {
+          clickMap[c.partner_id] = (clickMap[c.partner_id] ?? 0) + 1;
+        }
+      }
+      setPartners(partnersRes.data.map((p: Partner) => ({ ...p, click_count: clickMap[p.id] ?? 0 })) as Partner[]);
+    }
     if (domainsRes.data) setDomains(domainsRes.data as AllowedDomain[]);
     if (resourcesRes.data) setResources(resourcesRes.data as ResourceRow[]);
     if (reportsRes.data) {
