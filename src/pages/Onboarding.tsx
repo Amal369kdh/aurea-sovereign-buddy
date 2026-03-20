@@ -141,29 +141,45 @@ const Onboarding = () => {
     setSubmitting(true);
 
     const studentStatus = isFrench ? "francais" : isInFrance ? "en_france" : "futur_arrivant";
+    // For French students, is_in_france is always true
+    const effectiveIsInFrance = isFrench ? true : isInFrance;
 
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({
-        user_id: user.id,
-        nationality,
-        city,
-        target_city: city,
-        university,
-        objectifs,
-        is_in_france: isInFrance,
-        student_status: studentStatus,
-        onboarding_step: 3,
-        status: "explorateur",
-      }, { onConflict: "user_id" });
+    let lastError = null;
+    // Retry up to 3 times with 1s delay in case of transient network error
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const { error } = await supabase
+        .from("profiles")
+        .upsert({
+          user_id: user.id,
+          nationality,
+          city,
+          target_city: city,
+          university,
+          objectifs,
+          is_in_france: effectiveIsInFrance,
+          student_status: studentStatus,
+          onboarding_step: 3,
+          status: "explorateur",
+        }, { onConflict: "user_id" });
 
-    if (error) {
-      toast({ title: "Oops… retry 🔄", description: "Impossible de sauvegarder. Réessaie.", variant: "destructive" });
-    } else {
-      toast({ title: "T'es prêt(e) 🔥", description: "Ton profil est configuré. Bienvenue !" });
-      navigate("/", { replace: true });
+      if (!error) {
+        lastError = null;
+        break;
+      }
+      lastError = error;
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 1000));
     }
+
     setSubmitting(false);
+
+    if (lastError) {
+      toast({ title: "Oops… retry 🔄", description: "Connexion instable. Réessaie dans quelques secondes.", variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "C'est parti ! 🔥", description: "Ton espace est prêt — on est là pour toi." });
+    // Use hard redirect for Android WebView / PWA reliability
+    window.location.href = "/";
   };
 
   const [nameConfirmed, setNameConfirmed] = useState(false);
