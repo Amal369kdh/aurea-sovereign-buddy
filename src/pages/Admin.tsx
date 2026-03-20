@@ -50,7 +50,9 @@ type Partner = {
   name: string;
   type: string;
   offer: string | null;
+  url: string | null;
   is_active: boolean;
+  click_count?: number;
 };
 
 type AllowedDomain = {
