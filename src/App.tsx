@@ -292,6 +292,7 @@ const App = () => (
           <ErrorBoundary>
             <BrowserRouter>
               <AppRouter />
+              <PWAInstallPrompt />
             </BrowserRouter>
           </ErrorBoundary>
         </IntegrationProvider>
