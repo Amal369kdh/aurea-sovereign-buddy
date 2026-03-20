@@ -26,9 +26,20 @@ const DeleteAccountButton = () => {
     if (!user || confirmText !== "SUPPRIMER") return;
     setDeleting(true);
 
+    // Hard client-side timeout: never spin more than 15s
+    const deleteTimeout = setTimeout(() => {
+      toast({
+        title: "Délai dépassé",
+        description: "La suppression prend trop longtemps. Réessaie dans quelques instants.",
+        variant: "destructive",
+      });
+      setDeleting(false);
+    }, 15000);
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
+        clearTimeout(deleteTimeout);
         toast({ title: "Erreur", description: "Session expirée, reconnecte-toi.", variant: "destructive" });
         setDeleting(false);
         return;
@@ -37,6 +48,8 @@ const DeleteAccountButton = () => {
       const res = await supabase.functions.invoke("delete-account", {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
+
+      clearTimeout(deleteTimeout);
 
       if (res.error || res.data?.error) {
         toast({
@@ -49,7 +62,6 @@ const DeleteAccountButton = () => {
       }
 
       // Purge ALL Supabase session keys from localStorage immediately
-      // This prevents ProtectedRoute retry loops and stale session flashes on mobile
       try {
         const keysToRemove = Object.keys(localStorage).filter(
           (k) => k.startsWith("sb-") || k.toLowerCase().includes("supabase")
@@ -61,9 +73,9 @@ const DeleteAccountButton = () => {
       }
 
       // Hard redirect — do NOT call signOut() (session is already deleted server-side)
-      // This avoids the race condition between AuthContext SIGNED_OUT redirect and this one
       window.location.replace("/auth");
     } catch {
+      clearTimeout(deleteTimeout);
       toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
       setDeleting(false);
     }
