@@ -238,15 +238,6 @@ const Profile = () => {
   };
 
 
-
-    setSaving(false);
-    if (error) {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Profil sauvegardé ✓", description: "Tes informations ont été mises à jour." });
-    }
-  };
-
   const isFrench = profile.nationality === "🇫🇷 Française";
 
   const statusLabel: Record<string, string> = {
