@@ -34,8 +34,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // cet event SIGNED_OUT sera émis dans TOUS les onglets automatiquement.
       // On force alors une redirection propre pour éviter la boucle infinie.
       if (event === "SIGNED_OUT" && !session) {
-        // Seulement si la page courante n'est pas déjà /auth
-        if (!window.location.pathname.startsWith("/auth") && !window.location.pathname.startsWith("/reset-password")) {
+        // Seulement si la page courante n'est pas déjà /auth ou /reset-password
+        // Also skip if localStorage was already cleared (account deletion flow)
+        const hasSupabaseSession = Object.keys(localStorage).some(
+          (k) => k.startsWith("sb-") || k.toLowerCase().includes("supabase")
+        );
+        if (
+          !window.location.pathname.startsWith("/auth") &&
+          !window.location.pathname.startsWith("/reset-password") &&
+          hasSupabaseSession
+        ) {
           window.location.href = "/auth";
         }
       }
