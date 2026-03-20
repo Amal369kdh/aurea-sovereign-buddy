@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
