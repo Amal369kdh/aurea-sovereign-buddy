@@ -1,0 +1,4 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS faculte text DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS type_formation text DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS diplome_vise text DEFAULT NULL;

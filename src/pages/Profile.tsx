@@ -40,6 +40,18 @@ const OBJECTIFS_LIST = [
   { id: "sante", label: "🏥 M'occuper de ma santé" },
 ];
 
+const TYPES_FORMATION = [
+  "Licence (L1/L2/L3)", "Master (M1/M2)", "Doctorat (PhD)",
+  "BUT / Bachelor", "BTS", "Classe préparatoire (CPGE)",
+  "École d'ingénieurs", "École de commerce", "Formation professionnelle", "Autre",
+];
+
+const DIPLOMES_VISES = [
+  "Bac+3 (Licence, Bachelor)", "Bac+4 (Master 1)",
+  "Bac+5 (Master 2, Ingénieur, Grande École)", "Bac+8 (Doctorat)",
+  "BTS / BUT", "Certificat professionnel", "Autre",
+];
+
 type ProfileData = {
   display_name: string;
   city: string;
@@ -56,6 +68,9 @@ type ProfileData = {
   points_social: number;
   status: string;
   avatar_initials: string;
+  faculte: string;
+  type_formation: string;
+  diplome_vise: string;
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -117,6 +132,9 @@ const Profile = () => {
     points_social: 0,
     status: "explorateur",
     avatar_initials: "?",
+    faculte: "",
+    type_formation: "",
+    diplome_vise: "",
   });
 
   useEffect(() => {
@@ -126,7 +144,7 @@ const Profile = () => {
         supabase
           .from("profiles")
           .select(
-            "display_name, city, university, university_id, nationality, visa_type, logement_situation, mutuelle, budget_monthly, revenus_monthly, objectifs, is_verified, points_social, status, avatar_initials"
+            "display_name, city, university, university_id, nationality, visa_type, logement_situation, mutuelle, budget_monthly, revenus_monthly, objectifs, is_verified, points_social, status, avatar_initials, faculte, type_formation, diplome_vise"
           )
           .eq("user_id", user.id)
           .maybeSingle(),
@@ -138,7 +156,7 @@ const Profile = () => {
       if (datingRes.data) setDatingProfile(datingRes.data as DatingProfileData);
 
       if (profileRes.data) {
-        const d = profileRes.data;
+        const d = profileRes.data as any;
         setProfile({
           display_name: d.display_name ?? "",
           city: d.city ?? "",
@@ -155,6 +173,9 @@ const Profile = () => {
           points_social: d.points_social ?? 0,
           status: d.status ?? "explorateur",
           avatar_initials: d.avatar_initials ?? "?",
+          faculte: d.faculte ?? "",
+          type_formation: d.type_formation ?? "",
+          diplome_vise: d.diplome_vise ?? "",
         });
       }
       setLoading(false);
@@ -182,6 +203,7 @@ const Profile = () => {
     }));
   };
 
+
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
@@ -201,7 +223,10 @@ const Profile = () => {
         budget_monthly: profile.budget_monthly,
         revenus_monthly: profile.revenus_monthly,
         objectifs: profile.objectifs,
-      })
+        faculte: (profile.faculte as any) || null,
+        type_formation: (profile.type_formation as any) || null,
+        diplome_vise: (profile.diplome_vise as any) || null,
+      } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -211,6 +236,7 @@ const Profile = () => {
       toast({ title: "Profil sauvegardé ✓", description: "Tes informations ont été mises à jour." });
     }
   };
+
 
   const isFrench = profile.nationality === "🇫🇷 Française";
 
@@ -313,6 +339,38 @@ const Profile = () => {
                   </option>
                 ))}
                 <option value="Autre">Autre / Non listée</option>
+              </select>
+            </FieldRow>
+            <FieldRow label="Faculté / Composante (optionnel)">
+              <input
+                className={inputClass}
+                value={profile.faculte}
+                onChange={(e) => set("faculte", e.target.value)}
+                placeholder="Ex: UFR Droit, IUT GEA, IAE..."
+              />
+            </FieldRow>
+            <FieldRow label="Type de formation">
+              <select
+                className={selectClass}
+                value={profile.type_formation}
+                onChange={(e) => set("type_formation", e.target.value)}
+              >
+                <option value="">— Sélectionne —</option>
+                {TYPES_FORMATION.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </FieldRow>
+            <FieldRow label="Diplôme visé">
+              <select
+                className={selectClass}
+                value={profile.diplome_vise}
+                onChange={(e) => set("diplome_vise", e.target.value)}
+              >
+                <option value="">— Sélectionne —</option>
+                {DIPLOMES_VISES.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
               </select>
             </FieldRow>
           </Section>
