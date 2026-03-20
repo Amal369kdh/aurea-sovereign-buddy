@@ -46,10 +46,12 @@ const AppSidebar = () => {
     <aside className="hidden lg:flex w-[240px] shrink-0 flex-col border-r border-border bg-sidebar p-4">
       <div className="mb-8 flex items-center justify-between px-3">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl gold-gradient">
-          <Crown className="h-4 w-4 text-primary-foreground" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl gold-gradient">
+            <Crown className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="text-lg font-extrabold gold-text">Aurea</span>
         </div>
-        <span className="text-lg font-extrabold gold-text">Aurea</span>
+        <NotificationBell />
       </div>
 
       <nav className="flex flex-1 flex-col gap-1">
