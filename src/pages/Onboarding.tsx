@@ -175,10 +175,10 @@ const Onboarding = () => {
             <Crown className="h-6 w-6 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-extrabold">
-            <span className="gold-text">Complète ton profil</span>
+            <span className="gold-text">Start clean ✨</span>
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Étape {step + 1} / {STEPS.length}
+            Configure ton espace — étape {step + 1} / {STEPS.length}
           </p>
         </div>
 
