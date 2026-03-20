@@ -174,7 +174,7 @@ const Legal = () => {
 
           <H3>1. Responsable du traitement</H3>
           <P>
-            Le responsable du traitement des données est le porteur du projet Aurea Student, joignable à <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>.
+            Le responsable du traitement des données est le porteur du projet Aurea Student, joignable à <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>.
           </P>
 
           <H3>2. Données collectées</H3>
