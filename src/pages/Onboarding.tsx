@@ -136,13 +136,14 @@ const Onboarding = () => {
   // Save progress after each step so partial data is never lost
   const saveProgress = async () => {
     if (!user) return;
-    const partial: Record<string, unknown> = { user_id: user.id };
-    if (nationality) partial.nationality = nationality;
-    if (isInFrance !== null) partial.is_in_france = isFrench ? true : isInFrance;
-    if (university) partial.university = university;
-    if (objectifs.length > 0) partial.objectifs = objectifs;
     try {
-      await supabase.from("profiles").upsert(partial, { onConflict: "user_id" });
+      await supabase.from("profiles").upsert({
+        user_id: user.id,
+        ...(nationality ? { nationality } : {}),
+        ...(isInFrance !== null ? { is_in_france: isFrench ? true : isInFrance } : {}),
+        ...(university ? { university } : {}),
+        ...(objectifs.length > 0 ? { objectifs } : {}),
+      }, { onConflict: "user_id" });
     } catch { /* non-blocking */ }
   };
 
