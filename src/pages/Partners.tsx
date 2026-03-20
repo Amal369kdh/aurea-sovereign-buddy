@@ -26,10 +26,11 @@ const TYPE_LABELS: Record<string, { label: string; emoji: string; color: string 
 
 // Offres "à venir" pour renforcer la proposition B2B
 const COMING_SOON = [
-  { emoji: "🏦", title: "Comparateur bancaire", sub: "Trouve la meilleure offre étudiant — SG, BNP, Hello Bank", category: "Banque" },
+  { emoji: "🏦", title: "Comparateur bancaire", sub: "Trouve la meilleure offre étudiant — SG, BNP, Hello Bank, Boursobank", category: "Banque" },
   { emoji: "🛡️", title: "Mutuelle étudiante", sub: "Comparatif LMDE, HEYME, April — sans frais cachés", category: "Assurance" },
-  { emoji: "🏠", title: "Garant gratuit", sub: "Partenariat avec un service de garantie locative", category: "Logement" },
-  { emoji: "📱", title: "Forfait mobile étudiant", sub: "Offres préférentielles pour les étudiants internationaux", category: "Téléphonie" },
+  { emoji: "🏠", title: "Visale — garant gratuit de l'État", sub: "Garantie locative gratuite pour tous les étudiants via visale.fr", category: "Logement", url: "https://www.visale.fr" },
+  { emoji: "📱", title: "Comparateur forfaits mobiles", sub: "Free, Bouygues, SFR, Orange — trouvez le meilleur rapport qualité/prix", category: "Téléphonie" },
+  { emoji: "🛒", title: "Comparateur de prix — courses", sub: "Lidl, Aldi, Leclerc, Carrefour — compare les paniers selon ton budget", category: "Alimentation" },
 ];
 
 const trackClick = async (partnerId: string, userId: string) => {
@@ -184,12 +185,26 @@ const Partners = () => {
                   {item.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-bold text-foreground">{item.title}</p>
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">Bientôt</span>
+                    {item.url ? (
+                      <span className="rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">Disponible</span>
+                    ) : (
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">Bientôt</span>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{item.sub}</p>
                 </div>
+                {item.url && (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 flex items-center gap-1 rounded-xl bg-primary/10 border border-primary/20 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/15 transition-colors cursor-pointer"
+                  >
+                    Voir <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
               </motion.div>
             ))}
           </div>
