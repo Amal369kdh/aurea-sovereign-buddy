@@ -25,17 +25,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Hard safety timeout: if auth never resolves (offline/slow network), unblock UI after 6s
+    const authTimeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          console.warn("[AuthContext] Auth load timed out after 6s — unblocking UI");
+          return false;
+        }
+        return prev;
+      });
+    }, 6000);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      clearTimeout(authTimeout);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
 
       // Si un autre onglet supprime le compte ou se déconnecte via Supabase Auth,
       // cet event SIGNED_OUT sera émis dans TOUS les onglets automatiquement.
-      // On force alors une redirection propre pour éviter la boucle infinie.
       if (event === "SIGNED_OUT" && !session) {
-        // Seulement si la page courante n'est pas déjà /auth ou /reset-password
-        // Also skip if localStorage was already cleared (account deletion flow)
         const hasSupabaseSession = Object.keys(localStorage).some(
           (k) => k.startsWith("sb-") || k.toLowerCase().includes("supabase")
         );
@@ -50,16 +59,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(authTimeout);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+    }).catch(() => {
+      // Network error: unblock immediately
+      clearTimeout(authTimeout);
+      setLoading(false);
     });
 
-    // Cross-tab sync: when ANOTHER tab confirms an email or logs in, refresh session
-    // here so this tab reflects the new state.
-    // IMPORTANT: only react to NEW sessions appearing (newValue set), never to
-    // sign-outs (newValue null from storage) — the Supabase Auth SIGNED_OUT event
-    // above already handles cross-tab logouts/deletions properly.
     const handleStorage = (e: StorageEvent) => {
       if (e.key && e.key.includes("supabase") && e.newValue !== null) {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -76,6 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       subscription.unsubscribe();
       window.removeEventListener("storage", handleStorage);
+      clearTimeout(authTimeout);
     };
   }, []);
 

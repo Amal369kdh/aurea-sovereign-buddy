@@ -162,10 +162,11 @@ const EmailConfirmHandler = () => {
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
-  const location = useLocation();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const checkedUserRef = useRef<string | null>(null);
+  // Hard timeout: never show spinner more than 8 seconds
+  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -179,55 +180,93 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     setProfileChecked(false);
     setNeedsOnboarding(false);
+    setTimedOut(false);
     checkedUserRef.current = user.id;
 
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 6; // max ~9s (500+1000+1500+2000+2500+3000ms)
+
+    // Hard safety timeout: if still loading after 8s, force proceed
+    const hardTimeout = setTimeout(() => {
+      if (!cancelled && !profileChecked) {
+        setTimedOut(true);
+        setNeedsOnboarding(false);
+        setProfileChecked(true);
+      }
+    }, 8000);
 
     const checkProfile = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("nationality, city, university, objectifs, is_in_france, onboarding_step")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (!data && attempts < maxAttempts) {
-        attempts++;
-        setTimeout(checkProfile, 500 * attempts);
-        return;
-      }
+        if (!data && attempts < maxAttempts) {
+          attempts++;
+          setTimeout(checkProfile, 500 * attempts);
+          return;
+        }
 
-      if (!data) {
-        setNeedsOnboarding(true);
+        if (!data) {
+          setNeedsOnboarding(true);
+          setProfileChecked(true);
+          clearTimeout(hardTimeout);
+          return;
+        }
+
+        const isFrench = data.nationality === "🇫🇷 Française";
+        const objectifs = data.objectifs as string[] | null;
+        const incomplete =
+          !data.nationality ||
+          !data.city ||
+          !data.university ||
+          !objectifs ||
+          objectifs.length === 0 ||
+          (!isFrench && data.is_in_france === null);
+
+        setNeedsOnboarding(incomplete);
         setProfileChecked(true);
-        return;
+        clearTimeout(hardTimeout);
+      } catch {
+        // Network error: force proceed rather than spin forever
+        if (!cancelled) {
+          setNeedsOnboarding(false);
+          setProfileChecked(true);
+          clearTimeout(hardTimeout);
+        }
       }
-
-      const isFrench = data.nationality === "🇫🇷 Française";
-      const objectifs = data.objectifs as string[] | null;
-      const incomplete =
-        !data.nationality ||
-        !data.city ||
-        !data.university ||
-        !objectifs ||
-        objectifs.length === 0 ||
-        (!isFrench && data.is_in_france === null);
-
-      setNeedsOnboarding(incomplete);
-      setProfileChecked(true);
     };
 
     checkProfile();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      clearTimeout(hardTimeout);
+    };
   }, [user?.id]);
+
+  // Also guard against auth loading hanging forever (> 8s)
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => {
+      // Force re-render — AuthContext will handle this case
+    }, 8000);
+    return () => clearTimeout(t);
+  }, [loading]);
 
   if (loading || !profileChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          {timedOut && (
+            <p className="text-xs text-muted-foreground">Connexion lente… 🌐</p>
+          )}
+        </div>
       </div>
     );
   }

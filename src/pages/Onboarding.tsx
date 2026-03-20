@@ -55,35 +55,54 @@ const Onboarding = () => {
     if (!user) return;
     let cancelled = false;
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 6;
+
+    // Hard safety timeout: never block UI more than 6s
+    const hardTimeout = setTimeout(() => {
+      if (!cancelled) setProfileReady(true);
+    }, 6000);
 
     const checkProfile = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (data) {
-        setProfileReady(true);
-        return;
+        if (data) {
+          clearTimeout(hardTimeout);
+          setProfileReady(true);
+          return;
+        }
+
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(checkProfile, 800);
+          return;
+        }
+
+        // Fallback: try to create empty profile, then unblock regardless
+        try {
+          await supabase.from("profiles").insert({ user_id: user.id });
+        } catch {
+          // ignore — might already exist or RLS blocks it
+        }
+        clearTimeout(hardTimeout);
+        if (!cancelled) setProfileReady(true);
+      } catch {
+        clearTimeout(hardTimeout);
+        if (!cancelled) setProfileReady(true);
       }
-
-      attempts++;
-      if (attempts < maxAttempts) {
-        setTimeout(checkProfile, 800);
-        return;
-      }
-
-      // Fallback: create empty profile
-      await supabase.from("profiles").insert({ user_id: user.id });
-      if (!cancelled) setProfileReady(true);
     };
 
     checkProfile();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      clearTimeout(hardTimeout);
+    };
   }, [user?.id]);
 
   useEffect(() => {
