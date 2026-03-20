@@ -201,13 +201,13 @@ const BentoTile = ({
             {title === "Santé" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
-                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-green-500/20 bg-green-500/5 px-4 py-2.5 text-left transition-colors hover:bg-green-500/10 cursor-pointer"
+                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-success/20 bg-success/5 px-4 py-2.5 text-left transition-colors hover:bg-success/10 cursor-pointer"
               >
                 <span className="text-sm">🛡️</span>
-                <p className="flex-1 text-xs text-green-600/80 dark:text-green-400/80 leading-snug">
+                <p className="flex-1 text-xs text-success/80 leading-snug">
                   <span className="font-semibold">Mutuelle étudiante partenaire</span> — comparatif LMDE, HEYME, April arrive bientôt
                 </p>
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-green-500/60" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-success/60" />
               </button>
             )}
 
@@ -215,13 +215,13 @@ const BentoTile = ({
             {title === "Mon Avenir" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
-                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-violet-500/20 bg-violet-500/5 px-4 py-2.5 text-left transition-colors hover:bg-violet-500/10 cursor-pointer"
+                className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-info/20 bg-info/5 px-4 py-2.5 text-left transition-colors hover:bg-info/10 cursor-pointer"
               >
                 <span className="text-sm">💼</span>
-                <p className="flex-1 text-xs text-violet-600/80 dark:text-violet-400/80 leading-snug">
+                <p className="flex-1 text-xs text-info/80 leading-snug">
                   <span className="font-semibold">Jobs étudiants & alternance partenaires</span> — offres exclusives bientôt
                 </p>
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-violet-500/60" />
+                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-info/60" />
               </button>
             )}
           </motion.div>
