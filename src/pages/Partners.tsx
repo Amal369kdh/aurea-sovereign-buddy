@@ -185,12 +185,26 @@ const Partners = () => {
                   {item.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-bold text-foreground">{item.title}</p>
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">Bientôt</span>
+                    {item.url ? (
+                      <span className="rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">Disponible</span>
+                    ) : (
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">Bientôt</span>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">{item.sub}</p>
                 </div>
+                {item.url && (
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 flex items-center gap-1 rounded-xl bg-primary/10 border border-primary/20 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/15 transition-colors cursor-pointer"
+                  >
+                    Voir <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
               </motion.div>
             ))}
           </div>
