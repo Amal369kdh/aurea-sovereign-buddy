@@ -305,9 +305,14 @@ const Admin = () => {
 
   const addPartner = async () => {
     if (!newPartner.name.trim()) return;
-    const { error } = await supabase.from("partners").insert({ ...newPartner, offer: newPartner.offer || null });
+    const { error } = await supabase.from("partners").insert({
+      name: newPartner.name,
+      type: newPartner.type,
+      offer: newPartner.offer || null,
+      url: newPartner.url || null,
+    });
     if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    else { toast({ title: "Partenaire ajouté ✓" }); setNewPartner({ name: "", type: "bank", offer: "" }); fetchAll(); }
+    else { toast({ title: "Partenaire ajouté ✓" }); setNewPartner({ name: "", type: "bank", offer: "", url: "" }); fetchAll(); }
   };
 
   const deletePartner = async (id: string) => {
