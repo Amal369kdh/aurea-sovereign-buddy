@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert, Handshake } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ const navItems = [
   { icon: FolderLock, label: "Dossier", path: "/mon-dossier" },
   { icon: Users, label: "Social", path: "/hub-social" },
   { icon: MessageCircle, label: "Messages", path: "/messages" },
+  { icon: Handshake, label: "Partenaires", path: "/partners" },
 ];
 
 const MobileBottomNav = () => {

@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FileText, ExternalLink, Save, Loader2, Calendar,
-  CreditCard, Shield, Clock, HelpCircle, CheckCircle, Home, Heart,
+  CreditCard, Shield, Clock, HelpCircle, CheckCircle, Home, Heart, Handshake,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+
 
 /* ─── Types ─── */
 
@@ -62,6 +64,7 @@ const VISA_OPTIONS: { value: AdminInfo["visa_type"]; label: string }[] = [
 const AlphaVault = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [info, setInfo] = useState<AdminInfo>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -145,7 +148,7 @@ const AlphaVault = () => {
         href="https://www.digiposte.fr/"
         target="_blank"
         rel="noopener noreferrer"
-        className="mb-4 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
+        className="mb-2 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gold-gradient">
           <FileText className="h-5 w-5 text-primary-foreground" />
@@ -158,6 +161,23 @@ const AlphaVault = () => {
         </div>
         <ExternalLink className="h-4 w-4 shrink-0 text-primary" />
       </a>
+
+      {/* Bannière partenaire banque */}
+      <button
+        onClick={() => navigate("/partners")}
+        className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-left transition-colors hover:bg-primary/10 cursor-pointer"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <Handshake className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-foreground">Offres partenaires exclusives</p>
+          <p className="text-xs text-muted-foreground">
+            Banques, mutuelles, jobs étudiants — voir les partenaires Aurea
+          </p>
+        </div>
+        <ExternalLink className="h-4 w-4 shrink-0 text-primary" />
+      </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Titre de séjour - hidden for French */}
@@ -285,6 +305,19 @@ const AlphaVault = () => {
               maxLength={80}
               className="w-full rounded-xl border border-border bg-secondary/50 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
+          )}
+          {/* Bannière partenaire mutuelle */}
+          {!info.mutuelle && (
+            <button
+              onClick={() => navigate("/partners")}
+              className="mt-2 flex w-full items-center gap-2 rounded-xl border border-success/20 bg-success/5 px-3 py-2 text-left transition-colors hover:bg-success/10 cursor-pointer"
+            >
+              <Handshake className="h-3.5 w-3.5 shrink-0 text-success" />
+              <p className="flex-1 text-xs text-success/80 leading-snug">
+                <span className="font-semibold">Comparateur mutuelle</span> — LMDE, HEYME bientôt
+              </p>
+              <ExternalLink className="h-3 w-3 shrink-0 text-success/50" />
+            </button>
           )}
         </motion.div>
 
