@@ -50,7 +50,9 @@ type Partner = {
   name: string;
   type: string;
   offer: string | null;
+  url: string | null;
   is_active: boolean;
+  click_count?: number;
 };
 
 type AllowedDomain = {
@@ -172,7 +174,7 @@ const Admin = () => {
   const [refreshingCity, setRefreshingCity] = useState<string | null>(null);
 
   // Form states
-  const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "" });
+  const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "", url: "" });
   const [newDomain, setNewDomain] = useState({ domain: "", university_name: "" });
   const [newResource, setNewResource] = useState({ title: "", url: "", category: "social" });
 
@@ -199,7 +201,7 @@ const Admin = () => {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
 
-    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes, postsTodayRes] =
+    const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes, postsTodayRes, clicksRes] =
       await Promise.all([
         supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
@@ -213,11 +215,20 @@ const Admin = () => {
         supabase.from("announcements").select("id, content, created_at, likes_count").eq("is_pinned", true).order("created_at", { ascending: false }),
         supabase.from("profiles").select("aya_messages_used").gt("aya_messages_used", 0),
         supabase.from("announcements").select("id", { count: "exact", head: true }).gte("created_at", todayStart.toISOString()),
+        (supabase as any).from("partner_link_clicks").select("partner_id"),
       ]);
 
     if (profilesRes.data) setUsers(profilesRes.data as UserRow[]);
     if (featuresRes.data) setFeatures(featuresRes.data as FeatureFlag[]);
-    if (partnersRes.data) setPartners(partnersRes.data as Partner[]);
+    if (partnersRes.data) {
+      const clickMap: Record<string, number> = {};
+      if (clicksRes?.data) {
+        for (const c of clicksRes.data) {
+          clickMap[c.partner_id] = (clickMap[c.partner_id] ?? 0) + 1;
+        }
+      }
+      setPartners(partnersRes.data.map((p: Partner) => ({ ...p, click_count: clickMap[p.id] ?? 0 })) as Partner[]);
+    }
     if (domainsRes.data) setDomains(domainsRes.data as AllowedDomain[]);
     if (resourcesRes.data) setResources(resourcesRes.data as ResourceRow[]);
     if (reportsRes.data) {
@@ -303,9 +314,14 @@ const Admin = () => {
 
   const addPartner = async () => {
     if (!newPartner.name.trim()) return;
-    const { error } = await supabase.from("partners").insert({ ...newPartner, offer: newPartner.offer || null });
+    const { error } = await supabase.from("partners").insert({
+      name: newPartner.name,
+      type: newPartner.type,
+      offer: newPartner.offer || null,
+      url: newPartner.url || null,
+    });
     if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    else { toast({ title: "Partenaire ajouté ✓" }); setNewPartner({ name: "", type: "bank", offer: "" }); fetchAll(); }
+    else { toast({ title: "Partenaire ajouté ✓" }); setNewPartner({ name: "", type: "bank", offer: "", url: "" }); fetchAll(); }
   };
 
   const deletePartner = async (id: string) => {
@@ -582,32 +598,61 @@ const Admin = () => {
     );
   };
 
+  const PARTNER_TYPE_LABELS: Record<string, string> = {
+    bank: "🏦 Banque",
+    insurance: "🛡️ Assurance",
+    housing: "🏠 Logement",
+    job: "💼 Jobs étudiants",
+    alternance: "🎓 Alternance",
+    other: "📦 Autre",
+  };
+
   const renderPartners = () => (
     <div className="space-y-4">
       <Section title="Partenaires actifs">
         {partners.length === 0 && <p className="text-sm text-muted-foreground">Aucun partenaire.</p>}
         {partners.map((p) => (
-          <div key={p.id} className="mb-3 flex items-center justify-between last:mb-0">
-            <div>
-              <p className="text-sm font-bold text-foreground">{p.name}</p>
-              <p className="text-xs text-muted-foreground">{p.type} · {p.offer ?? "—"}</p>
+          <div key={p.id} className="mb-3 rounded-2xl border border-border bg-background p-4 last:mb-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-bold text-foreground">{p.name}</p>
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                    {PARTNER_TYPE_LABELS[p.type] ?? p.type}
+                  </span>
+                  {(p.click_count ?? 0) > 0 && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                      {p.click_count} clic{(p.click_count ?? 0) > 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+                {p.offer && <p className="mt-0.5 text-xs text-muted-foreground">{p.offer}</p>}
+                {p.url && (
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="mt-0.5 block truncate text-xs text-primary hover:underline">
+                    {p.url}
+                  </a>
+                )}
+              </div>
+              <button onClick={() => deletePartner(p.id)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button onClick={() => deletePartner(p.id)} className="flex h-8 w-8 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors">
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
           </div>
         ))}
       </Section>
       <Section title="Ajouter un partenaire">
         <div className="space-y-3">
-          <input className={inputCls} placeholder="Nom du partenaire" value={newPartner.name} onChange={(e) => setNewPartner((p) => ({ ...p, name: e.target.value }))} />
+          <input className={inputCls} placeholder="Nom du partenaire (ex: McDonald's, BNP, Matmut…)" value={newPartner.name} onChange={(e) => setNewPartner((p) => ({ ...p, name: e.target.value }))} />
           <select className={inputCls} value={newPartner.type} onChange={(e) => setNewPartner((p) => ({ ...p, type: e.target.value }))}>
             <option value="bank">🏦 Banque</option>
             <option value="insurance">🛡️ Assurance</option>
             <option value="housing">🏠 Logement</option>
+            <option value="job">💼 Jobs étudiants</option>
+            <option value="alternance">🎓 Alternance</option>
             <option value="other">📦 Autre</option>
           </select>
-          <input className={inputCls} placeholder="Offre associée (ex: Compte gratuit 3 mois)" value={newPartner.offer} onChange={(e) => setNewPartner((p) => ({ ...p, offer: e.target.value }))} />
+          <input className={inputCls} placeholder="Lien affilié (https://…)" value={newPartner.url} onChange={(e) => setNewPartner((p) => ({ ...p, url: e.target.value }))} />
+          <input className={inputCls} placeholder="Description de l'offre (ex: Compte gratuit 3 mois)" value={newPartner.offer} onChange={(e) => setNewPartner((p) => ({ ...p, offer: e.target.value }))} />
           <button onClick={addPartner} className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground">
             <Plus className="h-4 w-4" /> Ajouter le partenaire
           </button>
