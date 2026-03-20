@@ -567,8 +567,10 @@ export type Database = {
           cuisine_preferences: string[] | null
           daily_swipes_count: number
           dietary: string | null
+          diplome_vise: string | null
           display_name: string | null
           expertise_domains: string[] | null
+          faculte: string | null
           full_name: string | null
           has_seen_welcome: boolean
           id: string
@@ -596,6 +598,7 @@ export type Database = {
           suspended_until: string | null
           target_city: string | null
           titre_sejour_expiry: string | null
+          type_formation: string | null
           university: string | null
           university_id: string | null
           updated_at: string
@@ -615,8 +618,10 @@ export type Database = {
           cuisine_preferences?: string[] | null
           daily_swipes_count?: number
           dietary?: string | null
+          diplome_vise?: string | null
           display_name?: string | null
           expertise_domains?: string[] | null
+          faculte?: string | null
           full_name?: string | null
           has_seen_welcome?: boolean
           id?: string
@@ -644,6 +649,7 @@ export type Database = {
           suspended_until?: string | null
           target_city?: string | null
           titre_sejour_expiry?: string | null
+          type_formation?: string | null
           university?: string | null
           university_id?: string | null
           updated_at?: string
@@ -663,8 +669,10 @@ export type Database = {
           cuisine_preferences?: string[] | null
           daily_swipes_count?: number
           dietary?: string | null
+          diplome_vise?: string | null
           display_name?: string | null
           expertise_domains?: string[] | null
+          faculte?: string | null
           full_name?: string | null
           has_seen_welcome?: boolean
           id?: string
@@ -692,6 +700,7 @@ export type Database = {
           suspended_until?: string | null
           target_city?: string | null
           titre_sejour_expiry?: string | null
+          type_formation?: string | null
           university?: string | null
           university_id?: string | null
           updated_at?: string
