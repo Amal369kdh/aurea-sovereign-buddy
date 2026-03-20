@@ -1,4 +1,5 @@
 import { MapPin, LogOut, Settings, User, CalendarClock } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import logo from "@/assets/logo.jpg";
 import { useNavigate } from "react-router-dom";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
@@ -59,7 +60,11 @@ const DashboardHeader = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 lg:gap-3">
+          {/* Cloche notifications — mobile uniquement (desktop = sidebar) */}
+          <div className="lg:hidden">
+            <NotificationBell />
+          </div>
           <div className="flex h-10 w-10 items-center justify-center rounded-full gold-gradient text-sm font-bold text-primary-foreground">
             {initials}
           </div>

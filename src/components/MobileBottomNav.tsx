@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert, Handshake, Bell } from "lucide-react";
-import { motion } from "framer-motion";
+import { LayoutDashboard, FolderLock, Users, MessageCircle, ShieldAlert, Handshake } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotifications } from "@/hooks/useNotifications";
+import NotificationBell from "@/components/NotificationBell";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -53,9 +54,14 @@ const MobileBottomNav = () => {
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             )}
-            {/* Badge for messages unread */}
+            {/* Badge notifications global sur tous les items concernés */}
             {item.path === "/messages" && unreadCount > 0 && (
               <span className="absolute right-2 top-1 flex h-4 w-4 items-center justify-center rounded-full gold-gradient text-[9px] font-bold text-primary-foreground z-20">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+            {item.path === "/hub-social" && unreadCount > 0 && (
+              <span className="absolute right-2 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground z-20">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
