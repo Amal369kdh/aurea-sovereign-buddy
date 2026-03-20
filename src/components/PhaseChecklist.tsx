@@ -78,8 +78,8 @@ const PhaseChecklist = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Non-verified foreign students can read everything, but cannot check tasks
-  const isReadOnly = !isTemoin && !isFrench;
+  // Les tâches "sur place" sont cochables si : Témoin OU Français OU déjà en France
+  const isReadOnly = !isTemoin && !isFrench && !isInFrance;
 
   return (
     <div className="space-y-4">
@@ -144,7 +144,9 @@ const PhaseChecklist = () => {
               <Info className="h-4 w-4 shrink-0 text-primary mt-0.5" />
               <p className="text-xs text-primary">
                 Les étapes « sur place » sont affichées en aperçu 🔒 pour que tu puisses anticiper. 
-                Elles se débloqueront quand tu passeras en mode « Je suis en France » et vérifieras ton email étudiant.
+                Elles se débloqueront automatiquement dès que tu cliques sur{" "}
+                <span className="font-semibold">« Je suis en France »</span> ci-dessus.
+                La vérification email étudiant, elle, débloque le <span className="font-semibold">Hub Social</span>.
               </p>
             </motion.div>
           )}

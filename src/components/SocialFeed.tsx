@@ -60,9 +60,10 @@ interface SocialFeedProps {
   activeCategory: Category;
   onCategoryChange: (cat: Category) => void;
   readOnly?: boolean;
+  isVerified?: boolean;
 }
 
-const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: SocialFeedProps) => {
+const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false }: SocialFeedProps) => {
   const { announcements, loading, createPost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );
@@ -356,6 +357,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: Soci
                   likedByMe={post.liked_by_me}
                   onToggleLike={() => toggleLike(post.id, post.liked_by_me)}
                   onGoldClick={() => setGoldOpen(true)}
+                  isVerified={isVerified}
                 />
                 <button
                   onClick={() => {
