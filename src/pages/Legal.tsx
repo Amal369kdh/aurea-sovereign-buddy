@@ -69,7 +69,7 @@ const Legal = () => {
             dans le cadre d'un projet étudiant indépendant. L'application n'est pas éditée par une personne morale enregistrée au Registre du Commerce et des Sociétés au moment de cette publication.
           </P>
           <P>
-            Contact : <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>
+            Contact : <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>
           </P>
 
           <H3>Hébergement</H3>
@@ -109,7 +109,7 @@ const Legal = () => {
 
           <H3>4. Compte utilisateur</H3>
           <P>
-            L'utilisateur est responsable de la confidentialité de ses identifiants. Tout accès frauduleux doit être signalé immédiatement à <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>. Aurea Student se réserve le droit de suspendre ou supprimer tout compte en cas de comportement contraire aux présentes CGU.
+            L'utilisateur est responsable de la confidentialité de ses identifiants. Tout accès frauduleux doit être signalé immédiatement à <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>. Aurea Student se réserve le droit de suspendre ou supprimer tout compte en cas de comportement contraire aux présentes CGU.
           </P>
           <P>
             Le pseudo (nom d'affichage) choisi à l'inscription est définitif et ne peut pas être modifié ultérieurement.
@@ -174,7 +174,7 @@ const Legal = () => {
 
           <H3>1. Responsable du traitement</H3>
           <P>
-            Le responsable du traitement des données est le porteur du projet Aurea Student, joignable à <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>.
+            Le responsable du traitement des données est le porteur du projet Aurea Student, joignable à <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>.
           </P>
 
           <H3>2. Données collectées</H3>
@@ -236,7 +236,7 @@ const Legal = () => {
             <li><strong className="text-foreground">Limitation</strong> : limiter le traitement de vos données</li>
           </ul>
           <P>
-            Pour exercer ces droits, contactez-nous à <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>. Nous répondrons dans un délai maximum d'un mois. Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a>.
+            Pour exercer ces droits, contactez-nous à <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>. Nous répondrons dans un délai maximum d'un mois. Vous pouvez également introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a>.
           </P>
 
           <H3>8. Cookies et traceurs</H3>
@@ -264,7 +264,7 @@ const Legal = () => {
         </Section>
 
         <p className="text-xs text-muted-foreground text-center pt-6 border-t border-border">
-          Pour toute question : <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>
+          Pour toute question : <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>
         </p>
       </main>
     </div>
