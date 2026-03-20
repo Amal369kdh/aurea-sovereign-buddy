@@ -264,7 +264,7 @@ const Legal = () => {
         </Section>
 
         <p className="text-xs text-muted-foreground text-center pt-6 border-t border-border">
-          Pour toute question : <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>
+          Pour toute question : <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>
         </p>
       </main>
     </div>
