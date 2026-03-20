@@ -8,8 +8,8 @@ const SovereigntyWidget = () => {
     <div className="rounded-4xl bg-card p-5 card-glow">
       <div className="mb-3 flex items-center justify-between">
         <div>
-          <h2 className="text-base font-bold text-foreground">Score d'intégration</h2>
-          <p className="text-xs text-muted-foreground">Ton avancement dans les démarches</p>
+          <h2 className="text-base font-bold text-foreground">Track ta progression 🎯</h2>
+          <p className="text-xs text-muted-foreground">Ton avancement dans les démarches admin</p>
         </div>
         <motion.span
           key={progress}

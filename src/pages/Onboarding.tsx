@@ -139,9 +139,9 @@ const Onboarding = () => {
       }, { onConflict: "user_id" });
 
     if (error) {
-      toast({ title: "Erreur", description: "Impossible de sauvegarder.", variant: "destructive" });
+      toast({ title: "Oops… retry 🔄", description: "Impossible de sauvegarder. Réessaie.", variant: "destructive" });
     } else {
-      toast({ title: "Bienvenue chez toi 🏠", description: "Ton profil est prêt !" });
+      toast({ title: "T'es prêt(e) 🔥", description: "Ton profil est configuré. Bienvenue !" });
       navigate("/", { replace: true });
     }
     setSubmitting(false);
@@ -175,10 +175,10 @@ const Onboarding = () => {
             <Crown className="h-6 w-6 text-primary-foreground" />
           </div>
           <h1 className="text-xl font-extrabold">
-            <span className="gold-text">Complète ton profil</span>
+            <span className="gold-text">Start clean ✨</span>
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Étape {step + 1} / {STEPS.length}
+            Configure ton espace — étape {step + 1} / {STEPS.length}
           </p>
         </div>
 
@@ -337,9 +337,9 @@ const Onboarding = () => {
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : isLast ? (
-              <>Terminer <Check className="h-4 w-4" /></>
+              <>On valide ✅ <Check className="h-4 w-4" /></>
             ) : (
-              <>Suivant <ArrowRight className="h-4 w-4" /></>
+              <>Go next <ArrowRight className="h-4 w-4" /></>
             )}
           </button>
         </div>

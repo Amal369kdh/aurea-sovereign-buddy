@@ -34,14 +34,14 @@ interface QuickLink {
 
 // Mapping tuile → phase de checklist dans Mon Dossier
 const TILE_CHECKLIST_MAP: Record<string, string> = {
-  "Logement": "Logement & Installation",
-  "Préfecture": "Titre de séjour",
-  "Aides & Administratif": "CAF, bourses & aides",
-  "Banque": "Ouvrir un compte",
-  "Santé": "Mutuelle & santé",
-  "Vie pratique": "Vie quotidienne",
-  "Mon Avenir": "Jobs & carrière",
-  "Soutien": "Aide sociale",
+  "Ton spot 🏡": "Logement & Installation",
+  "Mode légal activé ⚖️": "Titre de séjour",
+  "Zéro galère admin 📂": "CAF, bourses & aides",
+  "Cash flow mode 💸": "Ouvrir un compte",
+  "100% couvert 🛡️": "Mutuelle & santé",
+  "Life unlocked 🔓": "Vie quotidienne",
+  "Level up ta carrière 🚀": "Jobs & carrière",
+  "On est là pour toi 🤝": "Aide sociale",
 };
 
 /* ─── Tile component ─── */
@@ -173,8 +173,8 @@ const BentoTile = ({
               </button>
             )}
 
-            {/* Bannière partenaires — Logement */}
-            {title === "Logement" && !locked && (
+            {/* Bannière partenaires — Spot logement */}
+            {title === "Ton spot 🏡" && !locked && (
               <div className="mx-6 mb-4 flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5">
                 <span className="text-sm">🤝</span>
                 <p className="text-xs text-primary/80 leading-snug">
@@ -183,8 +183,8 @@ const BentoTile = ({
               </div>
             )}
 
-            {/* Bannière partenaires — Banque */}
-            {title === "Banque" && !locked && (
+            {/* Bannière partenaires — Cash flow (Banque) */}
+            {title === "Cash flow mode 💸" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10 cursor-pointer"
@@ -197,8 +197,8 @@ const BentoTile = ({
               </button>
             )}
 
-            {/* Bannière partenaires — Santé */}
-            {title === "Santé" && !locked && (
+            {/* Bannière partenaires — 100% couvert (Santé) */}
+            {title === "100% couvert 🛡️" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-success/20 bg-success/5 px-4 py-2.5 text-left transition-colors hover:bg-success/10 cursor-pointer"
@@ -211,8 +211,8 @@ const BentoTile = ({
               </button>
             )}
 
-            {/* Bannière partenaires — Mon Avenir */}
-            {title === "Mon Avenir" && !locked && (
+            {/* Bannière partenaires — Level up carrière */}
+            {title === "Level up ta carrière 🚀" && !locked && (
               <button
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-info/20 bg-info/5 px-4 py-2.5 text-left transition-colors hover:bg-info/10 cursor-pointer"
@@ -236,13 +236,12 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 1 — Trouver un logement
   {
     step: 1,
-    title: "Logement",
-    subtitle: "Résidences CROUS & plateformes locales",
+    title: "Ton spot 🏡",
+    subtitle: "Trouver un logement • CROUS & plateformes",
     icon: Home,
     accentClass: "bg-warning/15 text-warning",
     className: "",
     lockable: true,
-    // ⚠️ Alerte renouvellement CROUS 2026 (Grenoble only for now)
     _alerte: city.toLowerCase() === "grenoble"
       ? "⚠️ Renouvellement CROUS 2026 : du 10 mars au 4 mai. Sur messervices.etudiant.gouv.fr → Cité'U → Grenoble → « Mon logement actuel » → « Demander mon renouvellement ». Passé le 4 mai = perte de ta chambre pour la rentrée."
       : undefined,
@@ -256,8 +255,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 2 — Titre de séjour & préfecture
   {
     step: 2,
-    title: "Préfecture",
-    subtitle: "Titre de séjour — ANEF & Bâtiment MUSE",
+    title: "Mode légal activé ⚖️",
+    subtitle: "Être en règle • Titre de séjour & ANEF",
     icon: Landmark,
     accentClass: "bg-info/15 text-info",
     className: "",
@@ -268,11 +267,11 @@ const defaultTiles = (city: string) => [
       { icon: MapPin, label: "Préfecture de l'Isère", sub: "Place de Verdun, Grenoble • retrait carte de séjour", href: "https://maps.google.com/?q=Préfecture+Isère+Place+de+Verdun+Grenoble" },
     ] as QuickLink[],
   },
-  // ÉTAPE 3 — Aides financières & administratif (APL retiré — il est dans Logement)
+  // ÉTAPE 3 — Aides financières & administratif
   {
     step: 3,
-    title: "Aides & Administratif",
-    subtitle: "Bourses, budget & inscription fac",
+    title: "Zéro galère admin 📂",
+    subtitle: "Simplifier les démarches • CAF, bourses & fac",
     icon: ClipboardCheck,
     accentClass: "gold-gradient text-primary-foreground",
     className: "",
@@ -288,8 +287,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 4 — Banque
   {
     step: 4,
-    title: "Banque",
-    subtitle: "Ouvrir un compte étudiant",
+    title: "Cash flow mode 💸",
+    subtitle: "Ouvrir un compte étudiant en France",
     icon: Landmark,
     accentClass: "bg-primary/15 text-primary",
     className: "",
@@ -302,11 +301,11 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
     ] as QuickLink[],
   },
-  // ÉTAPE 5 — Santé (point de repère unique = Bâtiment MUSE à Grenoble)
+  // ÉTAPE 5 — Santé
   {
     step: 5,
-    title: "Santé",
-    subtitle: "Soins, urgences & bien-être",
+    title: "100% couvert 🛡️",
+    subtitle: "Soins, urgences & bien-être étudiant",
     icon: Stethoscope,
     accentClass: "bg-destructive/15 text-destructive",
     className: "",
@@ -324,8 +323,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 6 — Vie pratique
   {
     step: 6,
-    title: "Vie pratique",
-    subtitle: "M réso, vélos, repas à 1€ & sport",
+    title: "Life unlocked 🔓",
+    subtitle: "Transport, repas à 1€ & sport campus",
     icon: Bus,
     accentClass: "bg-success/15 text-success",
     className: "",
@@ -341,8 +340,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 7 — Carrière & avenir
   {
     step: 7,
-    title: "Mon Avenir",
-    subtitle: "Orientation, jobs, stages & carrière",
+    title: "Level up ta carrière 🚀",
+    subtitle: "Jobs, stages & orientation professionnelle",
     icon: Briefcase,
     accentClass: "bg-info/15 text-info",
     className: "",
@@ -358,8 +357,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 8 — Soutien & aide humaine
   {
     step: 8,
-    title: "Soutien",
-    subtitle: "Aide alimentaire, psycho & juridique",
+    title: "On est là pour toi 🤝",
+    subtitle: "Aide alimentaire, soutien psycho & juridique",
     icon: HeartHandshake,
     accentClass: "bg-destructive/10 text-destructive",
     className: "",
@@ -596,14 +595,15 @@ const BentoGrid = () => {
           className="mb-3 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
         >
           <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-          <p className="flex-1 text-xs text-primary/80">
-            <span className="font-semibold text-primary">Mode lecture</span> — Vérifie ton email étudiant pour cocher tes démarches et accéder à toutes les fonctionnalités.
-          </p>
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-primary">Mode lecture activé 👀</p>
+            <p className="text-xs text-primary/70">Vérifie ton email étudiant pour tout débloquer.</p>
+          </div>
           <button
             onClick={() => setVerifyOpen(true)}
             className="shrink-0 rounded-full gold-gradient px-3 py-1.5 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
           >
-            Vérifier
+            Let's go 🔓
           </button>
         </motion.div>
       )}

@@ -54,6 +54,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
   const [email, setEmail] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const loadProfile = async (uid: string) => {
     const { data } = await supabase
@@ -65,6 +66,35 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
     setStatus(profileData?.status ?? "explorateur");
     setSuspendedUntil(profileData?.suspended_until ?? null);
     setLoading(false);
+    return profileData?.status ?? "explorateur";
+  };
+
+  // Start polling after sending verification email — catches same-tab confirmation
+  const startPolling = (uid: string) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    let attempts = 0;
+    const maxAttempts = 40; // 40 × 3s = 2 min
+    pollingRef.current = setInterval(async () => {
+      attempts++;
+      const st = await loadProfile(uid);
+      if (st === "temoin" || st === "admin" || attempts >= maxAttempts) {
+        if (pollingRef.current) clearInterval(pollingRef.current);
+        if (st === "temoin" || st === "admin") {
+          refreshProfile();
+          toast({
+            title: "Email vérifié ✅",
+            description: "T'es prêt(e) ! Toutes les fonctionnalités sont débloquées.",
+          });
+        }
+      }
+    }, 3000);
+  };
+
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
   };
 
   useEffect(() => {
@@ -105,6 +135,7 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
     return () => {
       ch.unsubscribe();
       window.removeEventListener("storage", handleStorage);
+      stopPolling();
     };
   }, [user?.id]);
 
@@ -199,15 +230,17 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
       }
 
       setGateState("sent");
+      // Start polling — catches same-tab confirmation (localStorage event doesn't fire in same tab)
+      if (user) startPolling(user.id);
       toast({
         title: data?.email_sent ? "Email envoyé ✅" : "Lien généré ✅",
         description: data?.email_sent
-          ? `Vérifie ta boîte mail ${email.trim().toLowerCase()}`
+          ? `Vérifie ta boîte mail ${email.trim().toLowerCase()} puis reviens ici — ça se met à jour tout seul.`
           : "Clique sur le lien pour confirmer ton email étudiant.",
       });
     } catch {
       setGateState("error");
-      setErrorMsg("Erreur inattendue. Réessaie.");
+      setErrorMsg("Oops… retry 🔄 Erreur inattendue.");
     }
   };
 
