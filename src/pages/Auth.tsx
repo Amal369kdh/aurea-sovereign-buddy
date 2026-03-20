@@ -275,13 +275,21 @@ const Auth = () => {
           setSignupEmail(email);
           setPendingConfirmation(true);
         } else {
+          // Pre-create profile so ProtectedRoute doesn't spin waiting for the DB trigger.
+          // We only set safe defaults — onboarding will fill nationality/city/etc.
+          // We do NOT set is_in_france or student_status here so the onboarding
+          // completeness check sends them to /onboarding as expected.
           if (data?.user?.id) {
-            await supabase.from("profiles").upsert({
-              user_id: data.user.id,
-              display_name: displayName,
-              avatar_initials: displayName.slice(0, 2).toUpperCase(),
-              status: "explorateur",
-            }, { onConflict: "user_id" });
+            try {
+              await supabase.from("profiles").upsert({
+                user_id: data.user.id,
+                display_name: displayName,
+                avatar_initials: displayName.slice(0, 2).toUpperCase(),
+                status: "explorateur",
+              }, { onConflict: "user_id" });
+            } catch {
+              // Ignore — the DB trigger will create the profile on confirmation
+            }
           }
           setSignupEmail(email);
           setSignupDone(true);
