@@ -148,7 +148,7 @@ const AlphaVault = () => {
         href="https://www.digiposte.fr/"
         target="_blank"
         rel="noopener noreferrer"
-        className="mb-4 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
+        className="mb-2 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 transition-colors hover:bg-primary/10"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gold-gradient">
           <FileText className="h-5 w-5 text-primary-foreground" />
@@ -161,6 +161,23 @@ const AlphaVault = () => {
         </div>
         <ExternalLink className="h-4 w-4 shrink-0 text-primary" />
       </a>
+
+      {/* Bannière partenaire banque */}
+      <button
+        onClick={() => navigate("/partners")}
+        className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-left transition-colors hover:bg-primary/10 cursor-pointer"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <Handshake className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-foreground">Offres partenaires exclusives</p>
+          <p className="text-xs text-muted-foreground">
+            Banques, mutuelles, jobs étudiants — voir les partenaires Aurea
+          </p>
+        </div>
+        <ExternalLink className="h-4 w-4 shrink-0 text-primary" />
+      </button>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Titre de séjour - hidden for French */}
