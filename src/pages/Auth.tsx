@@ -379,33 +379,36 @@ const Auth = () => {
           )}
 
           {mode === "signup" && (
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="flex items-start gap-3 cursor-pointer group rounded-2xl border border-border/60 bg-secondary/40 p-3 hover:bg-secondary/70 transition-colors">
               <input
                 type="checkbox"
                 checked={acceptedCgu}
                 onChange={(e) => setAcceptedCgu(e.target.checked)}
                 required
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border border-border bg-secondary accent-primary cursor-pointer"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border border-primary bg-secondary accent-primary cursor-pointer"
               />
-              <span className="text-xs text-muted-foreground leading-relaxed">
-                J'accepte les{" "}
+              <span className="text-xs text-foreground leading-relaxed">
+                J'ai lu et j'accepte les{" "}
                 <a
                   href="/legal#cgu"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline font-semibold"
+                  className="text-primary hover:underline font-bold underline decoration-dotted"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  CGU
+                  Conditions Générales d'Utilisation
                 </a>{" "}
                 et la{" "}
                 <a
                   href="/legal#rgpd"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:underline font-semibold"
+                  className="text-primary hover:underline font-bold underline decoration-dotted"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  politique de confidentialité
-                </a>
+                  Politique de Confidentialité
+                </a>{" "}
+                (RGPD)
               </span>
             </label>
           )}
