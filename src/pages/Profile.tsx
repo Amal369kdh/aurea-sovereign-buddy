@@ -40,6 +40,18 @@ const OBJECTIFS_LIST = [
   { id: "sante", label: "🏥 M'occuper de ma santé" },
 ];
 
+const TYPES_FORMATION = [
+  "Licence (L1/L2/L3)", "Master (M1/M2)", "Doctorat (PhD)",
+  "BUT / Bachelor", "BTS", "Classe préparatoire (CPGE)",
+  "École d'ingénieurs", "École de commerce", "Formation professionnelle", "Autre",
+];
+
+const DIPLOMES_VISES = [
+  "Bac+3 (Licence, Bachelor)", "Bac+4 (Master 1)",
+  "Bac+5 (Master 2, Ingénieur, Grande École)", "Bac+8 (Doctorat)",
+  "BTS / BUT", "Certificat professionnel", "Autre",
+];
+
 type ProfileData = {
   display_name: string;
   city: string;
@@ -56,6 +68,9 @@ type ProfileData = {
   points_social: number;
   status: string;
   avatar_initials: string;
+  faculte: string;
+  type_formation: string;
+  diplome_vise: string;
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
