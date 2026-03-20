@@ -78,8 +78,8 @@ const PhaseChecklist = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Non-verified foreign students can read everything, but cannot check tasks
-  const isReadOnly = !isTemoin && !isFrench;
+  // Les tâches "sur place" sont cochables si : Témoin OU Français OU déjà en France
+  const isReadOnly = !isTemoin && !isFrench && !isInFrance;
 
   return (
     <div className="space-y-4">
