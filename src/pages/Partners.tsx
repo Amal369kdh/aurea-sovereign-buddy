@@ -222,7 +222,7 @@ const Partners = () => {
                   Intéressé par un partenariat ?
                 </p>
                 <a
-                  href="mailto:contact@aurea-student.app"
+                  href="mailto:contactaureastudent@gmail.com"
                   className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-primary/10 border border-primary/20 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 cursor-pointer"
                 >
                   Nous contacter

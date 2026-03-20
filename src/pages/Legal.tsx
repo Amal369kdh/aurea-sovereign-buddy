@@ -69,7 +69,7 @@ const Legal = () => {
             dans le cadre d'un projet étudiant indépendant. L'application n'est pas éditée par une personne morale enregistrée au Registre du Commerce et des Sociétés au moment de cette publication.
           </P>
           <P>
-            Contact : <a href="mailto:contact@aurea-student.fr" className="text-primary hover:underline">contact@aurea-student.fr</a>
+            Contact : <a href="mailto:contactaureastudent@gmail.com" className="text-primary hover:underline">contactaureastudent@gmail.com</a>
           </P>
 
           <H3>Hébergement</H3>
