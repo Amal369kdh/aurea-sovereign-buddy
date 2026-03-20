@@ -230,15 +230,17 @@ const VerifiedGate = ({ children, featureName = "cette fonctionnalité" }: Verif
       }
 
       setGateState("sent");
+      // Start polling — catches same-tab confirmation (localStorage event doesn't fire in same tab)
+      if (user) startPolling(user.id);
       toast({
         title: data?.email_sent ? "Email envoyé ✅" : "Lien généré ✅",
         description: data?.email_sent
-          ? `Vérifie ta boîte mail ${email.trim().toLowerCase()}`
+          ? `Vérifie ta boîte mail ${email.trim().toLowerCase()} puis reviens ici — ça se met à jour tout seul.`
           : "Clique sur le lien pour confirmer ton email étudiant.",
       });
     } catch {
       setGateState("error");
-      setErrorMsg("Erreur inattendue. Réessaie.");
+      setErrorMsg("Oops… retry 🔄 Erreur inattendue.");
     }
   };
 
