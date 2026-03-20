@@ -34,14 +34,14 @@ interface QuickLink {
 
 // Mapping tuile → phase de checklist dans Mon Dossier
 const TILE_CHECKLIST_MAP: Record<string, string> = {
-  "Logement": "Logement & Installation",
-  "Préfecture": "Titre de séjour",
-  "Aides & Administratif": "CAF, bourses & aides",
-  "Banque": "Ouvrir un compte",
-  "Santé": "Mutuelle & santé",
-  "Vie pratique": "Vie quotidienne",
-  "Mon Avenir": "Jobs & carrière",
-  "Soutien": "Aide sociale",
+  "Ton spot 🏡": "Logement & Installation",
+  "Mode légal activé ⚖️": "Titre de séjour",
+  "Zéro galère admin 📂": "CAF, bourses & aides",
+  "Cash flow mode 💸": "Ouvrir un compte",
+  "100% couvert 🛡️": "Mutuelle & santé",
+  "Life unlocked 🔓": "Vie quotidienne",
+  "Level up ta carrière 🚀": "Jobs & carrière",
+  "On est là pour toi 🤝": "Aide sociale",
 };
 
 /* ─── Tile component ─── */
