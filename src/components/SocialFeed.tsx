@@ -63,7 +63,7 @@ interface SocialFeedProps {
   isVerified?: boolean;
 }
 
-const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false }: SocialFeedProps) => {
+const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false }: SocialFeedProps) => {
   const { announcements, loading, createPost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );

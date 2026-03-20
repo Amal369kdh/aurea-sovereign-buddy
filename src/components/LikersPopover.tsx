@@ -18,12 +18,21 @@ interface LikerProfile {
   avatar_initials: string;
 }
 
-const LikersPopover = ({ announcementId, likesCount, likedByMe, onToggleLike, onGoldClick }: LikersPopoverProps) => {
+const LikersPopover = ({
+  announcementId,
+  likesCount,
+  likedByMe,
+  onToggleLike,
+  onGoldClick,
+  isVerified = false,
+}: LikersPopoverProps) => {
   const { user } = useAuth();
   const [isPremium, setIsPremium] = useState(false);
   const [likers, setLikers] = useState<LikerProfile[]>([]);
   const [loadingLikers, setLoadingLikers] = useState(false);
   const [open, setOpen] = useState(false);
+  // Gate popup for unverified users
+  const [gateOpen, setGateOpen] = useState(false);
 
   // Check premium status
   useEffect(() => {
@@ -70,17 +79,54 @@ const LikersPopover = ({ announcementId, likesCount, likedByMe, onToggleLike, on
     if (isOpen && isPremium) fetchLikers();
   };
 
+  const handleLikeClick = () => {
+    if (!isVerified) {
+      setGateOpen(true);
+      return;
+    }
+    onToggleLike();
+  };
+
   return (
     <div className="flex items-center gap-1.5">
-      <button
-        onClick={onToggleLike}
-        className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
-          likedByMe ? "text-primary font-semibold" : "text-muted-foreground hover:text-primary"
-        }`}
-      >
-        <Heart className={`h-4 w-4 ${likedByMe ? "fill-primary" : ""}`} />
-      </button>
+      {/* Like button — gate pour les explorateurs */}
+      <Popover open={gateOpen} onOpenChange={setGateOpen}>
+        <PopoverTrigger asChild>
+          <button
+            onClick={handleLikeClick}
+            className={`flex items-center gap-1.5 text-xs transition-colors cursor-pointer ${
+              likedByMe
+                ? "text-primary font-semibold"
+                : isVerified
+                ? "text-muted-foreground hover:text-primary"
+                : "text-muted-foreground/50 cursor-default"
+            }`}
+            aria-label="Liker"
+          >
+            <Heart className={`h-4 w-4 ${likedByMe ? "fill-primary" : ""}`} />
+          </button>
+        </PopoverTrigger>
+        {!isVerified && (
+          <PopoverContent className="w-60 rounded-2xl border border-border bg-card p-4" align="start">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+                <ShieldAlert className="h-5 w-5 text-primary" />
+              </div>
+              <p className="text-xs font-bold text-foreground">
+                Réservé aux Témoins 👀
+              </p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                Pour liker, commenter et publier, tu dois d'abord vérifier ton email étudiant et devenir <span className="font-semibold text-foreground">Témoin</span>.
+              </p>
+              <p className="text-[10px] text-muted-foreground/70">
+                Va dans ton profil → Vérification étudiant 🎓
+              </p>
+            </div>
+          </PopoverContent>
+        )}
+      </Popover>
 
+      {/* Compteur de likes avec popover Gold */}
       {likesCount > 0 && (
         <Popover open={open} onOpenChange={handleOpenChange}>
           <PopoverTrigger asChild>
@@ -99,14 +145,18 @@ const LikersPopover = ({ announcementId, likesCount, likedByMe, onToggleLike, on
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Aimé par
                   </p>
-                  {likers.map((liker, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-foreground">
-                        {liker.avatar_initials}
+                  {likers.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">Aucun détail disponible.</p>
+                  ) : (
+                    likers.map((liker, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-foreground">
+                          {liker.avatar_initials}
+                        </div>
+                        <span className="text-xs font-medium text-foreground">{liker.display_name}</span>
                       </div>
-                      <span className="text-xs font-medium text-foreground">{liker.display_name}</span>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               )
             ) : (
@@ -115,13 +165,17 @@ const LikersPopover = ({ announcementId, likesCount, likedByMe, onToggleLike, on
                   <Lock className="h-4 w-4 text-primary" />
                 </div>
                 <p className="text-xs font-semibold text-foreground">
-                  {likesCount} personne{likesCount > 1 ? "s" : ""} {likesCount > 1 ? "ont" : "a"} aimé
+                  {likesCount} personne{likesCount > 1 ? "s" : ""}{" "}
+                  {likesCount > 1 ? "ont" : "a"} aimé
                 </p>
                 <p className="text-[10px] text-muted-foreground">
                   Passe Gold pour voir qui a aimé tes publications
                 </p>
                 <button
-                  onClick={() => { setOpen(false); onGoldClick(); }}
+                  onClick={() => {
+                    setOpen(false);
+                    onGoldClick();
+                  }}
                   className="mt-1 flex items-center gap-1.5 rounded-xl gold-gradient px-4 py-1.5 text-[11px] font-bold text-primary-foreground cursor-pointer"
                 >
                   <Crown className="h-3 w-3" /> Débloquer Gold
