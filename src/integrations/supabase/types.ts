@@ -461,6 +461,35 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_link_clicks: {
+        Row: {
+          clicked_at: string
+          id: string
+          partner_id: string
+          user_id: string
+        }
+        Insert: {
+          clicked_at?: string
+          id?: string
+          partner_id: string
+          user_id: string
+        }
+        Update: {
+          clicked_at?: string
+          id?: string
+          partner_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_link_clicks_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partners: {
         Row: {
           created_at: string
@@ -469,6 +498,7 @@ export type Database = {
           name: string
           offer: string | null
           type: string
+          url: string | null
         }
         Insert: {
           created_at?: string
@@ -477,6 +507,7 @@ export type Database = {
           name: string
           offer?: string | null
           type?: string
+          url?: string | null
         }
         Update: {
           created_at?: string
@@ -485,6 +516,7 @@ export type Database = {
           name?: string
           offer?: string | null
           type?: string
+          url?: string | null
         }
         Relationships: []
       }
