@@ -224,16 +224,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         const isFrench = data.nationality === "🇫🇷 Française";
         const objectifs = data.objectifs as string[] | null;
 
-        // A profile is complete if all required fields are present
-        // For French students, is_in_france is always true (set during onboarding)
-        // For non-French, we need explicit is_in_france value
+        // Profile is complete when all required onboarding fields are present.
+        // For French students is_in_france is irrelevant (always true after onboarding).
+        // For non-French students we require is_in_france to have been explicitly set
+        // (null means they never finished the location step).
         const incomplete =
           !data.nationality ||
-          !data.city ||
           !data.university ||
           !objectifs ||
           objectifs.length === 0 ||
-          (!isFrench && data.is_in_france === null && data.onboarding_step === null);
+          (!isFrench && data.is_in_france === null);
 
         clearTimeout(hardTimeout);
         setNeedsOnboarding(incomplete);
