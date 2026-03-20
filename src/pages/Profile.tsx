@@ -203,6 +203,7 @@ const Profile = () => {
     }));
   };
 
+
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
@@ -222,8 +223,21 @@ const Profile = () => {
         budget_monthly: profile.budget_monthly,
         revenus_monthly: profile.revenus_monthly,
         objectifs: profile.objectifs,
-      })
+        faculte: (profile.faculte as any) || null,
+        type_formation: (profile.type_formation as any) || null,
+        diplome_vise: (profile.diplome_vise as any) || null,
+      } as any)
       .eq("user_id", user.id);
+
+    setSaving(false);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profil sauvegardé ✓", description: "Tes informations ont été mises à jour." });
+    }
+  };
+
+
 
     setSaving(false);
     if (error) {
