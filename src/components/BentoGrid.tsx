@@ -236,13 +236,12 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 1 — Trouver un logement
   {
     step: 1,
-    title: "Logement",
-    subtitle: "Résidences CROUS & plateformes locales",
+    title: "Ton spot 🏡",
+    subtitle: "Trouver un logement • CROUS & plateformes",
     icon: Home,
     accentClass: "bg-warning/15 text-warning",
     className: "",
     lockable: true,
-    // ⚠️ Alerte renouvellement CROUS 2026 (Grenoble only for now)
     _alerte: city.toLowerCase() === "grenoble"
       ? "⚠️ Renouvellement CROUS 2026 : du 10 mars au 4 mai. Sur messervices.etudiant.gouv.fr → Cité'U → Grenoble → « Mon logement actuel » → « Demander mon renouvellement ». Passé le 4 mai = perte de ta chambre pour la rentrée."
       : undefined,
@@ -256,8 +255,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 2 — Titre de séjour & préfecture
   {
     step: 2,
-    title: "Préfecture",
-    subtitle: "Titre de séjour — ANEF & Bâtiment MUSE",
+    title: "Mode légal activé ⚖️",
+    subtitle: "Être en règle • Titre de séjour & ANEF",
     icon: Landmark,
     accentClass: "bg-info/15 text-info",
     className: "",
@@ -268,11 +267,11 @@ const defaultTiles = (city: string) => [
       { icon: MapPin, label: "Préfecture de l'Isère", sub: "Place de Verdun, Grenoble • retrait carte de séjour", href: "https://maps.google.com/?q=Préfecture+Isère+Place+de+Verdun+Grenoble" },
     ] as QuickLink[],
   },
-  // ÉTAPE 3 — Aides financières & administratif (APL retiré — il est dans Logement)
+  // ÉTAPE 3 — Aides financières & administratif
   {
     step: 3,
-    title: "Aides & Administratif",
-    subtitle: "Bourses, budget & inscription fac",
+    title: "Zéro galère admin 📂",
+    subtitle: "Simplifier les démarches • CAF, bourses & fac",
     icon: ClipboardCheck,
     accentClass: "gold-gradient text-primary-foreground",
     className: "",
@@ -288,8 +287,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 4 — Banque
   {
     step: 4,
-    title: "Banque",
-    subtitle: "Ouvrir un compte étudiant",
+    title: "Cash flow mode 💸",
+    subtitle: "Ouvrir un compte étudiant en France",
     icon: Landmark,
     accentClass: "bg-primary/15 text-primary",
     className: "",
@@ -302,11 +301,11 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
     ] as QuickLink[],
   },
-  // ÉTAPE 5 — Santé (point de repère unique = Bâtiment MUSE à Grenoble)
+  // ÉTAPE 5 — Santé
   {
     step: 5,
-    title: "Santé",
-    subtitle: "Soins, urgences & bien-être",
+    title: "100% couvert 🛡️",
+    subtitle: "Soins, urgences & bien-être étudiant",
     icon: Stethoscope,
     accentClass: "bg-destructive/15 text-destructive",
     className: "",
@@ -324,8 +323,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 6 — Vie pratique
   {
     step: 6,
-    title: "Vie pratique",
-    subtitle: "M réso, vélos, repas à 1€ & sport",
+    title: "Life unlocked 🔓",
+    subtitle: "Transport, repas à 1€ & sport campus",
     icon: Bus,
     accentClass: "bg-success/15 text-success",
     className: "",
@@ -341,8 +340,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 7 — Carrière & avenir
   {
     step: 7,
-    title: "Mon Avenir",
-    subtitle: "Orientation, jobs, stages & carrière",
+    title: "Level up ta carrière 🚀",
+    subtitle: "Jobs, stages & orientation professionnelle",
     icon: Briefcase,
     accentClass: "bg-info/15 text-info",
     className: "",
