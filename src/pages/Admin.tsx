@@ -598,32 +598,61 @@ const Admin = () => {
     );
   };
 
+  const PARTNER_TYPE_LABELS: Record<string, string> = {
+    bank: "🏦 Banque",
+    insurance: "🛡️ Assurance",
+    housing: "🏠 Logement",
+    job: "💼 Jobs étudiants",
+    alternance: "🎓 Alternance",
+    other: "📦 Autre",
+  };
+
   const renderPartners = () => (
     <div className="space-y-4">
       <Section title="Partenaires actifs">
         {partners.length === 0 && <p className="text-sm text-muted-foreground">Aucun partenaire.</p>}
         {partners.map((p) => (
-          <div key={p.id} className="mb-3 flex items-center justify-between last:mb-0">
-            <div>
-              <p className="text-sm font-bold text-foreground">{p.name}</p>
-              <p className="text-xs text-muted-foreground">{p.type} · {p.offer ?? "—"}</p>
+          <div key={p.id} className="mb-3 rounded-2xl border border-border bg-background p-4 last:mb-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-bold text-foreground">{p.name}</p>
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                    {PARTNER_TYPE_LABELS[p.type] ?? p.type}
+                  </span>
+                  {(p.click_count ?? 0) > 0 && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+                      {p.click_count} clic{(p.click_count ?? 0) > 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+                {p.offer && <p className="mt-0.5 text-xs text-muted-foreground">{p.offer}</p>}
+                {p.url && (
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="mt-0.5 block truncate text-xs text-primary hover:underline">
+                    {p.url}
+                  </a>
+                )}
+              </div>
+              <button onClick={() => deletePartner(p.id)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button onClick={() => deletePartner(p.id)} className="flex h-8 w-8 items-center justify-center rounded-xl border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors">
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
           </div>
         ))}
       </Section>
       <Section title="Ajouter un partenaire">
         <div className="space-y-3">
-          <input className={inputCls} placeholder="Nom du partenaire" value={newPartner.name} onChange={(e) => setNewPartner((p) => ({ ...p, name: e.target.value }))} />
+          <input className={inputCls} placeholder="Nom du partenaire (ex: McDonald's, BNP, Matmut…)" value={newPartner.name} onChange={(e) => setNewPartner((p) => ({ ...p, name: e.target.value }))} />
           <select className={inputCls} value={newPartner.type} onChange={(e) => setNewPartner((p) => ({ ...p, type: e.target.value }))}>
             <option value="bank">🏦 Banque</option>
             <option value="insurance">🛡️ Assurance</option>
             <option value="housing">🏠 Logement</option>
+            <option value="job">💼 Jobs étudiants</option>
+            <option value="alternance">🎓 Alternance</option>
             <option value="other">📦 Autre</option>
           </select>
-          <input className={inputCls} placeholder="Offre associée (ex: Compte gratuit 3 mois)" value={newPartner.offer} onChange={(e) => setNewPartner((p) => ({ ...p, offer: e.target.value }))} />
+          <input className={inputCls} placeholder="Lien affilié (https://…)" value={newPartner.url} onChange={(e) => setNewPartner((p) => ({ ...p, url: e.target.value }))} />
+          <input className={inputCls} placeholder="Description de l'offre (ex: Compte gratuit 3 mois)" value={newPartner.offer} onChange={(e) => setNewPartner((p) => ({ ...p, offer: e.target.value }))} />
           <button onClick={addPartner} className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground">
             <Plus className="h-4 w-4" /> Ajouter le partenaire
           </button>
