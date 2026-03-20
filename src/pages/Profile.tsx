@@ -341,6 +341,38 @@ const Profile = () => {
                 <option value="Autre">Autre / Non listée</option>
               </select>
             </FieldRow>
+            <FieldRow label="Faculté / Composante (optionnel)">
+              <input
+                className={inputClass}
+                value={profile.faculte}
+                onChange={(e) => set("faculte", e.target.value)}
+                placeholder="Ex: UFR Droit, IUT GEA, IAE..."
+              />
+            </FieldRow>
+            <FieldRow label="Type de formation">
+              <select
+                className={selectClass}
+                value={profile.type_formation}
+                onChange={(e) => set("type_formation", e.target.value)}
+              >
+                <option value="">— Sélectionne —</option>
+                {TYPES_FORMATION.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </FieldRow>
+            <FieldRow label="Diplôme visé">
+              <select
+                className={selectClass}
+                value={profile.diplome_vise}
+                onChange={(e) => set("diplome_vise", e.target.value)}
+              >
+                <option value="">— Sélectionne —</option>
+                {DIPLOMES_VISES.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </FieldRow>
           </Section>
         </motion.div>
 
