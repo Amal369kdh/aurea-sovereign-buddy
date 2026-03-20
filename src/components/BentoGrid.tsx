@@ -357,8 +357,8 @@ const defaultTiles = (city: string) => [
   // ÉTAPE 8 — Soutien & aide humaine
   {
     step: 8,
-    title: "Soutien",
-    subtitle: "Aide alimentaire, psycho & juridique",
+    title: "On est là pour toi 🤝",
+    subtitle: "Aide alimentaire, soutien psycho & juridique",
     icon: HeartHandshake,
     accentClass: "bg-destructive/10 text-destructive",
     className: "",
