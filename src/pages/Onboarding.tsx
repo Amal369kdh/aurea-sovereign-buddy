@@ -139,9 +139,9 @@ const Onboarding = () => {
       }, { onConflict: "user_id" });
 
     if (error) {
-      toast({ title: "Erreur", description: "Impossible de sauvegarder.", variant: "destructive" });
+      toast({ title: "Oops… retry 🔄", description: "Impossible de sauvegarder. Réessaie.", variant: "destructive" });
     } else {
-      toast({ title: "Bienvenue chez toi 🏠", description: "Ton profil est prêt !" });
+      toast({ title: "T'es prêt(e) 🔥", description: "Ton profil est configuré. Bienvenue !" });
       navigate("/", { replace: true });
     }
     setSubmitting(false);
