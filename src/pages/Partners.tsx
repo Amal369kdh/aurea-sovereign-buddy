@@ -24,8 +24,10 @@ const TYPE_LABELS: Record<string, { label: string; emoji: string; color: string 
   leisure: { label: "Loisirs", emoji: "🎭", color: "bg-pink-500/10 text-pink-400 border-pink-500/20" },
 };
 
+type ComingSoonItem = { emoji: string; title: string; sub: string; category: string; url?: string };
+
 // Offres "à venir" pour renforcer la proposition B2B
-const COMING_SOON = [
+const COMING_SOON: ComingSoonItem[] = [
   { emoji: "🏦", title: "Comparateur bancaire", sub: "Trouve la meilleure offre étudiant — SG, BNP, Hello Bank, Boursobank", category: "Banque" },
   { emoji: "🛡️", title: "Mutuelle étudiante", sub: "Comparatif LMDE, HEYME, April — sans frais cachés", category: "Assurance" },
   { emoji: "🏠", title: "Accompagnement recherche de logement", sub: "Alertes annonces personnalisées, checklist caution & bail — bientôt", category: "Logement" },
