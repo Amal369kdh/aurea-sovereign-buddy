@@ -337,9 +337,9 @@ const Onboarding = () => {
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : isLast ? (
-              <>Terminer <Check className="h-4 w-4" /></>
+              <>On valide ✅ <Check className="h-4 w-4" /></>
             ) : (
-              <>Suivant <ArrowRight className="h-4 w-4" /></>
+              <>Go next <ArrowRight className="h-4 w-4" /></>
             )}
           </button>
         </div>

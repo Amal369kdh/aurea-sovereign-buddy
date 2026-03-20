@@ -595,14 +595,15 @@ const BentoGrid = () => {
           className="mb-3 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
         >
           <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-          <p className="flex-1 text-xs text-primary/80">
-            <span className="font-semibold text-primary">Mode lecture</span> — Vérifie ton email étudiant pour cocher tes démarches et accéder à toutes les fonctionnalités.
-          </p>
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-primary">Mode lecture activé 👀</p>
+            <p className="text-xs text-primary/70">Vérifie ton email étudiant pour tout débloquer.</p>
+          </div>
           <button
             onClick={() => setVerifyOpen(true)}
             className="shrink-0 rounded-full gold-gradient px-3 py-1.5 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
           >
-            Vérifier
+            Let's go 🔓
           </button>
         </motion.div>
       )}

@@ -49,21 +49,13 @@ const WelcomeModal = ({ onClose, city }: { onClose: () => void; city: string | n
             className="mb-4 text-2xl font-semibold tracking-tight"
             style={{ color: "hsl(43 74% 58%)" }}
           >
-            Content(e) de t'avoir avec nous
+            Bienvenue dans le game 🇫🇷
           </h1>
+          <p className="mb-2 text-sm font-semibold text-foreground">
+            {cityLabel ? `Landing smooth ✈️ — ${cityLabel} t'attend.` : "Landing smooth ✈️"}
+          </p>
           <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
-            {cityLabel
-              ? <>
-                  <span className="font-semibold text-foreground">{cityLabel}</span> t'attend — on est là à chaque étape.
-                  <br /><br />
-                  Aurea est un espace bienveillant créé par des étudiants, pour les étudiants. Tu es à ta place.
-                </>
-              : <>
-                  On est là à chaque étape de ton parcours.
-                  <br /><br />
-                  Aurea est un espace bienveillant créé par des étudiants, pour les étudiants. Tu es à ta place.
-                </>
-            }
+            Aurea est un espace bienveillant créé par des étudiants, pour les étudiants. Tu es à ta place. On est là à chaque étape.
           </p>
           <Button
             onClick={handleEnter}
@@ -74,7 +66,7 @@ const WelcomeModal = ({ onClose, city }: { onClose: () => void; city: string | n
               fontWeight: 600,
             }}
           >
-            Entrer dans mon espace
+            Let's go 🚀
           </Button>
         </motion.div>
       </motion.div>

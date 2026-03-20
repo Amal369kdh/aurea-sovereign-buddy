@@ -71,11 +71,11 @@ const WelcomeGuide = () => {
 
   return (
     <div className="rounded-3xl border border-border bg-card p-5">
-      <h3 className="text-base font-bold text-foreground mb-1">Par où commencer ? 🗺️</h3>
+      <h3 className="text-base font-bold text-foreground mb-1">Mode guidance activé 🗺️</h3>
       <p className="text-xs text-muted-foreground mb-4">
         {isInFrance || isFrench
-          ? "Suis ces étapes pour bien démarrer ton intégration en France."
-          : "Prépare ton arrivée en France étape par étape — on t'accompagne."}
+          ? "Suis ces étapes — on s'occupe du reste."
+          : "Prépare ton arrivée en France, étape par étape. On t'accompagne."}
       </p>
       <div className="space-y-3">
         {steps.map((step, i) => (
