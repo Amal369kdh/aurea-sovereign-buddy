@@ -48,10 +48,21 @@ const DeleteAccountButton = () => {
         return;
       }
 
-      // Sign out locally and force full reload regardless of signOut result
-      supabase.auth.signOut().finally(() => {
-        window.location.href = "/auth";
-      });
+      // Purge ALL Supabase session keys from localStorage immediately
+      // This prevents ProtectedRoute retry loops and stale session flashes on mobile
+      try {
+        const keysToRemove = Object.keys(localStorage).filter(
+          (k) => k.startsWith("sb-") || k.toLowerCase().includes("supabase")
+        );
+        keysToRemove.forEach((k) => localStorage.removeItem(k));
+        sessionStorage.clear();
+      } catch {
+        // ignore storage errors
+      }
+
+      // Hard redirect — do NOT call signOut() (session is already deleted server-side)
+      // This avoids the race condition between AuthContext SIGNED_OUT redirect and this one
+      window.location.replace("/auth");
     } catch {
       toast({ title: "Erreur", description: "Une erreur est survenue.", variant: "destructive" });
       setDeleting(false);
