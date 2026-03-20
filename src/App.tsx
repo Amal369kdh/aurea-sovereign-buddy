@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
