@@ -54,9 +54,14 @@ const MobileBottomNav = () => {
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             )}
-            {/* Badge for messages unread */}
+            {/* Badge notifications global sur tous les items concernés */}
             {item.path === "/messages" && unreadCount > 0 && (
               <span className="absolute right-2 top-1 flex h-4 w-4 items-center justify-center rounded-full gold-gradient text-[9px] font-bold text-primary-foreground z-20">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+            {item.path === "/hub-social" && unreadCount > 0 && (
+              <span className="absolute right-2 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground z-20">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
