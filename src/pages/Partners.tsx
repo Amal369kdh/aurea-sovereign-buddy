@@ -26,10 +26,11 @@ const TYPE_LABELS: Record<string, { label: string; emoji: string; color: string 
 
 // Offres "à venir" pour renforcer la proposition B2B
 const COMING_SOON = [
-  { emoji: "🏦", title: "Comparateur bancaire", sub: "Trouve la meilleure offre étudiant — SG, BNP, Hello Bank", category: "Banque" },
+  { emoji: "🏦", title: "Comparateur bancaire", sub: "Trouve la meilleure offre étudiant — SG, BNP, Hello Bank, Boursobank", category: "Banque" },
   { emoji: "🛡️", title: "Mutuelle étudiante", sub: "Comparatif LMDE, HEYME, April — sans frais cachés", category: "Assurance" },
-  { emoji: "🏠", title: "Garant gratuit", sub: "Partenariat avec un service de garantie locative", category: "Logement" },
-  { emoji: "📱", title: "Forfait mobile étudiant", sub: "Offres préférentielles pour les étudiants internationaux", category: "Téléphonie" },
+  { emoji: "🏠", title: "Visale — garant gratuit de l'État", sub: "Garantie locative gratuite pour tous les étudiants via visale.fr", category: "Logement", url: "https://www.visale.fr" },
+  { emoji: "📱", title: "Comparateur forfaits mobiles", sub: "Free, Bouygues, SFR, Orange — trouvez le meilleur rapport qualité/prix", category: "Téléphonie" },
+  { emoji: "🛒", title: "Comparateur de prix — courses", sub: "Lidl, Aldi, Leclerc, Carrefour — compare les paniers selon ton budget", category: "Alimentation" },
 ];
 
 const trackClick = async (partnerId: string, userId: string) => {
