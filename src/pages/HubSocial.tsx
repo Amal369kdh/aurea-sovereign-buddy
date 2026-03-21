@@ -26,13 +26,18 @@ const HubSocial = () => {
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
   const datingEnabled = flags["dating"] !== false;
+  // When bypass flag is ON, treat everyone as verified for social participation
+  const bypassVerification = flags["bypass_student_verification"] === true;
   const { user } = useAuth();
 
   // Check verification status for banner / tab gate
-  const [isVerified, setIsVerified] = useState<boolean | null>(null);
+  const [isVerifiedRaw, setIsVerifiedRaw] = useState<boolean | null>(null);
+
+  // Effective verified = raw verified OR bypass flag active
+  const isVerified = bypassVerification ? (isVerifiedRaw !== null ? true : null) : isVerifiedRaw;
 
   useEffect(() => {
-    if (!user) { setIsVerified(false); return; }
+    if (!user) { setIsVerifiedRaw(false); return; }
 
     // Initial fetch
     supabase
@@ -42,7 +47,7 @@ const HubSocial = () => {
       .maybeSingle()
       .then(({ data }) => {
         const s = (data as { status: string } | null)?.status ?? "explorateur";
-        setIsVerified(s === "temoin" || s === "admin");
+        setIsVerifiedRaw(s === "temoin" || s === "admin");
       });
 
     // Realtime: auto-update when status changes (e.g. student email verified in another tab)
@@ -53,7 +58,7 @@ const HubSocial = () => {
         { event: "UPDATE", schema: "public", table: "profiles", filter: `user_id=eq.${user.id}` },
         (payload) => {
           const newStatus = (payload.new as { status: string }).status;
-          setIsVerified(newStatus === "temoin" || newStatus === "admin");
+          setIsVerifiedRaw(newStatus === "temoin" || newStatus === "admin");
         }
       )
       .subscribe();
