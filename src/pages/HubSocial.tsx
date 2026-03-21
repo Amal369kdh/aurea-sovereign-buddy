@@ -189,6 +189,7 @@ const HubSocial = () => {
       <SecuritySovereign />
       <AmalTrigger />
       <GoldModal open={goldOpen} onClose={() => setGoldOpen(false)} />
+      <VerificationDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
       <MobileBottomNav />
     </div>
   );
