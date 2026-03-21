@@ -7,11 +7,12 @@ import DatingGrid from "@/components/DatingGrid";
 import DatingMatches from "@/components/DatingMatches";
 import GoldModal from "@/components/GoldModal";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import VerificationDialog from "@/components/VerificationDialog";
 import { useDating } from "@/hooks/useDating";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Heart, Sparkles, Zap, ShieldCheck } from "lucide-react";
+import { Users, Heart, Sparkles, Zap, ShieldCheck, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Tab = "hub" | "rencontres" | "matchs";
