@@ -142,16 +142,26 @@ const HubSocial = () => {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="mb-5 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
+                className="mb-5 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
               >
-                <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Tu vois ce qui se passe ici 👀 —{" "}
-                  <span className="font-semibold text-foreground">
-                    vérifie ton email étudiant pour rejoindre la conversation
-                  </span>{" "}
-                  et débloquer les Rencontres.
-                </p>
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Tu vois ce qui se passe ici 👀 —{" "}
+                      <span className="font-semibold text-foreground">
+                        vérifie ton email étudiant pour rejoindre la conversation
+                      </span>{" "}
+                      et débloquer les Rencontres.
+                    </p>
+                    <button
+                      onClick={() => setVerifyOpen(true)}
+                      className="mt-2 flex items-center gap-1.5 text-xs font-bold text-primary hover:underline cursor-pointer"
+                    >
+                      Vérifier mon email étudiant <ArrowRight className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
