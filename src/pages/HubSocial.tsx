@@ -7,11 +7,12 @@ import DatingGrid from "@/components/DatingGrid";
 import DatingMatches from "@/components/DatingMatches";
 import GoldModal from "@/components/GoldModal";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import VerificationDialog from "@/components/VerificationDialog";
 import { useDating } from "@/hooks/useDating";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Heart, Sparkles, Zap, ShieldCheck } from "lucide-react";
+import { Users, Heart, Sparkles, Zap, ShieldCheck, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Tab = "hub" | "rencontres" | "matchs";
@@ -20,6 +21,7 @@ const HubSocial = () => {
   const [tab, setTab] = useState<Tab>("hub");
   const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement" | "general">("all");
   const [goldOpen, setGoldOpen] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const { matches, isPremium } = useDating();
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
@@ -140,16 +142,26 @@ const HubSocial = () => {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="mb-5 flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
+                className="mb-5 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
               >
-                <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Tu vois ce qui se passe ici 👀 —{" "}
-                  <span className="font-semibold text-foreground">
-                    vérifie ton email étudiant pour rejoindre la conversation
-                  </span>{" "}
-                  et débloquer les Rencontres.
-                </p>
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Tu vois ce qui se passe ici 👀 —{" "}
+                      <span className="font-semibold text-foreground">
+                        vérifie ton email étudiant pour rejoindre la conversation
+                      </span>{" "}
+                      et débloquer les Rencontres.
+                    </p>
+                    <button
+                      onClick={() => setVerifyOpen(true)}
+                      className="mt-2 flex items-center gap-1.5 text-xs font-bold text-primary hover:underline cursor-pointer"
+                    >
+                      Vérifier mon email étudiant <ArrowRight className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -177,6 +189,7 @@ const HubSocial = () => {
       <SecuritySovereign />
       <AmalTrigger />
       <GoldModal open={goldOpen} onClose={() => setGoldOpen(false)} />
+      <VerificationDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
       <MobileBottomNav />
     </div>
   );
