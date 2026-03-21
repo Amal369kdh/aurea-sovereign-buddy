@@ -542,6 +542,18 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
   });
 }
 
+// Cities coming soon (purely decorative, no Perplexity call)
+const COMING_SOON_CITIES = [
+  { name: "Lyon", emoji: "🦁", label: "2ème ville étudiante de France" },
+  { name: "Paris", emoji: "🗼", label: "Île-de-France" },
+  { name: "Bordeaux", emoji: "🍷", label: "Nouvelle-Aquitaine" },
+  { name: "Montpellier", emoji: "🏖️", label: "Occitanie" },
+  { name: "Toulouse", emoji: "🌸", label: "Occitanie" },
+  { name: "Lille", emoji: "🏭", label: "Hauts-de-France" },
+  { name: "Nice", emoji: "🌊", label: "Côte d'Azur" },
+  { name: "Strasbourg", emoji: "🥨", label: "Grand Est" },
+];
+
 /* ─── Main grid ─── */
 const BentoGrid = () => {
   const navigate = useNavigate();
@@ -651,10 +663,36 @@ const BentoGrid = () => {
         </div>
       )}
 
+      {/* Coming soon cities */}
+      <div className="mt-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Globe className="h-4 w-4 text-muted-foreground" />
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Autres villes — bientôt disponibles</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {COMING_SOON_CITIES.map((c) => (
+            <div
+              key={c.name}
+              className="flex items-center gap-2.5 rounded-2xl border border-border/60 bg-secondary/30 px-3 py-2.5 opacity-60"
+            >
+              <span className="text-base">{c.emoji}</span>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-foreground truncate">{c.name}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{c.label}</p>
+              </div>
+              <span className="ml-auto shrink-0 rounded-full border border-primary/30 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold text-primary">
+                Bientôt
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <VerificationDialog open={verifyOpen} onClose={() => setVerifyOpen(false)} />
     </div>
   );
 };
 
 export default BentoGrid;
+
 
