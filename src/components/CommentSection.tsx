@@ -264,7 +264,7 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
             <input
               ref={inputRef}
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              onChange={(e) => setNewComment(e.target.value.slice(0, MAX_COMMENT_CHARS))}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey && mentionSuggestions.length === 0) handlePost();
                 if (e.key === "Escape") { setMentionSearch(null); setMentionSuggestions([]); }
@@ -274,12 +274,17 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
             />
             <button
               onClick={handlePost}
-              disabled={posting || !newComment.trim()}
+              disabled={posting || !newComment.trim() || newComment.trim().length > MAX_COMMENT_CHARS}
               className="flex h-8 w-8 items-center justify-center rounded-xl gold-gradient text-primary-foreground disabled:opacity-40 cursor-pointer"
             >
               {posting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
             </button>
           </div>
+          {newComment.length > MAX_COMMENT_CHARS * 0.8 && (
+            <p className={`mt-1 text-right text-[10px] tabular-nums ${newComment.length >= MAX_COMMENT_CHARS ? "text-destructive font-bold" : "text-muted-foreground"}`}>
+              {newComment.length}/{MAX_COMMENT_CHARS}
+            </p>
+          )}
         </div>
       )}
 
