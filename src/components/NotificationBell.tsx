@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Bell, BellRing, Check, CheckCheck } from "lucide-react";
+import { Bell, BellRing, CheckCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -9,13 +10,30 @@ const typeIcon: Record<string, string> = {
   new_message: "💬",
   new_match: "💛",
   new_comment: "🗨️",
+  mention: "👋",
   system: "📢",
 };
+
+// Navigate to the notification's origin when clicked
+function useNotificationTarget() {
+  const navigate = useNavigate();
+  return (type: string, data: Record<string, unknown> | null) => {
+    if (!data) return;
+    if (type === "new_message" && data.sender_id) {
+      navigate("/messages");
+    } else if ((type === "new_comment" || type === "mention") && data.announcement_id) {
+      navigate("/hub-social");
+    } else if (type === "new_match" && data.match_id) {
+      navigate("/hub-social");
+    }
+  };
+}
 
 const NotificationBell = () => {
   const { notifications, unreadCount, markAllRead, markRead } = useNotifications();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const goToOrigin = useNotificationTarget();
 
   // Close on outside click
   useEffect(() => {
@@ -54,7 +72,8 @@ const NotificationBell = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-11 z-50 w-80 rounded-3xl border border-border bg-card shadow-xl overflow-hidden"
+            // On mobile: fixed full-width from right edge; on desktop: absolute right-0
+            className="fixed right-2 top-16 z-50 w-[calc(100vw-1rem)] max-w-sm rounded-3xl border border-border bg-card shadow-xl overflow-hidden sm:absolute sm:right-0 sm:top-11 sm:w-80"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -82,16 +101,20 @@ const NotificationBell = () => {
                 notifications.map((n) => (
                   <button
                     key={n.id}
-                    onClick={() => markRead(n.id)}
+                    onClick={() => {
+                      markRead(n.id);
+                      goToOrigin(n.type, n.data);
+                      setOpen(false);
+                    }}
                     className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-accent cursor-pointer ${
                       !n.is_read ? "bg-primary/5" : ""
                     }`}
                   >
-                    <span className="mt-0.5 text-lg leading-none">
+                    <span className="mt-0.5 text-lg leading-none shrink-0">
                       {typeIcon[n.type] ?? "🔔"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs font-semibold text-foreground ${!n.is_read ? "text-primary" : ""}`}>
+                      <p className={`text-xs font-semibold truncate ${!n.is_read ? "text-primary" : "text-foreground"}`}>
                         {n.title}
                       </p>
                       {n.body && (

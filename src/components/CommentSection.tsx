@@ -97,16 +97,22 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const handlePost = async () => {
-    if (!newComment.trim()) return;
-    setPosting(true);
-    await addComment(newComment.trim());
+  const MAX_COMMENT_CHARS = 400;
 
-    // Send notifications to all @mentioned users
-    const mentionedNames = [...newComment.matchAll(/@(\w+)/g)].map((m) => m[1].replace(/_/g, " ").toLowerCase());
+  const handlePost = async () => {
+    const trimmed = newComment.trim();
+    if (!trimmed || trimmed.length > MAX_COMMENT_CHARS) return;
+    setPosting(true);
+    await addComment(trimmed);
+
+    // Send notifications to all @mentioned users, linked to the announcement
+    const mentionedNames = [...trimmed.matchAll(/@(\w+)/g)].map((m) => m[1].replace(/_/g, " ").toLowerCase());
     if (mentionedNames.length > 0) {
       const mentionedCommenters = comments.filter((c) =>
-        mentionedNames.some((n) => c.author_name.toLowerCase() === n || c.author_name.toLowerCase().replace(/\s+/g, "_") === n.replace(/\s+/g, "_"))
+        mentionedNames.some((n) =>
+          c.author_name.toLowerCase() === n ||
+          c.author_name.toLowerCase().replace(/\s+/g, "_") === n.replace(/\s+/g, "_")
+        )
       );
       const uniqueMentioned = [...new Map(mentionedCommenters.map((c) => [c.author_id, c])).values()];
       const myName = comments.find((c) => c.author_id === user?.id)?.author_name ?? "Quelqu'un";
@@ -117,7 +123,8 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
             user_id: mentioned.author_id,
             type: "mention",
             title: `${myName} t'a mentionné 👋`,
-            body: newComment.trim().slice(0, 80),
+            body: trimmed.slice(0, 80),
+            // Link notification to the announcement so the bell redirects to Hub Social
             data: { announcement_id: announcementId },
           });
         }
