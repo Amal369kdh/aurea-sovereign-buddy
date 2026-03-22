@@ -47,14 +47,29 @@ export function useComments(announcementId: string | null) {
     const authorIds = [...new Set(data.map((c) => c.author_id))];
     const { data: profiles } = await supabase
       .from("profiles_public")
-      .select("user_id, display_name, avatar_initials, is_verified")
+      .select("user_id, display_name, avatar_initials, is_verified, status")
       .in("user_id", authorIds);
 
     const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
+    // For authors missing from profiles_public (admins), check via RPC
+    const missingIds = authorIds.filter((id) => !profileMap.has(id));
+    const adminSet = new Set<string>();
+    if (missingIds.length > 0) {
+      await Promise.all(
+        missingIds.map(async (id) => {
+          const { data: isAdmin } = await supabase.rpc("is_admin", { _user_id: id });
+          if (isAdmin) adminSet.add(id);
+        })
+      );
+    }
+
     setComments(
       data.map((c) => {
         const profile = profileMap.get(c.author_id);
+        const status = (profile as { status?: string } | undefined)?.status || "explorateur";
+        const isAdmin = status === "admin" || adminSet.has(c.author_id);
+        const isTemoinOrAdmin = status === "temoin" || isAdmin;
         return {
           id: c.id,
           announcement_id: c.announcement_id,
@@ -62,9 +77,9 @@ export function useComments(announcementId: string | null) {
           content: c.content,
           is_solution: c.is_solution,
           created_at: c.created_at,
-          author_name: profile?.display_name || "Anonyme",
-          author_initials: profile?.avatar_initials || "??",
-          author_verified: profile?.is_verified || false,
+          author_name: isAdmin ? "Équipe Aurea" : (profile?.display_name || "Anonyme"),
+          author_initials: isAdmin ? "AU" : (profile?.avatar_initials || "??"),
+          author_verified: isTemoinOrAdmin,
         };
       })
     );
