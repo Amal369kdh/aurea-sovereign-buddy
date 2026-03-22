@@ -97,16 +97,22 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const handlePost = async () => {
-    if (!newComment.trim()) return;
-    setPosting(true);
-    await addComment(newComment.trim());
+  const MAX_COMMENT_CHARS = 400;
 
-    // Send notifications to all @mentioned users
-    const mentionedNames = [...newComment.matchAll(/@(\w+)/g)].map((m) => m[1].replace(/_/g, " ").toLowerCase());
+  const handlePost = async () => {
+    const trimmed = newComment.trim();
+    if (!trimmed || trimmed.length > MAX_COMMENT_CHARS) return;
+    setPosting(true);
+    await addComment(trimmed);
+
+    // Send notifications to all @mentioned users, linked to the announcement
+    const mentionedNames = [...trimmed.matchAll(/@(\w+)/g)].map((m) => m[1].replace(/_/g, " ").toLowerCase());
     if (mentionedNames.length > 0) {
       const mentionedCommenters = comments.filter((c) =>
-        mentionedNames.some((n) => c.author_name.toLowerCase() === n || c.author_name.toLowerCase().replace(/\s+/g, "_") === n.replace(/\s+/g, "_"))
+        mentionedNames.some((n) =>
+          c.author_name.toLowerCase() === n ||
+          c.author_name.toLowerCase().replace(/\s+/g, "_") === n.replace(/\s+/g, "_")
+        )
       );
       const uniqueMentioned = [...new Map(mentionedCommenters.map((c) => [c.author_id, c])).values()];
       const myName = comments.find((c) => c.author_id === user?.id)?.author_name ?? "Quelqu'un";
@@ -117,7 +123,8 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
             user_id: mentioned.author_id,
             type: "mention",
             title: `${myName} t'a mentionné 👋`,
-            body: newComment.trim().slice(0, 80),
+            body: trimmed.slice(0, 80),
+            // Link notification to the announcement so the bell redirects to Hub Social
             data: { announcement_id: announcementId },
           });
         }
@@ -257,7 +264,7 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
             <input
               ref={inputRef}
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              onChange={(e) => setNewComment(e.target.value.slice(0, MAX_COMMENT_CHARS))}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey && mentionSuggestions.length === 0) handlePost();
                 if (e.key === "Escape") { setMentionSearch(null); setMentionSuggestions([]); }
@@ -267,12 +274,17 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
             />
             <button
               onClick={handlePost}
-              disabled={posting || !newComment.trim()}
+              disabled={posting || !newComment.trim() || newComment.trim().length > MAX_COMMENT_CHARS}
               className="flex h-8 w-8 items-center justify-center rounded-xl gold-gradient text-primary-foreground disabled:opacity-40 cursor-pointer"
             >
               {posting ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
             </button>
           </div>
+          {newComment.length > MAX_COMMENT_CHARS * 0.8 && (
+            <p className={`mt-1 text-right text-[10px] tabular-nums ${newComment.length >= MAX_COMMENT_CHARS ? "text-destructive font-bold" : "text-muted-foreground"}`}>
+              {newComment.length}/{MAX_COMMENT_CHARS}
+            </p>
+          )}
         </div>
       )}
 

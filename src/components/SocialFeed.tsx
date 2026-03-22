@@ -76,11 +76,13 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
   const [goldOpen, setGoldOpen] = useState(false);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
 
+  const MAX_POST_CHARS = 800;
   const MIN_ENTRAIDE_CHARS = 50;
   const isEntrade = newCategory === "entraide";
   const charCount = newContent.trim().length;
   const isEntraideTooShort = isEntrade && charCount > 0 && charCount < MIN_ENTRAIDE_CHARS;
-  const canPost = newContent.trim().length > 0 && !isEntraideTooShort;
+  const isTooLong = charCount > MAX_POST_CHARS;
+  const canPost = charCount > 0 && !isEntraideTooShort && !isTooLong;
 
   const handlePost = async () => {
     if (!canPost) return;
@@ -197,7 +199,7 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
         <div className="mb-6 rounded-3xl border border-border bg-card p-4">
           <textarea
             value={newContent}
-            onChange={(e) => setNewContent(e.target.value)}
+            onChange={(e) => setNewContent(e.target.value.slice(0, MAX_POST_CHARS))}
             placeholder="Partage quelque chose… Tu peux utiliser des #hashtags pour être plus facilement retrouvé."
             className="w-full resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
             rows={3}
@@ -218,19 +220,19 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
               </button>
             ))}
           </div>
-          {/* Validation min chars for Entraide */}
-          {isEntrade && newContent.trim().length > 0 && (
-            <div className={`mt-2 flex items-center justify-between text-xs transition-colors ${isEntraideTooShort ? "text-destructive" : "text-success"}`}>
-              <span>
-                {isEntraideTooShort
-                  ? `Entraide : min. ${MIN_ENTRAIDE_CHARS} caractères pour gagner des points (${charCount}/${MIN_ENTRAIDE_CHARS})`
-                  : `✓ Longueur suffisante (${charCount} caractères)`}
-              </span>
-              <span className={`font-bold tabular-nums ${isEntraideTooShort ? "text-destructive" : "text-success"}`}>
-                {charCount}/{MIN_ENTRAIDE_CHARS}
-              </span>
-            </div>
-          )}
+          {/* Char count + Validation */}
+          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+            <span className={isEntraideTooShort ? "text-destructive font-semibold" : ""}>
+              {isEntraideTooShort
+                ? `Entraide : min. ${MIN_ENTRAIDE_CHARS} caractères pour les points (${charCount}/${MIN_ENTRAIDE_CHARS})`
+                : isEntrade && charCount >= MIN_ENTRAIDE_CHARS
+                ? "✓ Longueur suffisante"
+                : ""}
+            </span>
+            <span className={`tabular-nums font-semibold ${isTooLong ? "text-destructive" : charCount > MAX_POST_CHARS * 0.85 ? "text-primary" : ""}`}>
+              {charCount}/{MAX_POST_CHARS}
+            </span>
+          </div>
           {/* Send button */}
           <div className="mt-3 flex justify-end">
             <button
