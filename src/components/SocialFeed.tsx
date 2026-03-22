@@ -76,11 +76,13 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
   const [goldOpen, setGoldOpen] = useState(false);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
 
+  const MAX_POST_CHARS = 800;
   const MIN_ENTRAIDE_CHARS = 50;
   const isEntrade = newCategory === "entraide";
   const charCount = newContent.trim().length;
   const isEntraideTooShort = isEntrade && charCount > 0 && charCount < MIN_ENTRAIDE_CHARS;
-  const canPost = newContent.trim().length > 0 && !isEntraideTooShort;
+  const isTooLong = charCount > MAX_POST_CHARS;
+  const canPost = charCount > 0 && !isEntraideTooShort && !isTooLong;
 
   const handlePost = async () => {
     if (!canPost) return;

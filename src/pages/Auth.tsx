@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound } from "lucide-react";
+import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound, ShieldCheck, Users, MessageCircle, Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +31,30 @@ function translateAuthError(error: string): string {
   return error;
 }
 
+// ── Feature highlights displayed on the left panel ──────────────────────────
+const features = [
+  {
+    icon: <ShieldCheck className="h-5 w-5 text-primary" />,
+    title: "Espace 100% étudiant",
+    desc: "Communauté vérifiée — uniquement pour les étudiants en France.",
+  },
+  {
+    icon: <Users className="h-5 w-5 text-primary" />,
+    title: "Hub Social de ta ville",
+    desc: "Publications, entraide, logement, sorties… tout ce dont tu as besoin.",
+  },
+  {
+    icon: <MessageCircle className="h-5 w-5 text-primary" />,
+    title: "Messagerie privée",
+    desc: "Échange en toute confiance avec d'autres étudiants vérifiés.",
+  },
+  {
+    icon: <Star className="h-5 w-5 text-primary" />,
+    title: "Ressources & accompagnement",
+    desc: "Démarches administratives, CAF, santé, emploi — on centralise tout.",
+  },
+];
+
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const { toast } = useToast();
@@ -44,7 +68,6 @@ const Auth = () => {
   const [signupDone, setSignupDone] = useState(false);
   const [signupEmail, setSignupEmail] = useState("");
   const [forgotDone, setForgotDone] = useState(false);
-  // When the user already has an unconfirmed account
   const [pendingConfirmation, setPendingConfirmation] = useState(false);
 
   if (!loading && user) return <Navigate to="/" replace />;
@@ -94,7 +117,6 @@ const Auth = () => {
                   email: signupEmail,
                   options: { emailRedirectTo: "https://aurea-student.fr" },
                 });
-                // If error or account was deleted from dashboard → redirect to signup
                 if (error) {
                   if (error.message.toLowerCase().includes("user not found") || error.message.toLowerCase().includes("invalid") || error.status === 422) {
                     setPendingConfirmation(false);
@@ -270,15 +292,10 @@ const Auth = () => {
       if (error) {
         toast({ title: "Erreur", description: translateAuthError(error), variant: "destructive" });
       } else {
-        // Supabase returns identities:[] when the email already exists but is unconfirmed
         if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
           setSignupEmail(email);
           setPendingConfirmation(true);
         } else {
-          // Pre-create profile so ProtectedRoute doesn't spin waiting for the DB trigger.
-          // We only set safe defaults — onboarding will fill nationality/city/etc.
-          // We do NOT set is_in_france or student_status here so the onboarding
-          // completeness check sends them to /onboarding as expected.
           if (data?.user?.id) {
             try {
               await supabase.from("profiles").upsert({
@@ -306,155 +323,233 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen bg-background">
+      {/* ── Left panel: app presentation (hidden on small screens) ── */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 border-r border-border bg-card"
       >
-        {/* Logo */}
-        <div className="mb-6 flex flex-col items-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
-            <Crown className="h-7 w-7 text-primary-foreground" />
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl gold-gradient">
+            <Crown className="h-6 w-6 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-extrabold">
-            <span className="gold-text">Aurea</span>{" "}
-            <span className="text-foreground">Student</span>
-          </h1>
+          <div>
+            <h1 className="text-2xl font-extrabold">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+            <p className="text-xs text-muted-foreground">La plateforme des étudiants en France</p>
+          </div>
         </div>
 
-        {/* Welcome text */}
-        <div className="mb-10 flex flex-col items-center text-center" style={{ maxWidth: 500, margin: "0 auto 2.5rem" }}>
-          <h2 style={{ color: "hsl(43 96% 56%)", fontWeight: 600, fontSize: "1.5rem" }}>
-            Bienvenue dans notre cercle.
+        {/* Hero text */}
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            <span className="text-xs font-semibold text-primary">Expérimentation — Grenoble 🇫🇷</span>
+          </div>
+          <h2 className="text-4xl font-extrabold leading-tight text-foreground">
+            Ton cercle étudiant,<br />
+            <span className="gold-text">sécurisé & vérifié.</span>
           </h2>
-          <p style={{ color: "#EAEAEA", fontSize: "0.9rem", marginTop: 8 }}>
-            Tu es à ta place.
+          <p className="text-base text-muted-foreground leading-relaxed max-w-sm">
+            Aurea Student regroupe les étudiants internationaux et locaux dans un espace de confiance. Entraide, logement, emploi, vie sociale — tout en un.
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-border bg-card p-6">
-          {mode === "signup" && (
+        {/* Feature list */}
+        <div className="space-y-4">
+          {features.map((f, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 + i * 0.1 }}
+              className="flex items-start gap-3"
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                {f.icon}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{f.title}</p>
+                <p className="text-xs text-muted-foreground">{f.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Social proof */}
+        <div className="flex items-center gap-3 rounded-2xl border border-border bg-secondary/40 p-4">
+          <div className="flex -space-x-2">
+            {["AU", "MB", "AD"].map((initials, i) => (
+              <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-card gold-gradient text-[10px] font-bold text-primary-foreground">
+                {initials}
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            <span className="font-semibold text-foreground">Des étudiants</span> ont déjà rejoint le cercle — rejoins-les.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* ── Right panel: auth form ── */}
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          {/* Logo (mobile only) */}
+          <div className="mb-6 flex flex-col items-center lg:hidden">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
+              <Crown className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-3xl font-extrabold">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </h1>
+          </div>
+
+          {/* Welcome text */}
+          <div className="mb-8 text-center lg:text-left">
+            <h2 className="text-2xl font-extrabold text-foreground">
+              {mode === "login" ? "Bon retour 👋" : "Rejoins le cercle ✨"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {mode === "login"
+                ? "Connecte-toi à ton espace étudiant."
+                : "Crée ton compte et intègre la communauté."}
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-border bg-card p-6">
+            {mode === "signup" && (
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Prénom ou pseudo"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                  maxLength={50}
+                  className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                />
+              </div>
+            )}
+
             <div className="relative">
-              <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
-                type="text"
-                placeholder="Prénom ou pseudo"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
             </div>
-          )}
 
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-            />
-          </div>
-
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="password"
-              placeholder="Mot de passe"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-            />
-          </div>
-
-          {mode === "login" && (
-            <div className="text-right">
-              <button
-                type="button"
-                onClick={() => setMode("forgot")}
-                className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
-              >
-                Mot de passe oublié ?
-              </button>
-            </div>
-          )}
-
-          {mode === "signup" && (
-            <label className="flex items-start gap-3 cursor-pointer group rounded-2xl border border-border/60 bg-secondary/40 p-3 hover:bg-secondary/70 transition-colors">
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
-                type="checkbox"
-                checked={acceptedCgu}
-                onChange={(e) => setAcceptedCgu(e.target.checked)}
+                type="password"
+                placeholder="Mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
-                className="mt-0.5 h-4 w-4 shrink-0 rounded border border-primary bg-secondary accent-primary cursor-pointer"
+                minLength={6}
+                className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
-              <span className="text-xs text-foreground leading-relaxed">
-                J'ai lu et j'accepte les{" "}
-                <a
-                  href="/legal#cgu"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline font-bold underline decoration-dotted"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Conditions Générales d'Utilisation
-                </a>{" "}
-                et la{" "}
-                <a
-                  href="/legal#rgpd"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline font-bold underline decoration-dotted"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Politique de Confidentialité
-                </a>{" "}
-                (RGPD)
-              </span>
-            </label>
-          )}
+            </div>
 
-          <button
-            type="submit"
-            disabled={submitting || (mode === "signup" && !acceptedCgu)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-          >
-            {submitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <>
-                {mode === "login" ? "Se connecter" : "Créer mon compte"}
-                <ArrowRight className="h-4 w-4" />
-              </>
+            {mode === "login" && (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => setMode("forgot")}
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                >
+                  Mot de passe oublié ?
+                </button>
+              </div>
             )}
-          </button>
-        </form>
 
-        {/* Toggle */}
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {mode === "login" ? "Pas encore de compte ?" : "Déjà inscrit ?"}{" "}
-          <button
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="font-bold text-primary hover:underline cursor-pointer"
-          >
-            {mode === "login" ? "S'inscrire" : "Se connecter"}
-          </button>
-        </p>
+            {mode === "signup" && (
+              <label className="flex items-start gap-3 cursor-pointer group rounded-2xl border border-border/60 bg-secondary/40 p-3 hover:bg-secondary/70 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={acceptedCgu}
+                  onChange={(e) => setAcceptedCgu(e.target.checked)}
+                  required
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border border-primary bg-secondary accent-primary cursor-pointer"
+                />
+                <span className="text-xs text-foreground leading-relaxed">
+                  J'ai lu et j'accepte les{" "}
+                  <a
+                    href="/legal#cgu"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-bold underline decoration-dotted"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Conditions Générales d'Utilisation
+                  </a>{" "}
+                  et la{" "}
+                  <a
+                    href="/legal#rgpd"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-bold underline decoration-dotted"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Politique de Confidentialité
+                  </a>{" "}
+                  (RGPD)
+                </span>
+              </label>
+            )}
 
-        {/* Legal link */}
-        <p className="mt-8 text-center text-xs text-muted-foreground/60">
-          <a href="/legal" className="hover:text-muted-foreground transition-colors">
-            Mentions légales · CGU · Confidentialité
-          </a>
-        </p>
-      </motion.div>
+            <button
+              type="submit"
+              disabled={submitting || (mode === "signup" && !acceptedCgu)}
+              className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {submitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  {mode === "login" ? "Se connecter" : "Créer mon compte"}
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Toggle */}
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            {mode === "login" ? "Pas encore de compte ?" : "Déjà inscrit ?"}{" "}
+            <button
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="font-bold text-primary hover:underline cursor-pointer"
+            >
+              {mode === "login" ? "S'inscrire" : "Se connecter"}
+            </button>
+          </p>
+
+          {/* Legal link */}
+          <p className="mt-8 text-center text-xs text-muted-foreground/60">
+            <a href="/legal" className="hover:text-muted-foreground transition-colors">
+              Mentions légales · CGU · Confidentialité
+            </a>
+          </p>
+        </motion.div>
+      </div>
     </div>
   );
 };
