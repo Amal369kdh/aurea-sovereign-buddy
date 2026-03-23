@@ -14,7 +14,7 @@ const typeIcon: Record<string, string> = {
   system: "📢",
 };
 
-// Navigate to the notification's origin when clicked
+// Navigate to the notification's origin when clicked — deep-link to post when possible
 function useNotificationTarget() {
   const navigate = useNavigate();
   return (type: string, data: Record<string, unknown> | null) => {
@@ -22,9 +22,10 @@ function useNotificationTarget() {
     if (type === "new_message" && data.sender_id) {
       navigate("/messages");
     } else if ((type === "new_comment" || type === "mention") && data.announcement_id) {
-      navigate("/hub-social");
+      // Deep-link: pass announcement_id as query param so HubSocial can scroll to it
+      navigate(`/hub-social?post=${data.announcement_id}`);
     } else if (type === "new_match" && data.match_id) {
-      navigate("/hub-social");
+      navigate("/hub-social?tab=matchs");
     }
   };
 }

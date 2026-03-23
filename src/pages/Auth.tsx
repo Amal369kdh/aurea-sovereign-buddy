@@ -323,8 +323,41 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* ── Left panel: app presentation (hidden on small screens) ── */}
+    <div className="flex min-h-screen flex-col lg:flex-row bg-background">
+      {/* ── Mobile-only top marketing banner ── */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="lg:hidden border-b border-border bg-card px-5 py-4"
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl gold-gradient shrink-0">
+            <Crown className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <div>
+            <p className="text-base font-extrabold leading-tight">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </p>
+            <p className="text-[10px] text-muted-foreground">La plateforme des étudiants en France 🇫🇷</p>
+          </div>
+          <span className="ml-auto flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            Grenoble
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {features.map((f, i) => (
+            <div key={i} className="flex items-start gap-2 rounded-xl bg-secondary/50 p-2.5">
+              <div className="shrink-0 mt-0.5">{f.icon}</div>
+              <p className="text-[10px] font-semibold text-foreground leading-tight">{f.title}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Left panel: app presentation (desktop only) ── */}
       <motion.div
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
