@@ -63,6 +63,8 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [pseudoError, setPseudoError] = useState<string | null>(null);
+  const [checkingPseudo, setCheckingPseudo] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [acceptedCgu, setAcceptedCgu] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
