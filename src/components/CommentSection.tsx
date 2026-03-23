@@ -28,11 +28,12 @@ const renderCommentContent = (content: string) => {
   );
 };
 
-const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: CommentSectionProps) => {
+const CommentSection = ({ announcementId, postAuthorId, postCategory, readOnly = false }: CommentSectionProps) => {
   const { user } = useAuth();
-  const { comments, loading, addComment, markAsSolution } = useComments(announcementId);
+  const { comments, loading, addComment, markAsSolution, refetch } = useComments(announcementId);
   const [newComment, setNewComment] = useState("");
   const [posting, setPosting] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [solutionConvId, setSolutionConvId] = useState<string | null>(null);
   const [mentionSearch, setMentionSearch] = useState<string | null>(null);
   const [mentionSuggestions, setMentionSuggestions] = useState<{ user_id: string; display_name: string; avatar_initials: string }[]>([]);
