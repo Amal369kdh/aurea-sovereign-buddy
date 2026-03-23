@@ -578,7 +578,7 @@ const Auth = () => {
 
             <button
               type="submit"
-              disabled={submitting || (mode === "signup" && !acceptedCgu)}
+              disabled={submitting || (mode === "signup" && (!acceptedCgu || !!pseudoError))}
               className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {submitting ? (
