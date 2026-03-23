@@ -464,8 +464,8 @@ const Auth = () => {
 
           {/* Welcome text */}
           <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-2xl font-extrabold text-foreground">
-              {mode === "login" ? "Bon retour 👋" : "Rejoins le cercle ✨"}
+          <h2 className="text-2xl font-extrabold text-foreground">
+              {mode === "login" ? "Bon retour 👋" : "Rejoins les étudiants qui t'attendent ✨"}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {mode === "login"
