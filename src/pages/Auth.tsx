@@ -436,8 +436,8 @@ const Auth = () => {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          {/* Logo (mobile only) */}
-          <div className="mb-6 flex flex-col items-center lg:hidden">
+          {/* Logo (desktop only — mobile has top banner) */}
+          <div className="mb-6 hidden flex-col items-center lg:flex">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
               <Crown className="h-7 w-7 text-primary-foreground" />
             </div>

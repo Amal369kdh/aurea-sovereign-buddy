@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { useNavigate } from "react-router-dom";
-import { Users, Sparkles } from "lucide-react";
+import { Users, Sparkles, Globe } from "lucide-react";
 
 const WelcomeModal = ({ onClose, city }: { onClose: () => void; city: string | null }) => {
   const handleEnter = async () => {

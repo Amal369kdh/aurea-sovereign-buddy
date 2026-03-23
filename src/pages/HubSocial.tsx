@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import AppSidebar from "@/components/AppSidebar";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
@@ -18,7 +19,11 @@ import { motion, AnimatePresence } from "framer-motion";
 type Tab = "hub" | "rencontres" | "matchs";
 
 const HubSocial = () => {
-  const [tab, setTab] = useState<Tab>("hub");
+  const [searchParams] = useSearchParams();
+  const deepLinkPostId = searchParams.get("post") ?? undefined;
+  const deepLinkTab = searchParams.get("tab") as Tab | null;
+
+  const [tab, setTab] = useState<Tab>(deepLinkTab ?? "hub");
   const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement" | "general">("all");
   const [goldOpen, setGoldOpen] = useState(false);
   const [verifyOpen, setVerifyOpen] = useState(false);
