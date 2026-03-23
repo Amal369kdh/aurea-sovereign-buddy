@@ -477,17 +477,30 @@ const Auth = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-border bg-card p-6">
             {mode === "signup" && (
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Prénom ou pseudo"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                  maxLength={50}
-                  className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                />
+              <div className="space-y-1">
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  {checkingPseudo && (
+                    <Loader2 className="absolute right-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
+                  )}
+                  <input
+                    type="text"
+                    placeholder="Prénom ou pseudo"
+                    value={displayName}
+                    onChange={(e) => {
+                      setDisplayName(e.target.value);
+                      checkPseudo(e.target.value);
+                    }}
+                    required
+                    maxLength={50}
+                    className={`w-full rounded-2xl border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none ${
+                      pseudoError ? "border-destructive focus:border-destructive" : "border-border focus:border-primary"
+                    }`}
+                  />
+                </div>
+                {pseudoError && (
+                  <p className="px-1 text-xs font-medium text-destructive">{pseudoError}</p>
+                )}
               </div>
             )}
 
