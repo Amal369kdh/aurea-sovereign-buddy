@@ -150,8 +150,21 @@ const CommentSection = ({ announcementId, postAuthorId, postCategory, readOnly =
     if (data) setSolutionConvId(data.id);
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    setDeleting(commentId);
+    const { error } = await supabase.from("comments").delete().eq("id", commentId);
+    if (error) {
+      console.error("Error deleting comment:", error);
+    } else {
+      await refetch();
+    }
+    setDeleting(null);
+  };
+
   const isPostAuthor = user?.id === postAuthorId;
   const hasSolution = comments.some((c) => c.is_solution);
+  // Solution button only for "entraide" category posts
+  const isEntraide = postCategory === "entraide";
 
   return (
     <div className="mt-3 border-t border-border pt-3">
