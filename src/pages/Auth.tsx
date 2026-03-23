@@ -63,6 +63,8 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [pseudoError, setPseudoError] = useState<string | null>(null);
+  const [checkingPseudo, setCheckingPseudo] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [acceptedCgu, setAcceptedCgu] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
@@ -283,6 +285,19 @@ const Auth = () => {
     );
   }
 
+  // Check pseudo uniqueness with debounce
+  const checkPseudo = async (name: string) => {
+    if (name.trim().length < 2) { setPseudoError(null); return; }
+    setCheckingPseudo(true);
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .ilike("display_name", name.trim())
+      .maybeSingle();
+    setCheckingPseudo(false);
+    setPseudoError(data ? "Ce pseudo est déjà utilisé. Choisis-en un autre." : null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -323,8 +338,41 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* ── Left panel: app presentation (hidden on small screens) ── */}
+    <div className="flex min-h-screen flex-col lg:flex-row bg-background">
+      {/* ── Mobile-only top marketing banner ── */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="lg:hidden border-b border-border bg-card px-5 py-4"
+      >
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl gold-gradient shrink-0">
+            <Crown className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <div>
+            <p className="text-base font-extrabold leading-tight">
+              <span className="gold-text">Aurea</span>{" "}
+              <span className="text-foreground">Student</span>
+            </p>
+            <p className="text-[10px] text-muted-foreground">La plateforme des étudiants en France 🇫🇷</p>
+          </div>
+          <span className="ml-auto flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-[10px] font-semibold text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            Grenoble
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {features.map((f, i) => (
+            <div key={i} className="flex items-start gap-2 rounded-xl bg-secondary/50 p-2.5">
+              <div className="shrink-0 mt-0.5">{f.icon}</div>
+              <p className="text-[10px] font-semibold text-foreground leading-tight">{f.title}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Left panel: app presentation (desktop only) ── */}
       <motion.div
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
@@ -403,8 +451,8 @@ const Auth = () => {
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          {/* Logo (mobile only) */}
-          <div className="mb-6 flex flex-col items-center lg:hidden">
+          {/* Logo (desktop only — mobile has top banner) */}
+          <div className="mb-6 hidden flex-col items-center lg:flex">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl gold-gradient mb-4">
               <Crown className="h-7 w-7 text-primary-foreground" />
             </div>
@@ -429,17 +477,30 @@ const Auth = () => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4 rounded-3xl border border-border bg-card p-6">
             {mode === "signup" && (
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Prénom ou pseudo"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                  maxLength={50}
-                  className="w-full rounded-2xl border border-border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                />
+              <div className="space-y-1">
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  {checkingPseudo && (
+                    <Loader2 className="absolute right-4 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
+                  )}
+                  <input
+                    type="text"
+                    placeholder="Prénom ou pseudo"
+                    value={displayName}
+                    onChange={(e) => {
+                      setDisplayName(e.target.value);
+                      checkPseudo(e.target.value);
+                    }}
+                    required
+                    maxLength={50}
+                    className={`w-full rounded-2xl border bg-secondary px-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none ${
+                      pseudoError ? "border-destructive focus:border-destructive" : "border-border focus:border-primary"
+                    }`}
+                  />
+                </div>
+                {pseudoError && (
+                  <p className="px-1 text-xs font-medium text-destructive">{pseudoError}</p>
+                )}
               </div>
             )}
 
@@ -517,7 +578,7 @@ const Auth = () => {
 
             <button
               type="submit"
-              disabled={submitting || (mode === "signup" && !acceptedCgu)}
+              disabled={submitting || (mode === "signup" && (!acceptedCgu || !!pseudoError))}
               className="flex w-full items-center justify-center gap-2 rounded-2xl gold-gradient py-3 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {submitting ? (

@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { useNavigate } from "react-router-dom";
-import { Users, Sparkles } from "lucide-react";
+import { Users, Sparkles, Globe } from "lucide-react";
 
 const WelcomeModal = ({ onClose, city }: { onClose: () => void; city: string | null }) => {
   const handleEnter = async () => {
@@ -79,6 +79,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(false);
   const [profileCity, setProfileCity] = useState<string | null>(null);
+  const [showCityBanner, setShowCityBanner] = useState(false);
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
 
@@ -86,14 +87,20 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("has_seen_welcome, city")
+      .select("has_seen_welcome, city, target_city")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
-          setProfileCity(data.city ?? null);
+          const city = data.city ?? null;
+          setProfileCity(city);
           if (data.has_seen_welcome === false) {
             setShowWelcome(true);
+          }
+          // Show banner if user's city is not Grenoble (our pilot city)
+          const effectiveCity = city ?? data.target_city;
+          if (effectiveCity && effectiveCity.toLowerCase() !== "grenoble") {
+            setShowCityBanner(true);
           }
         }
       });
@@ -107,6 +114,37 @@ const Index = () => {
         <DashboardHeader />
 
         <div className="px-6 pb-28">
+          {/* City banner for non-Grenoble users */}
+          <AnimatePresence>
+            {showCityBanner && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="mb-4 flex items-start gap-4 rounded-3xl border border-primary/25 bg-primary/5 px-5 py-4"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gold-gradient">
+                  <Globe className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">
+                    Ta ville arrive bientôt 🌍
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    L'expérimentation démarre à Grenoble. D'autres villes rejoindront très prochainement — tu seras parmi les premiers informés.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCityBanner(false)}
+                  className="shrink-0 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  aria-label="Fermer"
+                >
+                  ✕
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Quick action buttons */}
           <div className="mb-4 flex items-center gap-2">
             {hubSocialEnabled && (

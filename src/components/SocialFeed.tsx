@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp, Hash } from "lucide-react";
 import LikersPopover from "@/components/LikersPopover";
@@ -61,9 +61,11 @@ interface SocialFeedProps {
   onCategoryChange: (cat: Category) => void;
   readOnly?: boolean;
   isVerified?: boolean;
+  /** If provided, automatically expand & scroll to this post (deep-link from notification) */
+  highlightPostId?: string;
 }
 
-const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false }: SocialFeedProps) => {
+const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false, highlightPostId }: SocialFeedProps) => {
   const { announcements, loading, createPost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );
@@ -75,6 +77,21 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
   const [goldOpen, setGoldOpen] = useState(false);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
+  const postRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrolledToHighlight = useRef(false);
+
+  // Auto-expand + scroll to highlighted post once announcements are loaded
+  useEffect(() => {
+    if (!highlightPostId || scrolledToHighlight.current || loading) return;
+    const el = postRefs.current[highlightPostId];
+    if (el) {
+      setExpandedComments((prev) => new Set([...prev, highlightPostId]));
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrolledToHighlight.current = true;
+      }, 200);
+    }
+  }, [highlightPostId, loading, announcements]);
 
   const MAX_POST_CHARS = 800;
   const MIN_ENTRAIDE_CHARS = 50;
@@ -275,10 +292,15 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
           {filteredAnnouncements.map((post, i) => (
             <motion.div
               key={post.id}
+              ref={(el) => { postRefs.current[post.id] = el; }}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06, duration: 0.3 }}
-              className="rounded-3xl border border-border bg-card p-5 transition-all hover:border-primary/20"
+              className={`rounded-3xl border bg-card p-5 transition-all hover:border-primary/20 ${
+                highlightPostId === post.id
+                  ? "border-primary/50 ring-2 ring-primary/20"
+                  : "border-border"
+              }`}
             >
               {/* Pinned indicator */}
               {post.is_pinned && (
