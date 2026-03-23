@@ -414,7 +414,12 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
 
               {/* Comments section */}
               {expandedComments.has(post.id) && (
-                <CommentSection announcementId={post.id} postAuthorId={post.author_id} readOnly={readOnly} />
+                <CommentSection
+                  announcementId={post.id}
+                  postAuthorId={post.author_id}
+                  postCategory={post.category}
+                  readOnly={readOnly}
+                />
               )}
             </motion.div>
           ))}

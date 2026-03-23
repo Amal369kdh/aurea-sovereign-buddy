@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, CheckCircle2, ShieldCheck, MessageSquare, AtSign } from "lucide-react";
+import { Send, Loader2, CheckCircle2, ShieldCheck, MessageSquare, AtSign, Trash2 } from "lucide-react";
 import { useComments } from "@/hooks/useComments";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface CommentSectionProps {
   announcementId: string;
   postAuthorId: string;
+  postCategory?: string;
   readOnly?: boolean;
 }
 
@@ -27,11 +28,12 @@ const renderCommentContent = (content: string) => {
   );
 };
 
-const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: CommentSectionProps) => {
+const CommentSection = ({ announcementId, postAuthorId, postCategory, readOnly = false }: CommentSectionProps) => {
   const { user } = useAuth();
-  const { comments, loading, addComment, markAsSolution } = useComments(announcementId);
+  const { comments, loading, addComment, markAsSolution, refetch } = useComments(announcementId);
   const [newComment, setNewComment] = useState("");
   const [posting, setPosting] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [solutionConvId, setSolutionConvId] = useState<string | null>(null);
   const [mentionSearch, setMentionSearch] = useState<string | null>(null);
   const [mentionSuggestions, setMentionSuggestions] = useState<{ user_id: string; display_name: string; avatar_initials: string }[]>([]);
@@ -148,8 +150,21 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
     if (data) setSolutionConvId(data.id);
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    setDeleting(commentId);
+    const { error } = await supabase.from("comments").delete().eq("id", commentId);
+    if (error) {
+      console.error("Error deleting comment:", error);
+    } else {
+      await refetch();
+    }
+    setDeleting(null);
+  };
+
   const isPostAuthor = user?.id === postAuthorId;
   const hasSolution = comments.some((c) => c.is_solution);
+  // Solution button only for "entraide" category posts
+  const isEntraide = postCategory === "entraide";
 
   return (
     <div className="mt-3 border-t border-border pt-3">
@@ -192,7 +207,7 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
                 {renderCommentContent(comment.content)}
               </p>
 
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
                 {/* Reply button — inserts @mention */}
                 {!readOnly && comment.author_id !== user?.id && (
                   <button
@@ -207,8 +222,8 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
                   </button>
                 )}
 
-                {/* Mark as solution button */}
-                {isPostAuthor && comment.author_id !== user?.id && !hasSolution && (
+                {/* Mark as solution button — Entraide only */}
+                {isEntraide && isPostAuthor && comment.author_id !== user?.id && !hasSolution && (
                   <button
                     onClick={() => handleMarkSolution(comment.id, comment.author_id)}
                     className="flex items-center gap-1 rounded-xl bg-success/10 px-2.5 py-1 text-[10px] font-semibold text-success hover:bg-success/20 transition-colors cursor-pointer"
@@ -224,6 +239,21 @@ const CommentSection = ({ announcementId, postAuthorId, readOnly = false }: Comm
                     className="flex items-center gap-1 rounded-xl bg-primary/10 px-2.5 py-1 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors cursor-pointer"
                   >
                     <MessageSquare className="h-3 w-3" /> Chat privé (3 msg max)
+                  </button>
+                )}
+
+                {/* Delete button — visible to comment author or admin (post author acting as moderator) */}
+                {(comment.author_id === user?.id || isPostAuthor) && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    disabled={deleting === comment.id}
+                    className="ml-auto flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-destructive transition-colors cursor-pointer disabled:opacity-50"
+                    title="Supprimer ce commentaire"
+                  >
+                    {deleting === comment.id
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : <Trash2 className="h-3 w-3" />
+                    }
                   </button>
                 )}
               </div>

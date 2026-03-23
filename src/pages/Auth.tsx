@@ -432,14 +432,14 @@ const Auth = () => {
         {/* Social proof */}
         <div className="flex items-center gap-3 rounded-2xl border border-border bg-secondary/40 p-4">
           <div className="flex -space-x-2">
-            {["AU", "MB", "AD"].map((initials, i) => (
+            {["YK", "MB", "AD", "SC"].map((initials, i) => (
               <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-card gold-gradient text-[10px] font-bold text-primary-foreground">
                 {initials}
               </div>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">Des étudiants</span> ont déjà rejoint le cercle — rejoins-les.
+            <span className="font-semibold text-foreground">Des étudiants de Grenoble</span> t'attendent déjà — rejoins-les maintenant.
           </p>
         </div>
       </motion.div>
@@ -464,8 +464,8 @@ const Auth = () => {
 
           {/* Welcome text */}
           <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-2xl font-extrabold text-foreground">
-              {mode === "login" ? "Bon retour 👋" : "Rejoins le cercle ✨"}
+          <h2 className="text-2xl font-extrabold text-foreground">
+              {mode === "login" ? "Bon retour 👋" : "Rejoins les étudiants qui t'attendent ✨"}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {mode === "login"
