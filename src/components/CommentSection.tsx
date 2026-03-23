@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Send, Loader2, CheckCircle2, ShieldCheck, MessageSquare, AtSign } from "lucide-react";
+import { Send, Loader2, CheckCircle2, ShieldCheck, MessageSquare, AtSign, Trash2 } from "lucide-react";
 import { useComments } from "@/hooks/useComments";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface CommentSectionProps {
   announcementId: string;
   postAuthorId: string;
+  postCategory?: string;
   readOnly?: boolean;
 }
 
