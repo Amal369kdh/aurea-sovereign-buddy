@@ -79,6 +79,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [showWelcome, setShowWelcome] = useState(false);
   const [profileCity, setProfileCity] = useState<string | null>(null);
+  const [showCityBanner, setShowCityBanner] = useState(false);
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
 
@@ -86,14 +87,20 @@ const Index = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("has_seen_welcome, city")
+      .select("has_seen_welcome, city, target_city")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
-          setProfileCity(data.city ?? null);
+          const city = data.city ?? null;
+          setProfileCity(city);
           if (data.has_seen_welcome === false) {
             setShowWelcome(true);
+          }
+          // Show banner if user's city is not Grenoble (our pilot city)
+          const effectiveCity = city ?? data.target_city;
+          if (effectiveCity && effectiveCity.toLowerCase() !== "grenoble") {
+            setShowCityBanner(true);
           }
         }
       });
