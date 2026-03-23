@@ -114,6 +114,37 @@ const Index = () => {
         <DashboardHeader />
 
         <div className="px-6 pb-28">
+          {/* City banner for non-Grenoble users */}
+          <AnimatePresence>
+            {showCityBanner && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="mb-4 flex items-start gap-4 rounded-3xl border border-primary/25 bg-primary/5 px-5 py-4"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gold-gradient">
+                  <Globe className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">
+                    Ta ville arrive bientôt 🌍
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    L'expérimentation démarre à Grenoble. D'autres villes rejoindront très prochainement — tu seras parmi les premiers informés.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowCityBanner(false)}
+                  className="shrink-0 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  aria-label="Fermer"
+                >
+                  ✕
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Quick action buttons */}
           <div className="mb-4 flex items-center gap-2">
             {hubSocialEnabled && (

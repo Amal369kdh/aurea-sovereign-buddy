@@ -292,10 +292,15 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
           {filteredAnnouncements.map((post, i) => (
             <motion.div
               key={post.id}
+              ref={(el) => { postRefs.current[post.id] = el; }}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06, duration: 0.3 }}
-              className="rounded-3xl border border-border bg-card p-5 transition-all hover:border-primary/20"
+              className={`rounded-3xl border bg-card p-5 transition-all hover:border-primary/20 ${
+                highlightPostId === post.id
+                  ? "border-primary/50 ring-2 ring-primary/20"
+                  : "border-border"
+              }`}
             >
               {/* Pinned indicator */}
               {post.is_pinned && (
