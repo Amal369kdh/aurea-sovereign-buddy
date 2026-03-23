@@ -285,6 +285,19 @@ const Auth = () => {
     );
   }
 
+  // Check pseudo uniqueness with debounce
+  const checkPseudo = async (name: string) => {
+    if (name.trim().length < 2) { setPseudoError(null); return; }
+    setCheckingPseudo(true);
+    const { data } = await supabase
+      .from("profiles")
+      .select("id")
+      .ilike("display_name", name.trim())
+      .maybeSingle();
+    setCheckingPseudo(false);
+    setPseudoError(data ? "Ce pseudo est déjà utilisé. Choisis-en un autre." : null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
