@@ -207,7 +207,7 @@ const CommentSection = ({ announcementId, postAuthorId, postCategory, readOnly =
                 {renderCommentContent(comment.content)}
               </p>
 
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
                 {/* Reply button — inserts @mention */}
                 {!readOnly && comment.author_id !== user?.id && (
                   <button
@@ -222,8 +222,8 @@ const CommentSection = ({ announcementId, postAuthorId, postCategory, readOnly =
                   </button>
                 )}
 
-                {/* Mark as solution button */}
-                {isPostAuthor && comment.author_id !== user?.id && !hasSolution && (
+                {/* Mark as solution button — Entraide only */}
+                {isEntraide && isPostAuthor && comment.author_id !== user?.id && !hasSolution && (
                   <button
                     onClick={() => handleMarkSolution(comment.id, comment.author_id)}
                     className="flex items-center gap-1 rounded-xl bg-success/10 px-2.5 py-1 text-[10px] font-semibold text-success hover:bg-success/20 transition-colors cursor-pointer"
@@ -239,6 +239,21 @@ const CommentSection = ({ announcementId, postAuthorId, postCategory, readOnly =
                     className="flex items-center gap-1 rounded-xl bg-primary/10 px-2.5 py-1 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors cursor-pointer"
                   >
                     <MessageSquare className="h-3 w-3" /> Chat privé (3 msg max)
+                  </button>
+                )}
+
+                {/* Delete button — visible to comment author or admin (post author acting as moderator) */}
+                {(comment.author_id === user?.id || isPostAuthor) && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.id)}
+                    disabled={deleting === comment.id}
+                    className="ml-auto flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-destructive transition-colors cursor-pointer disabled:opacity-50"
+                    title="Supprimer ce commentaire"
+                  >
+                    {deleting === comment.id
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : <Trash2 className="h-3 w-3" />
+                    }
                   </button>
                 )}
               </div>
