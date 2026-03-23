@@ -61,9 +61,11 @@ interface SocialFeedProps {
   onCategoryChange: (cat: Category) => void;
   readOnly?: boolean;
   isVerified?: boolean;
+  /** If provided, automatically expand & scroll to this post (deep-link from notification) */
+  highlightPostId?: string;
 }
 
-const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false }: SocialFeedProps) => {
+const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false, highlightPostId }: SocialFeedProps) => {
   const { announcements, loading, createPost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );
@@ -75,6 +77,21 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
   const [goldOpen, setGoldOpen] = useState(false);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
+  const postRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrolledToHighlight = useRef(false);
+
+  // Auto-expand + scroll to highlighted post once announcements are loaded
+  useEffect(() => {
+    if (!highlightPostId || scrolledToHighlight.current || loading) return;
+    const el = postRefs.current[highlightPostId];
+    if (el) {
+      setExpandedComments((prev) => new Set([...prev, highlightPostId]));
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrolledToHighlight.current = true;
+      }, 200);
+    }
+  }, [highlightPostId, loading, announcements]);
 
   const MAX_POST_CHARS = 800;
   const MIN_ENTRAIDE_CHARS = 50;
