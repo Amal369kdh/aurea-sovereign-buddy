@@ -45,86 +45,98 @@ const isMobileDevice = () =>
  * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
  */
 const EmailConfirmHandler = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const [processing, setProcessing] = useState(false);
+  const [processing, setProcessing] = useState(true);
   const [confirmed, setConfirmed] = useState(false);
+  const [error, setError] = useState(false);
   const [city, setCity] = useState<string>("ta ville");
-  // Guard: never process twice (React strict mode / remounts)
+  // Guard: never process twice (React StrictMode double-invocation)
   const handled = useRef(false);
-  // Whether this component should render at all (token present)
-  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tokenHash = params.get("token_hash");
-    const type = params.get("type") as "signup" | "recovery" | "email_change" | null;
-
-    const hash = new URLSearchParams(location.hash.slice(1));
-    const accessToken = hash.get("access_token");
-    const refreshToken = hash.get("refresh_token");
-    const hashType = hash.get("type");
-
-    // ⚠️ CRITICAL: Never handle recovery tokens here — /reset-password handles them exclusively.
-    if (type === "recovery" || hashType === "recovery") return;
-
-    const tokenPresent = !!(tokenHash && type) || !!(accessToken && refreshToken);
-    // If there is no token in the URL we do NOTHING
-    if (!tokenPresent) return;
-    setHasToken(true);
     if (handled.current) return;
     handled.current = true;
 
-    setProcessing(true);
+    const params = new URLSearchParams(location.search);
+    const tokenHash = params.get("token_hash");
+    const type = params.get("type") as "signup" | "recovery" | "email_change" | null;
+    const hash = new URLSearchParams(location.hash.slice(1));
+    const accessToken = hash.get("access_token");
+    const refreshToken = hash.get("refresh_token");
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        subscription.unsubscribe();
-        // Clean the token from the URL so refresh doesn't re-trigger
-        window.history.replaceState({}, "", window.location.pathname);
+    // Clean the token from the URL immediately so refresh doesn't re-trigger
+    window.history.replaceState({}, "", window.location.pathname);
 
-        if (isMobileDevice()) {
-          if (session?.user?.id) {
-            supabase
-              .from("profiles")
-              .select("city")
-              .eq("user_id", session.user.id)
-              .maybeSingle()
-              .then(({ data }) => {
-                if (data?.city) setCity(data.city);
-                setProcessing(false);
-                setConfirmed(true);
-              });
-          } else {
-            setProcessing(false);
-            setConfirmed(true);
-          }
-        } else {
-          // Desktop: redirect directly, don't show confirmed screen
-          setTimeout(() => navigate("/", { replace: true }), 100);
+    const doExchange = async () => {
+      try {
+        let exchangeError: Error | null = null;
+        let userId: string | null = null;
+
+        if (tokenHash && type) {
+          const { data, error: err } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+          exchangeError = err;
+          userId = data?.user?.id ?? null;
+        } else if (accessToken && refreshToken) {
+          const { data, error: err } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+          exchangeError = err;
+          userId = data?.user?.id ?? null;
         }
-      }
-    });
 
-    const exchange = (tokenHash && type)
-      ? supabase.auth.verifyOtp({ token_hash: tokenHash, type })
-      : supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
+        if (exchangeError) {
+          console.error("[EmailConfirmHandler] Exchange error:", exchangeError.message);
+          setError(true);
+          setProcessing(false);
+          return;
+        }
 
-    exchange.then(({ error }) => {
-      if (error) {
-        subscription.unsubscribe();
+        // Fetch city for the success message
+        if (userId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("city")
+            .eq("user_id", userId)
+            .maybeSingle();
+          if (profile?.city) setCity(profile.city);
+        }
+
         setProcessing(false);
-        setHasToken(false);
-        // En cas d'erreur (lien expiré), on nettoie l'URL et on revient à /auth
-        window.history.replaceState({}, "", "/auth");
+        setConfirmed(true);
+      } catch (e) {
+        console.error("[EmailConfirmHandler] Unexpected error:", e);
+        setError(true);
+        setProcessing(false);
       }
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    doExchange();
   }, []);
 
-  // Don't render anything if there's no token — avoids overlapping with underlying route
-  if (!hasToken && !processing && !confirmed) return null;
+  if (processing) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background px-6 text-center">
+        <div className="space-y-3 max-w-sm">
+          <h1 className="text-xl font-bold text-foreground">Lien expiré ou invalide</h1>
+          <p className="text-sm text-muted-foreground">
+            Ce lien de confirmation a expiré ou a déjà été utilisé. Reconnecte-toi ou demande un nouvel email.
+          </p>
+        </div>
+        <button
+          onClick={() => { window.location.replace("/auth"); }}
+          className="rounded-2xl gold-gradient px-8 py-3 text-sm font-bold text-primary-foreground"
+        >
+          Retour à la connexion
+        </button>
+      </div>
+    );
+  }
 
   if (confirmed) {
     return (
@@ -141,19 +153,11 @@ const EmailConfirmHandler = () => {
           </p>
         </div>
         <button
-          onClick={() => { window.location.href = "/"; }}
+          onClick={() => { window.location.href = "/onboarding"; }}
           className="flex items-center gap-2 rounded-2xl gold-gradient px-8 py-4 text-base font-bold text-primary-foreground shadow-lg active:scale-95 transition-transform cursor-pointer"
         >
-          Accéder à mon espace →
+          Commencer l'inscription →
         </button>
-      </div>
-    );
-  }
-
-  if (processing) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
