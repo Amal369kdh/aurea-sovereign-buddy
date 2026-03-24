@@ -71,8 +71,10 @@ const GuidePanel = ({ guide }: { guide: ChecklistGuide }) => (
   </div>
 );
 
-const PhaseChecklist = () => {
+const PhaseChecklist = ({ preArrivalOnly = false }: { preArrivalOnly?: boolean }) => {
   const { phases, toggleTask, isInFrance, isFrench, isTemoin, setIsInFrance } = useIntegration();
+  // Si preArrivalOnly, on ne montre que la phase pré-arrivée (indépendante de la ville)
+  const visiblePhases = preArrivalOnly ? phases.filter((p) => p.scope === "pre" || p.id === "pre-arrival") : phases;
   const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
