@@ -10,17 +10,23 @@ const corsHeaders = {
 // ─── Academic domain validation ────────────────────────────────────────────────
 
 const ALLOWED_PATTERNS = [
+  // ── Patterns internationaux ────────────────────────────────
   /(^|\.)edu$/i,
   /(^|\.)edu\.[a-z]{2}$/i,
+  // ── Patterns génériques français ──────────────────────────
   /(^|\.)univ-[a-z-]+\.fr$/i,
   /(^|\.)u-[a-z-]+\.fr$/i,
   /(^|\.)etu\.[a-z-]+\.fr$/i,
   /(^|\.)etud\.[a-z-]+\.fr$/i,
+  /(^|\.)etudiant\.[a-z-]+\.fr$/i,
   /(^|\.)univ\.fr$/i,
   /(^|\.)ac-[a-z-]+\.fr$/i,
-  /(^|\.)ens[a-z]*\.fr$/i,
+  /(^|\.)ens[a-z-]*\.fr$/i,
   /(^|\.)insa[a-z-]*\.fr$/i,
   /(^|\.)iut[a-z-]*\.fr$/i,
+  /(^|\.)centrale-[a-z-]+\.fr$/i,
+  /(^|\.)sciencespo[a-z-]*\.fr$/i,
+  // ── Grandes écoles & universités explicites ────────────────
   /(^|\.)grenoble-inp\.fr$/i,
   /(^|\.)parisnanterre\.fr$/i,
   /(^|\.)sorbonne-universite\.fr$/i,
@@ -28,6 +34,21 @@ const ALLOWED_PATTERNS = [
   /(^|\.)umontpellier\.fr$/i,
   /(^|\.)univ-grenoble-alpes\.fr$/i,
   /(^|\.)uga\.fr$/i,
+  /(^|\.)hec\.edu$/i,
+  /(^|\.)polytechnique\.edu$/i,
+  /(^|\.)essec\.edu$/i,
+  /(^|\.)u-paris\.fr$/i,
+  /(^|\.)unistra\.fr$/i,
+  /(^|\.)univ-amu\.fr$/i,
+  /(^|\.)amu\.fr$/i,
+  /(^|\.)univ-cotedazur\.fr$/i,
+  /(^|\.)unice\.fr$/i,
+  /(^|\.)bordeaux-inp\.fr$/i,
+  /(^|\.)imt-nord-europe\.fr$/i,
+  /(^|\.)ec-lyon\.fr$/i,
+  /(^|\.)em-lyon\.com$/i,
+  // ── Vérification en table allowed_domains (fallback) ──────
+  // La fonction vérifie aussi explicitement la table allowed_domains via serviceClient
 ];
 
 function isAcademicEmail(email: string): boolean {
