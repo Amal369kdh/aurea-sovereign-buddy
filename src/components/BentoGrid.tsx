@@ -189,9 +189,9 @@ const BentoTile = ({
                 onClick={() => onNavigate("/partners")}
                 className="mx-6 mb-4 flex w-[calc(100%-3rem)] items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-2.5 text-left transition-colors hover:bg-primary/10 cursor-pointer"
               >
-                <span className="text-sm">🤝</span>
+                <span className="text-sm">🎁</span>
                 <p className="flex-1 text-xs text-primary/80 leading-snug">
-                  <span className="font-semibold text-primary">Offres partenaires & comparateur de comptes étudiants</span> — voir tout ⚡
+                  <span className="font-semibold text-primary">Bons plans & offres partenaires</span> — comptes étudiants, promos exclusives ⚡
                 </p>
                 <ChevronRight className="h-3.5 w-3.5 shrink-0 text-primary/60" />
               </button>
