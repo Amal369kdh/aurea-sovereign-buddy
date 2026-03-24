@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -23,53 +23,65 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  // Track whether the initial session has been restored from storage
+  const initialLoadDone = useRef(false);
 
   useEffect(() => {
-    // Hard safety timeout: if auth never resolves (offline/slow network), unblock UI after 6s
-    const authTimeout = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) {
-          console.warn("[AuthContext] Auth load timed out after 6s — unblocking UI");
-          return false;
-        }
-        return prev;
-      });
-    }, 6000);
-
+    // ── STEP 1: Set up the listener FIRST (recommended pattern per Supabase docs)
+    // This ensures we never miss an auth event that fires before getSession resolves.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      clearTimeout(authTimeout);
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
 
-      // Si un autre onglet supprime le compte ou se déconnecte via Supabase Auth,
-          // cet event SIGNED_OUT sera émis dans TOUS les onglets automatiquement.
-          // On ne redirige QUE si la déconnexion vient d'un autre onglet (pas du signOut() local
-          // qui gère sa propre redirection via window.location.replace).
-          if (event === "SIGNED_OUT" && !session) {
-            // Vérifier si la déconnexion est cross-tab (signOut local a déjà redirigé)
-            const isOnAuthPage =
-              window.location.pathname.startsWith("/auth") ||
-              window.location.pathname.startsWith("/reset-password") ||
-              window.location.pathname.startsWith("/apercu") ||
-              window.location.pathname.startsWith("/legal");
-            if (!isOnAuthPage) {
-              window.location.replace("/auth");
-            }
-          }
+      // Only mark loading as done once the initial session restore is complete.
+      // Subsequent events (SIGNED_IN, TOKEN_REFRESHED, etc.) must not re-trigger
+      // the loading state after the initial load.
+      if (!initialLoadDone.current) {
+        initialLoadDone.current = true;
+        setLoading(false);
+      }
+
+      // Cross-tab sign-out: redirect to /auth when another tab signs out.
+      if (event === "SIGNED_OUT" && !session) {
+        const isPublicPage =
+          window.location.pathname.startsWith("/auth") ||
+          window.location.pathname.startsWith("/reset-password") ||
+          window.location.pathname.startsWith("/apercu") ||
+          window.location.pathname.startsWith("/legal");
+        if (!isPublicPage) {
+          window.location.replace("/auth");
+        }
+      }
     });
 
+    // ── STEP 2: Restore session from storage (fires INITIAL_SESSION event → handled above)
     supabase.auth.getSession().then(({ data: { session } }) => {
-      clearTimeout(authTimeout);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      // If onAuthStateChange already fired with INITIAL_SESSION, this is a no-op.
+      // If it hasn't fired yet (slow init), we set state here as a safety net.
+      if (!initialLoadDone.current) {
+        initialLoadDone.current = true;
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     }).catch(() => {
-      // Network error: unblock immediately
-      clearTimeout(authTimeout);
-      setLoading(false);
+      // Network error on session restore: unblock UI
+      if (!initialLoadDone.current) {
+        initialLoadDone.current = true;
+        setLoading(false);
+      }
     });
 
+    // ── STEP 3: Hard timeout — never block the UI forever (e.g. offline/slow mobile)
+    const hardTimeout = setTimeout(() => {
+      if (!initialLoadDone.current) {
+        console.warn("[AuthContext] Auth init timed out after 8s — unblocking UI");
+        initialLoadDone.current = true;
+        setLoading(false);
+      }
+    }, 8000);
+
+    // ── STEP 4: Cross-tab session sync (e.g. sign-in in another tab)
     const handleStorage = (e: StorageEvent) => {
       if (e.key && e.key.includes("supabase") && e.newValue !== null) {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -86,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       subscription.unsubscribe();
       window.removeEventListener("storage", handleStorage);
-      clearTimeout(authTimeout);
+      clearTimeout(hardTimeout);
     };
   }, []);
 
@@ -96,8 +108,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
       options: {
         data: { display_name: displayName },
-        // Toujours pointer vers le domaine de production pour éviter
-        // les redirections vers l'URL interne de Lovable
         emailRedirectTo: "https://aurea-student.fr",
       },
     });
@@ -113,11 +123,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await supabase.auth.signOut();
     } catch {
-      // Ignore sign-out errors (already signed out, network issue, etc.)
+      // Ignore sign-out errors
     }
-    // On mobile, location.replace is more reliable than href for clearing the history stack.
-    // We use a short setTimeout to let React flush state before navigating,
-    // which prevents the occasional "stuck loading" screen on mobile Chrome/Safari.
     setTimeout(() => {
       window.location.replace("/auth");
     }, 50);
