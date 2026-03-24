@@ -27,23 +27,7 @@ import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
-/** Detect mobile/tablet UA */
-const isMobileDevice = () =>
-  typeof window !== "undefined" &&
-  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-/**
- * Handles Supabase email confirmation links (?token_hash= or #access_token=).
- * Only runs when there is actually a token in the URL — never loops.
- * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
- */
-/**
- * Handles Supabase email confirmation links (?token_hash= or #access_token=).
- * Only runs when there is actually a token in the URL — never loops.
- * Renders a FULL-SCREEN overlay (z-50) to prevent the underlying route from
- * showing through during processing and on the success/confirmation screen.
- * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
- */
 const EmailConfirmHandler = () => {
   const location = useLocation();
   const [processing, setProcessing] = useState(true);
