@@ -165,6 +165,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  // Track the user ID we last ran the check for — avoid duplicate runs
   const checkedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -175,7 +176,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // Already checked this user in this session — don't re-check
+    // Same user already resolved in this session — skip
     if (checkedUserRef.current === user.id && profileChecked) return;
 
     setProfileChecked(false);
@@ -184,59 +185,57 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     let cancelled = false;
     let attempts = 0;
-    // Max 8 attempts × 1000ms = 8s before we give up and let through
-    const maxAttempts = 8;
+    // After 10 attempts (~12s total) we send to onboarding if still no profile
+    const maxAttempts = 10;
 
-    // Hard safety timeout: 15s on mobile, never block forever
+    // Hard safety timeout: 20s — never block forever on mobile
     const hardTimeout = setTimeout(() => {
       if (!cancelled) {
-        console.warn("[ProtectedRoute] Hard timeout — letting user through");
-        setNeedsOnboarding(false);
+        console.warn("[ProtectedRoute] Hard timeout — sending to onboarding");
+        setNeedsOnboarding(true);
         setProfileChecked(true);
       }
-    }, 15000);
+    }, 20000);
 
     const checkProfile = async () => {
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("nationality, city, university, objectifs, is_in_france, onboarding_step, student_status")
+          .select("nationality, city, university, objectifs, is_in_france")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (cancelled) return;
 
-        // Network/auth error → let through rather than spin forever
+        // Any RLS/network error → let user through to avoid permanent lockout
         if (error) {
-          console.warn("[ProtectedRoute] Profile query error, letting through:", error.message);
+          console.warn("[ProtectedRoute] Profile query error:", error.message);
           clearTimeout(hardTimeout);
           setNeedsOnboarding(false);
           setProfileChecked(true);
           return;
         }
 
+        // Profile not yet created by the DB trigger → retry with backoff
         if (!data) {
           if (attempts < maxAttempts) {
             attempts++;
-            // Progressive backoff: 1s, 1s, 1.5s, 1.5s, 2s...
-            const delay = attempts <= 2 ? 1000 : attempts <= 4 ? 1500 : 2000;
+            // Backoff: 800ms, 800ms, 1.2s, 1.2s, 1.5s, 1.5s, 2s…
+            const delay = attempts <= 2 ? 800 : attempts <= 4 ? 1200 : attempts <= 6 ? 1500 : 2000;
             setTimeout(checkProfile, delay);
             return;
           }
-          // After max retries → send to onboarding
+          // Still no profile after max retries → onboarding will create it
           clearTimeout(hardTimeout);
           setNeedsOnboarding(true);
           setProfileChecked(true);
           return;
         }
 
+        // Profile exists — check if onboarding was completed
         const isFrench = data.nationality === "🇫🇷 Française";
         const objectifs = data.objectifs as string[] | null;
 
-        // Profile is complete when all required onboarding fields are present.
-        // For French students is_in_france is irrelevant (always true after onboarding).
-        // For non-French students we require is_in_france to have been explicitly set
-        // (null means they never finished the location step).
         const incomplete =
           !data.nationality ||
           !data.university ||
@@ -248,7 +247,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setNeedsOnboarding(incomplete);
         setProfileChecked(true);
       } catch {
-        // Network error: let through rather than spin forever
+        // Network error → let through
         if (!cancelled) {
           clearTimeout(hardTimeout);
           setNeedsOnboarding(false);
@@ -264,6 +263,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     };
   }, [user?.id]);
 
+  // Show spinner while auth or profile check is pending
   if (loading || !profileChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
