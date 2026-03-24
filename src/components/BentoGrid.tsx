@@ -297,6 +297,7 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "Boursorama", sub: "Bienvenue Étudiant", href: "https://www.boursobank.com" },
       { icon: Globe, label: "Revolut", sub: "Compte multi-devises gratuit", href: "https://www.revolut.com/fr" },
       { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
+      { icon: ClipboardCheck, label: "Voir les banques partenaires", sub: "Comptes étudiants & offres exclusives", route: "/partners" },
     ] as QuickLink[],
   },
   // ÉTAPE 5 — Santé
