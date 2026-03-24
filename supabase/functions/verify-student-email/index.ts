@@ -271,7 +271,7 @@ serve(async (req) => {
 
     const { error: insertError } = await serviceClient
       .from("student_email_verifications")
-      .insert({ user_id: user.id, student_email: trimmedEmail, token_hash: tokenHash });
+      .insert({ user_id: user.id, student_email: trimmedEmail, token_hash: tokenHash, token });
 
     if (insertError) {
       console.error("Insert verification error:", JSON.stringify(insertError));
