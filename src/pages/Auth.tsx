@@ -306,8 +306,22 @@ const Auth = () => {
     if (mode === "signup") {
       const { error, data } = await signUp(email, password, displayName);
       if (error) {
-        toast({ title: "Erreur", description: translateAuthError(error), variant: "destructive" });
+        // "User already registered" = compte confirmé existant → invite à se connecter
+        if (
+          error.toLowerCase().includes("user already registered") ||
+          error.toLowerCase().includes("already registered")
+        ) {
+          setEmail(email);
+          setMode("login");
+          toast({
+            title: "Compte existant 👋",
+            description: "Un compte confirmé existe déjà avec cet email. Connecte-toi !",
+          });
+        } else {
+          toast({ title: "Erreur", description: translateAuthError(error), variant: "destructive" });
+        }
       } else {
+        // identities vide = compte existant mais email non confirmé
         if (data?.user && (!data.user.identities || data.user.identities.length === 0)) {
           setSignupEmail(email);
           setPendingConfirmation(true);
@@ -321,7 +335,7 @@ const Auth = () => {
                 status: "explorateur",
               }, { onConflict: "user_id" });
             } catch {
-              // Ignore — the DB trigger will create the profile on confirmation
+              // Ignore — le trigger DB créera le profil à la confirmation
             }
           }
           setSignupEmail(email);
