@@ -388,16 +388,17 @@ const allPhases: ChecklistPhase[] = [
       },
       {
         id: "sport-culture", label: "Inscription sport / associations", done: false,
-        tip: "Le SUAPS de ta fac propose du sport gratuit — rejoins aussi un BDE ou une asso.",
+        link: "https://www.univ-grenoble-alpes.fr/formation/enrichir-son-parcours/personnaliser-votre-formation/les-etc-de-sport/les-enseignements-transversaux-a-choix-etc-de-sport-723373.kjsp",
+        tip: "Les ETC Sport (anciennement SUAPS) permettent de valider des crédits ECTS tout en faisant du sport.",
         guide: {
           steps: [
-            "Renseigne-toi au SUAPS (Service Universitaire des Activités Physiques et Sportives) de ta fac",
-            "Inscris-toi aux activités gratuites (50+ sports en général)",
+            "Consulte le catalogue des ETC Sport sur le lien officiel ci-dessous",
+            "Inscris-toi aux activités (50+ sports) — certains donnent des crédits ECTS",
             "Rejoins un BDE ou une asso culturelle pour rencontrer du monde",
             "Consulte le programme des événements étudiants de ta ville",
           ],
           documents: ["Carte étudiante", "Certificat médical (pour certains sports)"],
-          pitfalls: ["Les inscriptions SUAPS se remplissent vite — inscris-toi dès l'ouverture", "Les assos étudiantes sont le meilleur moyen de se faire un réseau"],
+          pitfalls: ["Les inscriptions se remplissent vite — inscris-toi dès l'ouverture", "Les assos étudiantes sont le meilleur moyen de se faire un réseau"],
         },
       },
     ],
