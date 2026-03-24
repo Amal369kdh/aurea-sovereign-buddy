@@ -363,7 +363,7 @@ const Auth = () => {
             Grenoble
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 mb-3">
           {features.map((f, i) => (
             <div key={i} className="flex items-start gap-2 rounded-xl bg-secondary/50 p-2.5">
               <div className="shrink-0 mt-0.5">{f.icon}</div>
@@ -371,6 +371,12 @@ const Auth = () => {
             </div>
           ))}
         </div>
+        <button
+          onClick={() => navigate("/apercu")}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/10 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 cursor-pointer"
+        >
+          <Eye className="h-3.5 w-3.5" /> Voir un aperçu de l'application →
+        </button>
       </motion.div>
 
       {/* ── Left panel: app presentation (desktop only) ── */}
