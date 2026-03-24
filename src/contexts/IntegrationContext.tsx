@@ -397,15 +397,6 @@ function buildAccessPhases(
       // In France: hide pre-arrival unless toggled
       if (isInFrance && phase.scope === "pre" && !showPreArrival) return null;
 
-      // In France but NOT temoin: post-arrival is LOCKED (needs verification)
-      if (isInFrance && phase.scope === "post" && !isTemoin) {
-        return {
-          ...phase,
-          locked: true,
-          items: phase.items.map((item) => ({ ...item, locked: true })),
-        };
-      }
-
       // Not in France: show post-arrival as LOCKED preview
       if (isInFrance === false && phase.scope === "post") {
         return {
