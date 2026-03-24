@@ -109,9 +109,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    // Force full page reload for mobile Chrome reliability (React Router navigate can fail)
-    window.location.href = "/auth";
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Ignore sign-out errors (already signed out, network issue, etc.)
+    }
+    // On mobile, location.replace is more reliable than href for clearing the history stack.
+    // We use a short setTimeout to let React flush state before navigating,
+    // which prevents the occasional "stuck loading" screen on mobile Chrome/Safari.
+    setTimeout(() => {
+      window.location.replace("/auth");
+    }, 50);
   };
 
   return (
