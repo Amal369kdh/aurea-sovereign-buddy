@@ -33,7 +33,7 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
 
     let query = supabase
       .from("announcements")
-      .select("*")
+      .select("*, display_author_name")
       .order("is_pinned", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(50);
