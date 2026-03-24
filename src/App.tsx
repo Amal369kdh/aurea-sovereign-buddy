@@ -311,6 +311,7 @@ const AppRouter = () => {
     <>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/apercu" element={<Apercu />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
