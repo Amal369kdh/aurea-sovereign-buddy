@@ -58,15 +58,15 @@ const MobileBottomNav = () => {
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               />
             )}
-            {/* Badge notifications global sur tous les items concernés */}
-            {item.path === "/messages" && unreadCount > 0 && (
+            {/* Badge notifications: messages → Messages icon, comments/mentions → Hub Social icon */}
+            {item.path === "/messages" && messageUnread > 0 && (
               <span className="absolute right-2 top-1 flex h-4 w-4 items-center justify-center rounded-full gold-gradient text-[9px] font-bold text-primary-foreground z-20">
-                {unreadCount > 9 ? "9+" : unreadCount}
+                {messageUnread > 9 ? "9+" : messageUnread}
               </span>
             )}
-            {item.path === "/hub-social" && unreadCount > 0 && (
+            {item.path === "/hub-social" && socialUnread > 0 && (
               <span className="absolute right-2 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground z-20">
-                {unreadCount > 9 ? "9+" : unreadCount}
+                {socialUnread > 9 ? "9+" : socialUnread}
               </span>
             )}
             <item.icon
