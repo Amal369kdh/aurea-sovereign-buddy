@@ -172,7 +172,7 @@ export default function Apercu() {
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Dashboard — ressources</p>
             <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-              <Sparkles className="h-2.5 w-2.5" /> Personnalisé par IA
+              <MapPin className="h-2.5 w-2.5" /> Pour ta ville
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
