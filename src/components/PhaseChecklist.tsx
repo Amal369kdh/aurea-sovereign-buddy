@@ -169,7 +169,7 @@ const PhaseChecklist = ({ preArrivalOnly = false }: { preArrivalOnly?: boolean }
       )}
 
       <div className="space-y-3 mt-4">
-        {phases.map((phase) => {
+        {visiblePhases.map((phase) => {
           const activeItems = phase.items.filter((i) => !i.locked);
           const doneCount = activeItems.filter((i) => i.done).length;
           const isOpen = openPhase === phase.id;
