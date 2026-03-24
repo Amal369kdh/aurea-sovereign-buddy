@@ -43,19 +43,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
 
       // Si un autre onglet supprime le compte ou se déconnecte via Supabase Auth,
-      // cet event SIGNED_OUT sera émis dans TOUS les onglets automatiquement.
-      if (event === "SIGNED_OUT" && !session) {
-        const hasSupabaseSession = Object.keys(localStorage).some(
-          (k) => k.startsWith("sb-") || k.toLowerCase().includes("supabase")
-        );
-        if (
-          !window.location.pathname.startsWith("/auth") &&
-          !window.location.pathname.startsWith("/reset-password") &&
-          hasSupabaseSession
-        ) {
-          window.location.href = "/auth";
-        }
-      }
+          // cet event SIGNED_OUT sera émis dans TOUS les onglets automatiquement.
+          // On ne redirige QUE si la déconnexion vient d'un autre onglet (pas du signOut() local
+          // qui gère sa propre redirection via window.location.replace).
+          if (event === "SIGNED_OUT" && !session) {
+            // Vérifier si la déconnexion est cross-tab (signOut local a déjà redirigé)
+            const isOnAuthPage =
+              window.location.pathname.startsWith("/auth") ||
+              window.location.pathname.startsWith("/reset-password") ||
+              window.location.pathname.startsWith("/apercu") ||
+              window.location.pathname.startsWith("/legal");
+            if (!isOnAuthPage) {
+              window.location.replace("/auth");
+            }
+          }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
