@@ -170,10 +170,11 @@ const allPhases: ChecklistPhase[] = [
       },
       {
         id: "banque", label: "Ouverture de compte bancaire", done: false,
-        link: "https://www.boursobank.com/",
-        tip: "Banque en ligne (Bourso, Revolut) ou agence — apporte ton passeport et justificatif de domicile.",
+        link: "/",
+        tip: "Banque en ligne (Bourso, Revolut) ou agence — apporte ton passeport et justificatif de domicile. Voir les banques partenaires depuis le dashboard → Cash flow mode.",
         guide: {
           steps: [
+            "Depuis le Dashboard, va dans « Cash flow mode 💸 » pour voir toutes les banques disponibles et nos partenaires",
             "Choisis entre banque traditionnelle (BNP, Société Générale) ou en ligne (Bourso, Revolut)",
             "Prends RDV en agence ou inscris-toi en ligne",
             "Fournis les documents demandés",
@@ -297,8 +298,39 @@ const allPhases: ChecklistPhase[] = [
         },
       },
       {
+        id: "inscription-univ", label: "Inscription administrative à l'université", done: false,
+        link: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp",
+        tip: "Apporte TON DOSSIER PHYSIQUE complet — les mêmes documents que pour Campus France.",
+        guide: {
+          steps: [
+            "Connecte-toi sur le portail de l'université (lien ci-dessous) pour connaître les dates et lieux d'accueil",
+            "Prépare le dossier physique COMPLET (bulletins, diplômes, Campus France) — ils ne prennent PAS les documents par email",
+            "Rends-toi au service de scolarité de ton UFR/composante avec tous les originaux ET photocopies",
+            "Paye les droits d'inscription (CVEC + frais de scolarité selon ton statut)",
+            "Récupère ta carte étudiante — indispensable pour la bibliothèque, les restos U, les transports",
+          ],
+          documents: [
+            "Passeport + visa validé (original + photocopie)",
+            "Bulletins des 3 dernières années (originaux traduits et légalisés)",
+            "Diplômes obtenus (originaux + traductions assermentées)",
+            "Attestation Campus France ou décision d'admission",
+            "Justificatif de domicile (ou hébergement temporaire)",
+            "2 photos d'identité",
+            "Attestation de paiement CVEC (à régler avant sur cvec.etudiant.gouv.fr)"
+          ],
+          deadline: "Dès ton arrivée, avant la rentrée — les délais sont stricts",
+          pitfalls: [
+            "L'inscription NE SE PAYE PAS EN ESPÈCES — uniquement par carte bancaire ou virement",
+            "Si tu n'as pas encore de compte bancaire français : trouve un ami ou une personne de confiance qui peut payer par carte et te rembourser en espèces",
+            "Sans inscription administrative, tu n'as PAS accès aux restos U, aux transports étudiants, ni aux bourses",
+            "La CVEC (92€) doit être payée AVANT de finaliser l'inscription à l'université",
+            "Apporte les ORIGINAUX — les photocopies seules ne suffisent pas",
+          ],
+        },
+      },
+      {
         id: "transport", label: "Carte de transport M réso", done: false,
-        link: "https://www.mreso.fr/",
+        link: "https://www.reso-m.fr/68-tarification-solidaire.htm",
         tip: "Réseau M réso (ex-TAG) à Grenoble — tarif réduit selon ton quotient familial CAF.",
         guide: {
           steps: [
@@ -356,16 +388,17 @@ const allPhases: ChecklistPhase[] = [
       },
       {
         id: "sport-culture", label: "Inscription sport / associations", done: false,
-        tip: "Le SUAPS de ta fac propose du sport gratuit — rejoins aussi un BDE ou une asso.",
+        link: "https://www.univ-grenoble-alpes.fr/formation/enrichir-son-parcours/personnaliser-votre-formation/les-etc-de-sport/les-enseignements-transversaux-a-choix-etc-de-sport-723373.kjsp",
+        tip: "Les ETC Sport (anciennement SUAPS) permettent de valider des crédits ECTS tout en faisant du sport.",
         guide: {
           steps: [
-            "Renseigne-toi au SUAPS (Service Universitaire des Activités Physiques et Sportives) de ta fac",
-            "Inscris-toi aux activités gratuites (50+ sports en général)",
+            "Consulte le catalogue des ETC Sport sur le lien officiel ci-dessous",
+            "Inscris-toi aux activités (50+ sports) — certains donnent des crédits ECTS",
             "Rejoins un BDE ou une asso culturelle pour rencontrer du monde",
             "Consulte le programme des événements étudiants de ta ville",
           ],
           documents: ["Carte étudiante", "Certificat médical (pour certains sports)"],
-          pitfalls: ["Les inscriptions SUAPS se remplissent vite — inscris-toi dès l'ouverture", "Les assos étudiantes sont le meilleur moyen de se faire un réseau"],
+          pitfalls: ["Les inscriptions se remplissent vite — inscris-toi dès l'ouverture", "Les assos étudiantes sont le meilleur moyen de se faire un réseau"],
         },
       },
     ],

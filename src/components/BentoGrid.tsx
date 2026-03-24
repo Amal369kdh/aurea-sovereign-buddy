@@ -247,7 +247,7 @@ const defaultTiles = (city: string) => [
       : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
-      { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://lokaviz.fr" },
+      { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
       { icon: Home, label: "Simulateur APL (CAF)", sub: "Calcule ton aide au logement en 2 min", href: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation" },
       { icon: Globe, label: "SeLoger Étudiant", sub: "Colocations et studios", href: "https://www.seloger.com" },
     ] as QuickLink[],
@@ -279,9 +279,7 @@ const defaultTiles = (city: string) => [
     links: [
       { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
       { icon: HandCoins, label: "Bourse CROUS (DSE)", sub: "Demande en ligne — deadline octobre", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
-      { icon: GraduationCap, label: "Inscription universitaire", sub: "Dossier parcoursup ou admission directe", href: "https://www.parcoursup.fr/" },
-      { icon: Calculator, label: "Simulateur de budget étudiant", sub: "Estime tes dépenses mensuelles", href: "https://www.etudiant.gouv.fr/fr/simulateur-de-budget-1428" },
-      { icon: Landmark, label: "Aide d'urgence CROUS", sub: "Si tu es en difficulté financière", href: "https://www.etudiant.gouv.fr/fr/aides-specifiques-702" },
+      { icon: GraduationCap, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" },
     ] as QuickLink[],
   },
   // ÉTAPE 4 — Banque
@@ -299,6 +297,7 @@ const defaultTiles = (city: string) => [
       { icon: Globe, label: "Boursorama", sub: "Bienvenue Étudiant", href: "https://www.boursobank.com" },
       { icon: Globe, label: "Revolut", sub: "Compte multi-devises gratuit", href: "https://www.revolut.com/fr" },
       { icon: Globe, label: "N26", sub: "Compte mobile sans frais", href: "https://n26.com/fr-fr" },
+      { icon: ClipboardCheck, label: "Voir les banques partenaires", sub: "Comptes étudiants & offres exclusives", route: "/partners" },
     ] as QuickLink[],
   },
   // ÉTAPE 5 — Santé
@@ -330,10 +329,10 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: Bus, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.mreso.fr/" },
-      { icon: Globe, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.mreso.fr/mveloplus" },
-      { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.etudiant.gouv.fr/fr/le-repas-au-crous-1204" },
-      { icon: Dumbbell, label: "Sport universitaire (SUAPS)", sub: `50+ activités gratuites sur le campus`, href: `https://maps.google.com/?q=SUAPS+${city}` },
+      { icon: Bus, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+      { icon: Globe, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+      { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
+      { icon: Dumbbell, label: "Sport universitaire (ETC Sport)", sub: "50+ activités — crédits ECTS possibles", href: "https://www.univ-grenoble-alpes.fr/formation/enrichir-son-parcours/personnaliser-votre-formation/les-etc-de-sport/les-enseignements-transversaux-a-choix-etc-de-sport-723373.kjsp" },
       { icon: Phone, label: "Ticket SMS dépannage", sub: "SMS au 93123 — achète un ticket de bus sans appli", href: "sms:93123" },
     ] as QuickLink[],
   },
@@ -347,7 +346,7 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: MapPin, label: "Espace OIP — Réorientation", sub: "150 av. centrale, campus • Pour ceux qui doutent de leur voie", href: `https://maps.google.com/?q=Espace+OIP+Grenoble+150+avenue+centrale` },
+      { icon: MapPin, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" },
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
       { icon: Globe, label: "France Travail", sub: "Accompagnement et offres d'emploi", href: "https://www.francetravail.fr/" },
@@ -364,13 +363,13 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: Utensils, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://www.fage.org/agora/" },
+      { icon: Utensils, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
       { icon: Utensils, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-      { icon: HandCoins, label: "Aide d'urgence ASAP (CROUS)", sub: "RDV assistante sociale du CROUS", href: "https://www.etudiant.gouv.fr/fr/aides-specifiques-702" },
+      { icon: HandCoins, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
       { icon: Phone, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
-      { icon: Scale, label: "Aide juridique gratuite", sub: "Maison de la Justice et du Droit", href: "https://www.justice.fr/droits-demarches/aide-juridictionnelle" },
+      { icon: Scale, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
   },
