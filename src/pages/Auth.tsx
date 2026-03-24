@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound, ShieldCheck, Users, MessageCircle, Star } from "lucide-react";
+import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound, ShieldCheck, Users, MessageCircle, Star, Eye } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
