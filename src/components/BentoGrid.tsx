@@ -346,7 +346,7 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: MapPin, label: "Espace OIP — Réorientation", sub: "150 av. centrale, campus • Pour ceux qui doutent de leur voie", href: `https://maps.google.com/?q=Espace+OIP+Grenoble+150+avenue+centrale` },
+      { icon: MapPin, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" },
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
       { icon: Globe, label: "France Travail", sub: "Accompagnement et offres d'emploi", href: "https://www.francetravail.fr/" },
