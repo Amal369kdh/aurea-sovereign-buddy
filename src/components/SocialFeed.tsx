@@ -40,14 +40,21 @@ function parseHashtags(content: string): { text: string; tags: string[] } {
   return { text: content, tags };
 }
 
-/** Rendu du contenu avec hashtags mis en évidence */
+/** Rendu du contenu avec hashtags mis en évidence — #ASM en bleu, autres en doré */
 function ContentWithHashtags({ content }: { content: string }) {
   const parts = content.split(/(#[\wÀ-ÿ]+)/g);
   return (
     <p className="mb-4 text-sm leading-relaxed text-foreground/90">
       {parts.map((part, i) =>
         part.startsWith("#") ? (
-          <span key={i} className="font-semibold text-primary">
+          <span
+            key={i}
+            className={
+              part.toLowerCase() === "#asm"
+                ? "font-semibold text-info"
+                : "font-semibold text-primary"
+            }
+          >
             {part}
           </span>
         ) : (
