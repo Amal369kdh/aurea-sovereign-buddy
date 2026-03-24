@@ -209,5 +209,5 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
     );
   };
 
-  return { announcements, loading, createPost, toggleLike, refetch: fetchAnnouncements };
+  return { announcements, loading, createPost, deletePost, toggleLike, refetch: fetchAnnouncements };
 }
