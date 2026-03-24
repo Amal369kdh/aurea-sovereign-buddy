@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp, Hash } from "lucide-react";
+import { ShieldCheck, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp, Hash, Trash2 } from "lucide-react";
 import LikersPopover from "@/components/LikersPopover";
 import GoldModal from "@/components/GoldModal";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,8 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import ReportDialog from "@/components/ReportDialog";
 import CommentSection from "@/components/CommentSection";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 type Category = AnnouncementCategory | "all";
 
