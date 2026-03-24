@@ -610,8 +610,19 @@ const Auth = () => {
             </button>
           </p>
 
+          {/* Aperçu link */}
+          <div className="mt-5 text-center">
+            <button
+              onClick={() => navigate("/apercu")}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Voir un aperçu de l'application sans s'inscrire
+            </button>
+          </div>
+
           {/* Legal link */}
-          <p className="mt-8 text-center text-xs text-muted-foreground/60">
+          <p className="mt-4 text-center text-xs text-muted-foreground/60">
             <a href="/legal" className="hover:text-muted-foreground transition-colors">
               Mentions légales · CGU · Confidentialité
             </a>
