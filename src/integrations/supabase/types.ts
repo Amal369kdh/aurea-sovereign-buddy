@@ -71,6 +71,7 @@ export type Database = {
           comments_count: number
           content: string
           created_at: string
+          display_author_name: string | null
           expires_at: string | null
           id: string
           is_pinned: boolean
@@ -82,6 +83,7 @@ export type Database = {
           comments_count?: number
           content: string
           created_at?: string
+          display_author_name?: string | null
           expires_at?: string | null
           id?: string
           is_pinned?: boolean
@@ -93,6 +95,7 @@ export type Database = {
           comments_count?: number
           content?: string
           created_at?: string
+          display_author_name?: string | null
           expires_at?: string | null
           id?: string
           is_pinned?: boolean
