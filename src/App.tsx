@@ -166,8 +166,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const checkedUserRef = useRef<string | null>(null);
-  // Hard timeout: never show spinner more than 8 seconds
-  const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -177,31 +175,30 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    // Already checked this user in this session — don't re-check
     if (checkedUserRef.current === user.id && profileChecked) return;
 
     setProfileChecked(false);
     setNeedsOnboarding(false);
-    setTimedOut(false);
     checkedUserRef.current = user.id;
 
     let cancelled = false;
     let attempts = 0;
-    // Max 5 attempts × 800ms = 4s max, well within the 10s hard timeout
-    const maxAttempts = 5;
+    // Max 8 attempts × 1000ms = 8s before we give up and let through
+    const maxAttempts = 8;
 
-    // Hard safety timeout: never block UI more than 10s
+    // Hard safety timeout: 15s on mobile, never block forever
     const hardTimeout = setTimeout(() => {
       if (!cancelled) {
-        console.warn("[ProtectedRoute] Hard timeout — forcing through");
-        setTimedOut(true);
+        console.warn("[ProtectedRoute] Hard timeout — letting user through");
         setNeedsOnboarding(false);
         setProfileChecked(true);
       }
-    }, 10000);
+    }, 15000);
 
     const checkProfile = async () => {
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from("profiles")
           .select("nationality, city, university, objectifs, is_in_france, onboarding_step, student_status")
           .eq("user_id", user.id)
@@ -209,13 +206,24 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
         if (cancelled) return;
 
+        // Network/auth error → let through rather than spin forever
+        if (error) {
+          console.warn("[ProtectedRoute] Profile query error, letting through:", error.message);
+          clearTimeout(hardTimeout);
+          setNeedsOnboarding(false);
+          setProfileChecked(true);
+          return;
+        }
+
         if (!data) {
           if (attempts < maxAttempts) {
             attempts++;
-            setTimeout(checkProfile, 800);
+            // Progressive backoff: 1s, 1s, 1.5s, 1.5s, 2s...
+            const delay = attempts <= 2 ? 1000 : attempts <= 4 ? 1500 : 2000;
+            setTimeout(checkProfile, delay);
             return;
           }
-          // After max retries and still no profile → send to onboarding to create it
+          // After max retries → send to onboarding
           clearTimeout(hardTimeout);
           setNeedsOnboarding(true);
           setProfileChecked(true);
@@ -256,24 +264,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     };
   }, [user?.id]);
 
-  // Also guard against auth loading hanging forever (> 8s)
-  useEffect(() => {
-    if (!loading) return;
-    const t = setTimeout(() => {
-      // Force re-render — AuthContext will handle this case
-    }, 8000);
-    return () => clearTimeout(t);
-  }, [loading]);
-
   if (loading || !profileChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          {timedOut && (
-            <p className="text-xs text-muted-foreground">Connexion lente… 🌐</p>
-          )}
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
