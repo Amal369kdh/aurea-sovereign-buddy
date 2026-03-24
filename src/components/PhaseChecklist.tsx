@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, ShieldCheck, FileText, AlertTriangle, Clock, ChevronRight } from "lucide-react";
+import { Check, Circle, Sparkles, ChevronDown, Plane, MapPin, Info, Lock, FileText, AlertTriangle, Clock, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { useNavigate } from "react-router-dom";
