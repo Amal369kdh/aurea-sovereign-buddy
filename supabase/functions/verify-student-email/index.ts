@@ -181,12 +181,32 @@ serve(async (req) => {
     }
 
     const trimmedEmail = student_email.trim().toLowerCase();
+    const emailDomain = trimmedEmail.split("@")[1] ?? "";
 
-    if (!isAcademicEmail(trimmedEmail)) {
+    // ── Étape 1 : validation par regex (patterns académiques connus) ──────────
+    const passesPattern = isAcademicEmail(trimmedEmail);
+
+    // ── Étape 2 : si le regex ne passe pas, vérifier la table allowed_domains ─
+    // Cela permet d'ajouter des domaines spécifiques sans modifier le code
+    let passesTable = false;
+    if (!passesPattern && emailDomain) {
+      const tempService = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
+      const { data: domainRow } = await tempService
+        .from("allowed_domains")
+        .select("domain")
+        .eq("domain", emailDomain)
+        .maybeSingle();
+      passesTable = !!domainRow;
+    }
+
+    if (!passesPattern && !passesTable) {
       return new Response(
         JSON.stringify({
           error: "invalid_domain",
-          message: "Cet email ne correspond pas à un domaine universitaire reconnu (.edu, .univ-*.fr, etc.)",
+          message: "Cet email ne correspond pas à un domaine universitaire reconnu. Utilise ton adresse académique (.edu, .univ-*.fr, .etu.*.fr, etc.)",
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
