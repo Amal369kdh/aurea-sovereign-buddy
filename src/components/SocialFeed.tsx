@@ -424,6 +424,20 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
                 >
                   <Flag className="h-3.5 w-3.5" />
                 </button>
+                {/* Delete: visible to post author or admin */}
+                {(post.author_id === user?.id || isAdmin) && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm("Supprimer cette publication ?")) {
+                        deletePost(post.id);
+                      }
+                    }}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-destructive cursor-pointer"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
                 <button className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80 cursor-pointer">
                   <Sparkles className="h-3.5 w-3.5" /> Amal
                 </button>
