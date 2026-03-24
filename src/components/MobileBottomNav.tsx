@@ -20,7 +20,11 @@ const MobileBottomNav = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const { unreadCount } = useNotifications();
+  const { notifications } = useNotifications();
+
+  // Split notification counts by type for correct badge routing
+  const messageUnread = notifications.filter((n) => !n.is_read && n.type === "new_message").length;
+  const socialUnread = notifications.filter((n) => !n.is_read && (n.type === "new_comment" || n.type === "mention")).length;
 
   useEffect(() => {
     if (!user) return;
