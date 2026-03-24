@@ -155,6 +155,20 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
     }
   };
 
+  const deletePost = async (announcementId: string) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("announcements")
+      .delete()
+      .eq("id", announcementId);
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de supprimer.", variant: "destructive" });
+    } else {
+      setAnnouncements((prev) => prev.filter((a) => a.id !== announcementId));
+      toast({ title: "Supprimé", description: "Publication supprimée." });
+    }
+  };
+
   const toggleLike = async (announcementId: string, currentlyLiked: boolean) => {
     if (!user) return;
     if (currentlyLiked) {
