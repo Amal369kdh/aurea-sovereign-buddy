@@ -78,8 +78,9 @@ const PhaseChecklist = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Les tâches "sur place" sont cochables si : Témoin OU Français OU déjà en France
-  const isReadOnly = !isTemoin && !isFrench && !isInFrance;
+  // Les tâches "sur place" sont cochables si : Français OU déclaré en France
+  // La vérification email étudiant n'est PAS requise pour le Dossier
+  const isReadOnly = !isFrench && !isInFrance;
 
   return (
     <div className="space-y-4">
