@@ -575,7 +575,12 @@ const BentoGrid = () => {
       });
   }, [user]);
 
-  const { data: cityData, loading: cityLoading } = useCityResources(city);
+  // Villes actives avec ressources IA disponibles
+  const ACTIVE_CITIES = ["grenoble"];
+  const isActiveCity = ACTIVE_CITIES.includes(city.toLowerCase().trim());
+
+  // On n'appelle Perplexity que pour les villes actives
+  const { data: cityData, loading: cityLoading } = useCityResources(isActiveCity ? city : null);
 
   // Non-verified users can now READ everything — only actions are locked
   const isReadOnly = !isTemoin && !isFrench;
@@ -585,14 +590,35 @@ const BentoGrid = () => {
 
   return (
     <div>
-      {/* City indicator */}
-      {cityLoading && (
+      {/* Bandeau ville non-active */}
+      {!isActiveCity && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 flex items-start gap-3 rounded-3xl border border-primary/25 bg-primary/5 px-5 py-4"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl gold-gradient">
+            <Globe className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-foreground">
+              {city} — ressources bientôt disponibles 🌍
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
+              L'expérimentation démarre à Grenoble. Les ressources personnalisées pour <strong>{city}</strong> seront activées prochainement. En attendant, la structure est disponible avec des liens nationaux.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* City indicator — villes actives uniquement */}
+      {isActiveCity && cityLoading && (
         <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="h-3 w-3 animate-spin" />
           <span>Chargement des ressources pour <strong>{city}</strong>…</span>
         </div>
       )}
-      {cityData && !cityData.parse_error && (
+      {isActiveCity && cityData && !cityData.parse_error && (
         <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
           <Sparkles className="h-3 w-3 text-primary" />
           <span>Ressources personnalisées pour <strong className="text-foreground">{city}</strong></span>

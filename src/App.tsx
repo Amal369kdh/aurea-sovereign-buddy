@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Legal from "./pages/Legal";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import Apercu from "./pages/Apercu";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import { Loader2 } from "lucide-react";
 
@@ -310,6 +311,7 @@ const AppRouter = () => {
     <>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/apercu" element={<Apercu />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
