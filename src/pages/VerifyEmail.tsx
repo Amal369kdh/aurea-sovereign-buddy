@@ -24,17 +24,25 @@ const VerifyEmail = () => {
 
     const confirm = async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("confirm-student-email", {
+        // Use fetch directly to get full HTTP status control (supabase.functions.invoke
+        // treats non-2xx as `error` which swallows the response body we need)
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+        const res = await fetch(`${supabaseUrl}/functions/v1/confirm-student-email`, {
           method: "POST",
-          body: { token },
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": supabaseKey,
+            "Authorization": `Bearer ${supabaseKey}`,
+          },
+          body: JSON.stringify({ token }),
         });
 
         if (cancelled) return;
 
-        if (error) {
-          setState("error");
-          return;
-        }
+        let data: Record<string, unknown> = {};
+        try { data = await res.json(); } catch (_) { /* ignore */ }
 
         if (data?.error === "invalid_token") {
           setState("invalid");
@@ -42,17 +50,19 @@ const VerifyEmail = () => {
           setState("expired");
         } else if (data?.success && data?.already_verified) {
           setState("already_done");
-          if (data.student_email) setStudentEmail(data.student_email);
+          if (data.student_email) setStudentEmail(data.student_email as string);
         } else if (data?.success) {
           setState("success");
-          if (data.student_email) setStudentEmail(data.student_email);
+          if (data.student_email) setStudentEmail(data.student_email as string);
           // Signal other open tabs that verification is complete
           try {
-            localStorage.setItem("aurea_student_verified", data.user_id);
+            localStorage.setItem("aurea_student_verified", data.user_id as string);
             setTimeout(() => localStorage.removeItem("aurea_student_verified"), 5000);
           } catch (_) { /* ignore */ }
         } else {
-          setState("error");
+          // Unexpected response: show invalid rather than generic error
+          // to avoid blocking users who have a valid token
+          setState(res.status === 404 ? "invalid" : "error");
         }
       } catch (_) {
         if (!cancelled) setState("error");
