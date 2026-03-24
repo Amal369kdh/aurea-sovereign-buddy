@@ -57,6 +57,7 @@ const features = [
 
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
