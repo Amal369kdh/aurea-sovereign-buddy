@@ -6,7 +6,7 @@ import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
   Crown, Globe, MapPin, GraduationCap, Target,
-  ArrowRight, ArrowLeft, Loader2, Check, Plane, AlertTriangle,
+  ArrowRight, ArrowLeft, Loader2, Check, Plane, Star,
 } from "lucide-react";
 
 const NATIONALITIES = [
@@ -17,8 +17,22 @@ const NATIONALITIES = [
   "🇲🇬 Malgache", "🇲🇷 Mauritanienne", "🇹🇩 Tchadienne", "Autre",
 ];
 
-// Only Grenoble for now — city is auto-selected, no blocker
-const ACTIVE_CITY = "Grenoble";
+// Grenoble est la ville pilote — les autres villes afficheront "Ta ville arrive bientôt"
+const CITIES = [
+  { name: "Grenoble", pilot: true },
+  { name: "Lyon", pilot: false },
+  { name: "Paris", pilot: false },
+  { name: "Bordeaux", pilot: false },
+  { name: "Toulouse", pilot: false },
+  { name: "Montpellier", pilot: false },
+  { name: "Strasbourg", pilot: false },
+  { name: "Nantes", pilot: false },
+  { name: "Lille", pilot: false },
+  { name: "Rennes", pilot: false },
+  { name: "Marseille", pilot: false },
+  { name: "Nice", pilot: false },
+  { name: "Autre", pilot: false },
+];
 
 const OBJECTIFS = [
   { id: "diplome", label: "🎓 Obtenir mon diplôme" },
@@ -29,7 +43,7 @@ const OBJECTIFS = [
   { id: "sante", label: "🏥 Gérer ma santé & mutuelle" },
 ];
 
-type StepKey = "nationality" | "location" | "university" | "objectifs";
+type StepKey = "nationality" | "location" | "city" | "university" | "objectifs";
 
 const Onboarding = () => {
   const { user, loading } = useAuth();
@@ -40,12 +54,12 @@ const Onboarding = () => {
 
   const [nationality, setNationality] = useState("");
   const [isInFrance, setIsInFrance] = useState<boolean | null>(null);
+  const [selectedCity, setSelectedCity] = useState("Grenoble");
   const [university, setUniversity] = useState("");
   const [objectifs, setObjectifs] = useState<string[]>([]);
 
   const isFrench = nationality === "🇫🇷 Française";
 
-  // Wait for profile to exist before showing onboarding
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -60,18 +74,18 @@ const Onboarding = () => {
       try {
         const { data } = await supabase
           .from("profiles")
-          .select("id, nationality, university, objectifs, is_in_france")
+          .select("id, nationality, university, objectifs, is_in_france, city")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (cancelled) return;
 
         if (data) {
-          // Pre-fill any already saved partial data
           if (data.nationality) setNationality(data.nationality);
           if (data.university) setUniversity(data.university);
           if (data.objectifs && (data.objectifs as string[]).length > 0) setObjectifs(data.objectifs as string[]);
           if (data.is_in_france !== null) setIsInFrance(data.is_in_france);
+          if (data.city) setSelectedCity(data.city);
           clearTimeout(hardTimeout);
           setProfileReady(true);
           return;
@@ -83,7 +97,6 @@ const Onboarding = () => {
           return;
         }
 
-        // Fallback: create the profile manually
         try {
           await supabase.from("profiles").insert({ user_id: user.id, status: "explorateur" });
         } catch { /* already exists or RLS */ }
@@ -109,7 +122,7 @@ const Onboarding = () => {
   const buildSteps = (): StepKey[] => {
     const steps: StepKey[] = ["nationality"];
     if (!isFrench) steps.push("location");
-    steps.push("university", "objectifs");
+    steps.push("city", "university", "objectifs");
     return steps;
   };
 
@@ -121,6 +134,7 @@ const Onboarding = () => {
     switch (currentStep) {
       case "nationality": return nationality.length > 0;
       case "location": return isInFrance !== null;
+      case "city": return selectedCity.trim().length > 0;
       case "university": return university.trim().length > 0;
       case "objectifs": return objectifs.length > 0;
       default: return true;
@@ -133,7 +147,6 @@ const Onboarding = () => {
     );
   };
 
-  // Save progress after each step so partial data is never lost
   const saveProgress = async () => {
     if (!user) return;
     try {
@@ -141,6 +154,7 @@ const Onboarding = () => {
         user_id: user.id,
         ...(nationality ? { nationality } : {}),
         ...(isInFrance !== null ? { is_in_france: isFrench ? true : isInFrance } : {}),
+        ...(selectedCity ? { city: selectedCity, target_city: selectedCity } : {}),
         ...(university ? { university } : {}),
         ...(objectifs.length > 0 ? { objectifs } : {}),
       }, { onConflict: "user_id" });
@@ -166,8 +180,8 @@ const Onboarding = () => {
         .upsert({
           user_id: user.id,
           nationality,
-          city: ACTIVE_CITY,
-          target_city: ACTIVE_CITY,
+          city: selectedCity,
+          target_city: selectedCity,
           university,
           objectifs,
           is_in_france: effectiveIsInFrance,
@@ -274,16 +288,62 @@ const Onboarding = () => {
               </StepLayout>
             )}
 
+            {currentStep === "city" && (
+              <StepLayout icon={<MapPin className="h-5 w-5" />} title="Ta ville d'études ?">
+                <p className="mb-3 text-xs text-muted-foreground">Grenoble est notre ville pilote avec toutes les ressources activées ⚡</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {CITIES.map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => setSelectedCity(c.name)}
+                      className={`relative flex items-center gap-2 rounded-2xl border px-3 py-2.5 text-xs font-medium transition-all cursor-pointer text-left ${
+                        selectedCity === c.name
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-secondary text-muted-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      {c.pilot && <Star className="h-3 w-3 shrink-0 text-primary fill-primary" />}
+                      <span>{c.name}</span>
+                      {c.pilot && (
+                        <span className="absolute -top-1.5 -right-1 text-[9px] font-bold rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 leading-none">
+                          Actif
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {selectedCity !== "Grenoble" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 rounded-2xl border border-primary/30 bg-primary/5 p-4"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-lg">⚡</span>
+                      <div>
+                        <p className="text-sm font-semibold text-primary">{selectedCity} bientôt disponible !</p>
+                        <p className="mt-1 text-xs text-primary/80">
+                          Tu auras accès à toute la structure de l'app et au Hub Social. Les ressources locales de {selectedCity} seront activées très prochainement.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </StepLayout>
+            )}
+
             {currentStep === "university" && (
               <StepLayout icon={<GraduationCap className="h-5 w-5" />} title="Ton université ou école ?">
-                {/* City is auto-set to Grenoble — inform the user */}
                 <div className="mb-4 flex items-center gap-2 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-2.5">
                   <MapPin className="h-4 w-4 text-primary shrink-0" />
-                  <p className="text-xs text-primary font-medium">Ville : <strong>Grenoble</strong> — notre ville pilote 🏔️</p>
+                  <p className="text-xs text-primary font-medium">
+                    Ville : <strong>{selectedCity}</strong>
+                    {selectedCity === "Grenoble" && " — ville pilote 🏔️"}
+                  </p>
                 </div>
                 <input
                   type="text"
-                  placeholder="Ex : Université Grenoble Alpes"
+                  placeholder={`Ex : Université de ${selectedCity}`}
                   value={university}
                   onChange={(e) => setUniversity(e.target.value)}
                   maxLength={150}
@@ -307,7 +367,6 @@ const Onboarding = () => {
                   ))}
                 </div>
 
-                {/* Pseudo lock — redesigned to be impossible to miss */}
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
