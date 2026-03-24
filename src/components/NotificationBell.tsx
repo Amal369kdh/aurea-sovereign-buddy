@@ -73,8 +73,8 @@ const NotificationBell = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.15 }}
-            // Mobile : plein écran depuis le bord droit / Desktop : ancré à droite du bouton
-            className="fixed right-2 top-16 z-50 w-[calc(100vw-1rem)] max-w-sm rounded-3xl border border-border bg-card shadow-xl overflow-hidden sm:fixed sm:right-4 sm:top-16 sm:w-80 sm:left-auto"
+            // Mobile : plein écran depuis le bord droit / Desktop : ancré à droite, jamais coupé à gauche
+            className="fixed right-2 top-16 z-50 w-[calc(100vw-1rem)] max-w-sm rounded-3xl border border-border bg-card shadow-xl overflow-hidden sm:right-4 sm:w-80"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
