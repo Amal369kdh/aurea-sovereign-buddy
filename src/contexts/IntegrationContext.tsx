@@ -298,8 +298,39 @@ const allPhases: ChecklistPhase[] = [
         },
       },
       {
+        id: "inscription-univ", label: "Inscription administrative à l'université", done: false,
+        link: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp",
+        tip: "Apporte TON DOSSIER PHYSIQUE complet — les mêmes documents que pour Campus France.",
+        guide: {
+          steps: [
+            "Connecte-toi sur le portail de l'université (lien ci-dessous) pour connaître les dates et lieux d'accueil",
+            "Prépare le dossier physique COMPLET (bulletins, diplômes, Campus France) — ils ne prennent PAS les documents par email",
+            "Rends-toi au service de scolarité de ton UFR/composante avec tous les originaux ET photocopies",
+            "Paye les droits d'inscription (CVEC + frais de scolarité selon ton statut)",
+            "Récupère ta carte étudiante — indispensable pour la bibliothèque, les restos U, les transports",
+          ],
+          documents: [
+            "Passeport + visa validé (original + photocopie)",
+            "Bulletins des 3 dernières années (originaux traduits et légalisés)",
+            "Diplômes obtenus (originaux + traductions assermentées)",
+            "Attestation Campus France ou décision d'admission",
+            "Justificatif de domicile (ou hébergement temporaire)",
+            "2 photos d'identité",
+            "Attestation de paiement CVEC (à régler avant sur cvec.etudiant.gouv.fr)"
+          ],
+          deadline: "Dès ton arrivée, avant la rentrée — les délais sont stricts",
+          pitfalls: [
+            "L'inscription NE SE PAYE PAS EN ESPÈCES — uniquement par carte bancaire ou virement",
+            "Si tu n'as pas encore de compte bancaire français : trouve un ami ou une personne de confiance qui peut payer par carte et te rembourser en espèces",
+            "Sans inscription administrative, tu n'as PAS accès aux restos U, aux transports étudiants, ni aux bourses",
+            "La CVEC (92€) doit être payée AVANT de finaliser l'inscription à l'université",
+            "Apporte les ORIGINAUX — les photocopies seules ne suffisent pas",
+          ],
+        },
+      },
+      {
         id: "transport", label: "Carte de transport M réso", done: false,
-        link: "https://www.mreso.fr/",
+        link: "https://www.reso-m.fr/68-tarification-solidaire.htm",
         tip: "Réseau M réso (ex-TAG) à Grenoble — tarif réduit selon ton quotient familial CAF.",
         guide: {
           steps: [
