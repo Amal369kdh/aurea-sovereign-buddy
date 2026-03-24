@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound, ShieldCheck, Users, MessageCircle, Star } from "lucide-react";
+import { Crown, Mail, Lock, User, ArrowRight, Loader2, MailCheck, KeyRound, ShieldCheck, Users, MessageCircle, Star, Eye } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -57,6 +57,7 @@ const features = [
 
 const Auth = () => {
   const { user, loading, signIn, signUp } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
@@ -362,7 +363,7 @@ const Auth = () => {
             Grenoble
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 mb-3">
           {features.map((f, i) => (
             <div key={i} className="flex items-start gap-2 rounded-xl bg-secondary/50 p-2.5">
               <div className="shrink-0 mt-0.5">{f.icon}</div>
@@ -370,6 +371,12 @@ const Auth = () => {
             </div>
           ))}
         </div>
+        <button
+          onClick={() => navigate("/apercu")}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/10 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 cursor-pointer"
+        >
+          <Eye className="h-3.5 w-3.5" /> Voir un aperçu de l'application →
+        </button>
       </motion.div>
 
       {/* ── Left panel: app presentation (desktop only) ── */}
@@ -603,8 +610,19 @@ const Auth = () => {
             </button>
           </p>
 
+          {/* Aperçu link */}
+          <div className="mt-5 text-center">
+            <button
+              onClick={() => navigate("/apercu")}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Voir un aperçu de l'application sans s'inscrire
+            </button>
+          </div>
+
           {/* Legal link */}
-          <p className="mt-8 text-center text-xs text-muted-foreground/60">
+          <p className="mt-4 text-center text-xs text-muted-foreground/60">
             <a href="/legal" className="hover:text-muted-foreground transition-colors">
               Mentions légales · CGU · Confidentialité
             </a>
