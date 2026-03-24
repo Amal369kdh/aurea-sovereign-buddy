@@ -75,7 +75,7 @@ const PhaseChecklist = ({ preArrivalOnly = false }: { preArrivalOnly?: boolean }
   const { phases, toggleTask, isInFrance, isFrench, isTemoin, setIsInFrance } = useIntegration();
   // Si preArrivalOnly, on ne montre que la phase pré-arrivée (indépendante de la ville)
   const visiblePhases = preArrivalOnly ? phases.filter((p) => p.scope === "pre" || p.id === "pre-arrival") : phases;
-  const [openPhase, setOpenPhase] = useState<string | null>(phases[0]?.id ?? null);
+  const [openPhase, setOpenPhase] = useState<string | null>(visiblePhases[0]?.id ?? null);
   const [verifyOpen, setVerifyOpen] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -86,8 +86,12 @@ const PhaseChecklist = ({ preArrivalOnly = false }: { preArrivalOnly?: boolean }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-extrabold text-foreground">Parcours d'intégration</h2>
-      <p className="text-sm text-muted-foreground">Coche chaque étape et suis les liens pour avancer dans tes démarches.</p>
+      <h2 className="text-xl font-extrabold text-foreground">
+        {preArrivalOnly ? "Pré-arrivée" : "Parcours d'intégration"}
+      </h2>
+      {!preArrivalOnly && (
+        <p className="text-sm text-muted-foreground">Coche chaque étape et suis les liens pour avancer dans tes démarches.</p>
+      )}
 
       {/* Read-only banner — unlocked by "Je suis en France" button */}
       {isReadOnly && (
