@@ -78,31 +78,26 @@ const PhaseChecklist = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Les tâches "sur place" sont cochables si : Témoin OU Français OU déjà en France
-  const isReadOnly = !isTemoin && !isFrench && !isInFrance;
+  // Les tâches "sur place" sont cochables si : Français OU déclaré en France
+  // La vérification email étudiant n'est PAS requise pour le Dossier
+  const isReadOnly = !isFrench && !isInFrance;
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-extrabold text-foreground">Parcours d'intégration</h2>
       <p className="text-sm text-muted-foreground">Coche chaque étape et suis les liens pour avancer dans tes démarches.</p>
 
-      {/* Read-only banner for non-verified students */}
+      {/* Read-only banner — unlocked by "Je suis en France" button */}
       {isReadOnly && (
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3"
         >
-          <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
+          <MapPin className="h-4 w-4 shrink-0 text-primary" />
           <p className="flex-1 text-xs text-primary/80">
-            <span className="font-semibold text-primary">Mode lecture</span> — Vérifie ton email étudiant pour cocher tes démarches et suivre ta progression.
+            <span className="font-semibold text-primary">Mode lecture</span> — Clique sur « Je suis en France » pour débloquer le suivi de tes démarches.
           </p>
-          <button
-            onClick={() => setVerifyOpen(true)}
-            className="shrink-0 rounded-full gold-gradient px-3 py-1.5 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 cursor-pointer"
-          >
-            Vérifier
-          </button>
         </motion.div>
       )}
 
@@ -152,16 +147,15 @@ const PhaseChecklist = () => {
           )}
 
           {/* Verification notice when in France but not temoin */}
-          {isInFrance && !isTemoin && (
+          {isInFrance && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 border border-amber-500/20 p-3"
+              className="mt-3 flex items-start gap-2 rounded-xl bg-primary/5 border border-primary/20 p-3"
             >
-              <ShieldCheck className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-              <p className="text-xs text-amber-700 dark:text-amber-300">
-                Pour débloquer les démarches sur place, vérifie ton email étudiant (.edu, .univ.fr). 
-                Cela protège la communauté et te donne accès à toutes les fonctionnalités.
+              <ShieldCheck className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+              <p className="text-xs text-muted-foreground">
+                Vérifie ton email étudiant pour accéder au Hub Social et à la messagerie.
               </p>
             </motion.div>
           )}
@@ -176,11 +170,9 @@ const PhaseChecklist = () => {
           const allDone = activeItems.length > 0 && doneCount === activeItems.length;
           const isLocked = phase.locked;
 
-          // Determine lock reason for display
+          // Determine lock reason for display — uniquement basé sur isInFrance
           const lockReason = isLocked
-            ? isInFrance && !isTemoin
-              ? "Vérifie ton email étudiant pour débloquer"
-              : `${phase.items.length} étapes — disponible une fois en France`
+            ? `${phase.items.length} étapes — disponible une fois en France`
             : null;
 
           return (
@@ -195,7 +187,7 @@ const PhaseChecklist = () => {
                     <p className="text-sm font-bold text-foreground">{phase.title}</p>
                     {isLocked && (
                       <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                        <Lock className="h-3 w-3" /> {isInFrance && !isTemoin ? "🔐 Vérification" : "Aperçu"}
+                        <Lock className="h-3 w-3" /> Aperçu
                       </span>
                     )}
                   </div>
@@ -205,14 +197,6 @@ const PhaseChecklist = () => {
                       : `${doneCount}/${activeItems.length} complétées`}
                   </p>
                 </div>
-                {isLocked && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setVerifyOpen(true); }}
-                    className="flex items-center gap-1 rounded-full gold-gradient px-3 py-1 text-[10px] font-bold text-primary-foreground cursor-pointer"
-                  >
-                    <ShieldCheck className="h-3 w-3" /> Vérifier
-                  </button>
-                )}
                 {!isLocked && (
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary">
                     <span className="text-xs font-bold text-foreground">

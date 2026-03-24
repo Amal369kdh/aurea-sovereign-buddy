@@ -124,7 +124,8 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
         author_name: displayName,
         author_initials: initials,
         author_university: fakeAuthorName ? null : (isAdmin ? null : (profile?.university || null)),
-        author_verified: fakeAuthorName ? false : isTemoinOrAdmin,
+        // Les publications avec display_author_name (ex: #ASM) s'affichent toujours avec leur pseudo fictif
+        author_verified: fakeAuthorName ? true : isTemoinOrAdmin,
         liked_by_me: likedSet.has(post.id),
       };
     });
