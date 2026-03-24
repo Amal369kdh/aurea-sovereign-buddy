@@ -247,7 +247,7 @@ const defaultTiles = (city: string) => [
       : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
-      { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://lokaviz.fr" },
+      { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
       { icon: Home, label: "Simulateur APL (CAF)", sub: "Calcule ton aide au logement en 2 min", href: "https://www.caf.fr/allocataires/mes-services-en-ligne/faire-une-simulation" },
       { icon: Globe, label: "SeLoger Étudiant", sub: "Colocations et studios", href: "https://www.seloger.com" },
     ] as QuickLink[],
@@ -279,9 +279,7 @@ const defaultTiles = (city: string) => [
     links: [
       { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
       { icon: HandCoins, label: "Bourse CROUS (DSE)", sub: "Demande en ligne — deadline octobre", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
-      { icon: GraduationCap, label: "Inscription universitaire", sub: "Dossier parcoursup ou admission directe", href: "https://www.parcoursup.fr/" },
-      { icon: Calculator, label: "Simulateur de budget étudiant", sub: "Estime tes dépenses mensuelles", href: "https://www.etudiant.gouv.fr/fr/simulateur-de-budget-1428" },
-      { icon: Landmark, label: "Aide d'urgence CROUS", sub: "Si tu es en difficulté financière", href: "https://www.etudiant.gouv.fr/fr/aides-specifiques-702" },
+      { icon: GraduationCap, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" },
     ] as QuickLink[],
   },
   // ÉTAPE 4 — Banque
