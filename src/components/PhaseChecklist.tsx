@@ -147,16 +147,15 @@ const PhaseChecklist = () => {
           )}
 
           {/* Verification notice when in France but not temoin */}
-          {isInFrance && !isTemoin && (
+          {isInFrance && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/10 border border-amber-500/20 p-3"
+              className="mt-3 flex items-start gap-2 rounded-xl bg-primary/5 border border-primary/20 p-3"
             >
-              <ShieldCheck className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-              <p className="text-xs text-amber-700 dark:text-amber-300">
-                Pour débloquer les démarches sur place, vérifie ton email étudiant (.edu, .univ.fr). 
-                Cela protège la communauté et te donne accès à toutes les fonctionnalités.
+              <ShieldCheck className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+              <p className="text-xs text-muted-foreground">
+                Vérifie ton email étudiant pour accéder au Hub Social et à la messagerie.
               </p>
             </motion.div>
           )}
