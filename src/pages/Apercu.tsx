@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import {
   Crown, Users, MessageCircle, ShieldCheck, ArrowRight,
   Home, Landmark, Stethoscope, Bus, Briefcase, HeartHandshake,
-  ClipboardCheck, Sparkles, Lock, Globe, MapPin, Heart,
-  ChevronDown, ChevronRight as ChevRight,
+  ClipboardCheck, Lock, Globe, MapPin, Heart,
+  ChevronDown,
 } from "lucide-react";
 
 // Fake hub social posts for preview
