@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp, Hash } from "lucide-react";
+import { ShieldCheck, MessageCircle, Share2, Sparkles, Send, Pin, Loader2, Flag, HandHeart, Trophy, ChevronDown, ChevronUp, Hash, Trash2 } from "lucide-react";
 import LikersPopover from "@/components/LikersPopover";
 import GoldModal from "@/components/GoldModal";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,8 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import ReportDialog from "@/components/ReportDialog";
 import CommentSection from "@/components/CommentSection";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 type Category = AnnouncementCategory | "all";
 
@@ -38,14 +40,21 @@ function parseHashtags(content: string): { text: string; tags: string[] } {
   return { text: content, tags };
 }
 
-/** Rendu du contenu avec hashtags mis en évidence */
+/** Rendu du contenu avec hashtags mis en évidence — #ASM en bleu, autres en doré */
 function ContentWithHashtags({ content }: { content: string }) {
   const parts = content.split(/(#[\wÀ-ÿ]+)/g);
   return (
     <p className="mb-4 text-sm leading-relaxed text-foreground/90">
       {parts.map((part, i) =>
         part.startsWith("#") ? (
-          <span key={i} className="font-semibold text-primary">
+          <span
+            key={i}
+            className={
+              part.toLowerCase() === "#asm"
+                ? "font-semibold text-info"
+                : "font-semibold text-primary"
+            }
+          >
             {part}
           </span>
         ) : (
@@ -66,9 +75,17 @@ interface SocialFeedProps {
 }
 
 const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false, highlightPostId }: SocialFeedProps) => {
-  const { announcements, loading, createPost, toggleLike } = useAnnouncements(
+  const { announcements, loading, createPost, deletePost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check admin status once
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc("is_admin", { _user_id: user.id }).then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
 
   const [newContent, setNewContent] = useState("");
   const [newCategory, setNewCategory] = useState<AnnouncementCategory>("general");
@@ -407,6 +424,20 @@ const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVeri
                 >
                   <Flag className="h-3.5 w-3.5" />
                 </button>
+                {/* Delete: visible to post author or admin */}
+                {(post.author_id === user?.id || isAdmin) && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm("Supprimer cette publication ?")) {
+                        deletePost(post.id);
+                      }
+                    }}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-destructive cursor-pointer"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
                 <button className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-primary transition-colors hover:text-primary/80 cursor-pointer">
                   <Sparkles className="h-3.5 w-3.5" /> Amal
                 </button>
