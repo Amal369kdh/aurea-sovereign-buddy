@@ -3,7 +3,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { IntegrationProvider } from "@/contexts/IntegrationContext";
 import { useEffect, useState, useRef } from "react";
@@ -27,104 +27,100 @@ import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
 
-/** Detect mobile/tablet UA */
-const isMobileDevice = () =>
-  typeof window !== "undefined" &&
-  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-/**
- * Handles Supabase email confirmation links (?token_hash= or #access_token=).
- * Only runs when there is actually a token in the URL — never loops.
- * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
- */
-/**
- * Handles Supabase email confirmation links (?token_hash= or #access_token=).
- * Only runs when there is actually a token in the URL — never loops.
- * Renders a FULL-SCREEN overlay (z-50) to prevent the underlying route from
- * showing through during processing and on the success/confirmation screen.
- * On mobile shows a manual "Accéder à mon espace" screen to avoid WebView navigate() failures.
- */
 const EmailConfirmHandler = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const [processing, setProcessing] = useState(false);
+  const [processing, setProcessing] = useState(true);
   const [confirmed, setConfirmed] = useState(false);
+  const [error, setError] = useState(false);
   const [city, setCity] = useState<string>("ta ville");
-  // Guard: never process twice (React strict mode / remounts)
+  // Guard: never process twice (React StrictMode double-invocation)
   const handled = useRef(false);
-  // Whether this component should render at all (token present)
-  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const tokenHash = params.get("token_hash");
-    const type = params.get("type") as "signup" | "recovery" | "email_change" | null;
-
-    const hash = new URLSearchParams(location.hash.slice(1));
-    const accessToken = hash.get("access_token");
-    const refreshToken = hash.get("refresh_token");
-    const hashType = hash.get("type");
-
-    // ⚠️ CRITICAL: Never handle recovery tokens here — /reset-password handles them exclusively.
-    if (type === "recovery" || hashType === "recovery") return;
-
-    const tokenPresent = !!(tokenHash && type) || !!(accessToken && refreshToken);
-    // If there is no token in the URL we do NOTHING
-    if (!tokenPresent) return;
-    setHasToken(true);
     if (handled.current) return;
     handled.current = true;
 
-    setProcessing(true);
+    const params = new URLSearchParams(location.search);
+    const tokenHash = params.get("token_hash");
+    const type = params.get("type") as "signup" | "recovery" | "email_change" | null;
+    const hash = new URLSearchParams(location.hash.slice(1));
+    const accessToken = hash.get("access_token");
+    const refreshToken = hash.get("refresh_token");
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        subscription.unsubscribe();
-        // Clean the token from the URL so refresh doesn't re-trigger
-        window.history.replaceState({}, "", window.location.pathname);
+    // Clean the token from the URL immediately so refresh doesn't re-trigger
+    window.history.replaceState({}, "", window.location.pathname);
 
-        if (isMobileDevice()) {
-          if (session?.user?.id) {
-            supabase
-              .from("profiles")
-              .select("city")
-              .eq("user_id", session.user.id)
-              .maybeSingle()
-              .then(({ data }) => {
-                if (data?.city) setCity(data.city);
-                setProcessing(false);
-                setConfirmed(true);
-              });
-          } else {
-            setProcessing(false);
-            setConfirmed(true);
-          }
-        } else {
-          // Desktop: redirect directly, don't show confirmed screen
-          setTimeout(() => navigate("/", { replace: true }), 100);
+    const doExchange = async () => {
+      try {
+        let exchangeError: Error | null = null;
+        let userId: string | null = null;
+
+        if (tokenHash && type) {
+          const { data, error: err } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+          exchangeError = err;
+          userId = data?.user?.id ?? null;
+        } else if (accessToken && refreshToken) {
+          const { data, error: err } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+          exchangeError = err;
+          userId = data?.user?.id ?? null;
         }
-      }
-    });
 
-    const exchange = (tokenHash && type)
-      ? supabase.auth.verifyOtp({ token_hash: tokenHash, type })
-      : supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
+        if (exchangeError) {
+          console.error("[EmailConfirmHandler] Exchange error:", exchangeError.message);
+          setError(true);
+          setProcessing(false);
+          return;
+        }
 
-    exchange.then(({ error }) => {
-      if (error) {
-        subscription.unsubscribe();
+        // Fetch city for the success message
+        if (userId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("city")
+            .eq("user_id", userId)
+            .maybeSingle();
+          if (profile?.city) setCity(profile.city);
+        }
+
         setProcessing(false);
-        setHasToken(false);
-        // En cas d'erreur (lien expiré), on nettoie l'URL et on revient à /auth
-        window.history.replaceState({}, "", "/auth");
+        setConfirmed(true);
+      } catch (e) {
+        console.error("[EmailConfirmHandler] Unexpected error:", e);
+        setError(true);
+        setProcessing(false);
       }
-    });
+    };
 
-    return () => subscription.unsubscribe();
+    doExchange();
   }, []);
 
-  // Don't render anything if there's no token — avoids overlapping with underlying route
-  if (!hasToken && !processing && !confirmed) return null;
+  if (processing) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background px-6 text-center">
+        <div className="space-y-3 max-w-sm">
+          <h1 className="text-xl font-bold text-foreground">Lien expiré ou invalide</h1>
+          <p className="text-sm text-muted-foreground">
+            Ce lien de confirmation a expiré ou a déjà été utilisé. Reconnecte-toi ou demande un nouvel email.
+          </p>
+        </div>
+        <button
+          onClick={() => { window.location.replace("/auth"); }}
+          className="rounded-2xl gold-gradient px-8 py-3 text-sm font-bold text-primary-foreground"
+        >
+          Retour à la connexion
+        </button>
+      </div>
+    );
+  }
 
   if (confirmed) {
     return (
@@ -141,19 +137,11 @@ const EmailConfirmHandler = () => {
           </p>
         </div>
         <button
-          onClick={() => { window.location.href = "/"; }}
+          onClick={() => { window.location.href = "/onboarding"; }}
           className="flex items-center gap-2 rounded-2xl gold-gradient px-8 py-4 text-base font-bold text-primary-foreground shadow-lg active:scale-95 transition-transform cursor-pointer"
         >
-          Accéder à mon espace →
+          Commencer l'inscription →
         </button>
-      </div>
-    );
-  }
-
-  if (processing) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -165,6 +153,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const [profileChecked, setProfileChecked] = useState(false);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  // Track the user ID we last ran the check for — avoid duplicate runs
   const checkedUserRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -175,7 +164,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // Already checked this user in this session — don't re-check
+    // Same user already resolved in this session — skip
     if (checkedUserRef.current === user.id && profileChecked) return;
 
     setProfileChecked(false);
@@ -184,59 +173,57 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     let cancelled = false;
     let attempts = 0;
-    // Max 8 attempts × 1000ms = 8s before we give up and let through
-    const maxAttempts = 8;
+    // After 10 attempts (~12s total) we send to onboarding if still no profile
+    const maxAttempts = 10;
 
-    // Hard safety timeout: 15s on mobile, never block forever
+    // Hard safety timeout: 20s — never block forever on mobile
     const hardTimeout = setTimeout(() => {
       if (!cancelled) {
-        console.warn("[ProtectedRoute] Hard timeout — letting user through");
-        setNeedsOnboarding(false);
+        console.warn("[ProtectedRoute] Hard timeout — sending to onboarding");
+        setNeedsOnboarding(true);
         setProfileChecked(true);
       }
-    }, 15000);
+    }, 20000);
 
     const checkProfile = async () => {
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("nationality, city, university, objectifs, is_in_france, onboarding_step, student_status")
+          .select("nationality, city, university, objectifs, is_in_france")
           .eq("user_id", user.id)
           .maybeSingle();
 
         if (cancelled) return;
 
-        // Network/auth error → let through rather than spin forever
+        // Any RLS/network error → let user through to avoid permanent lockout
         if (error) {
-          console.warn("[ProtectedRoute] Profile query error, letting through:", error.message);
+          console.warn("[ProtectedRoute] Profile query error:", error.message);
           clearTimeout(hardTimeout);
           setNeedsOnboarding(false);
           setProfileChecked(true);
           return;
         }
 
+        // Profile not yet created by the DB trigger → retry with backoff
         if (!data) {
           if (attempts < maxAttempts) {
             attempts++;
-            // Progressive backoff: 1s, 1s, 1.5s, 1.5s, 2s...
-            const delay = attempts <= 2 ? 1000 : attempts <= 4 ? 1500 : 2000;
+            // Backoff: 800ms, 800ms, 1.2s, 1.2s, 1.5s, 1.5s, 2s…
+            const delay = attempts <= 2 ? 800 : attempts <= 4 ? 1200 : attempts <= 6 ? 1500 : 2000;
             setTimeout(checkProfile, delay);
             return;
           }
-          // After max retries → send to onboarding
+          // Still no profile after max retries → onboarding will create it
           clearTimeout(hardTimeout);
           setNeedsOnboarding(true);
           setProfileChecked(true);
           return;
         }
 
+        // Profile exists — check if onboarding was completed
         const isFrench = data.nationality === "🇫🇷 Française";
         const objectifs = data.objectifs as string[] | null;
 
-        // Profile is complete when all required onboarding fields are present.
-        // For French students is_in_france is irrelevant (always true after onboarding).
-        // For non-French students we require is_in_france to have been explicitly set
-        // (null means they never finished the location step).
         const incomplete =
           !data.nationality ||
           !data.university ||
@@ -248,7 +235,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setNeedsOnboarding(incomplete);
         setProfileChecked(true);
       } catch {
-        // Network error: let through rather than spin forever
+        // Network error → let through
         if (!cancelled) {
           clearTimeout(hardTimeout);
           setNeedsOnboarding(false);
@@ -264,6 +251,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     };
   }, [user?.id]);
 
+  // Show spinner while auth or profile check is pending
   if (loading || !profileChecked) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
