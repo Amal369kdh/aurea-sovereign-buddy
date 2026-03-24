@@ -75,9 +75,17 @@ interface SocialFeedProps {
 }
 
 const SocialFeed = ({ activeCategory, onCategoryChange, readOnly = false, isVerified = false, highlightPostId }: SocialFeedProps) => {
-  const { announcements, loading, createPost, toggleLike } = useAnnouncements(
+  const { announcements, loading, createPost, deletePost, toggleLike } = useAnnouncements(
     activeCategory === "all" ? "all" : activeCategory
   );
+  const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check admin status once
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc("is_admin", { _user_id: user.id }).then(({ data }) => setIsAdmin(!!data));
+  }, [user?.id]);
 
   const [newContent, setNewContent] = useState("");
   const [newCategory, setNewCategory] = useState<AnnouncementCategory>("general");
