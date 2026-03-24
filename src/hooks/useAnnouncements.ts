@@ -97,6 +97,21 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
       const status = (profile as { status?: string } | undefined)?.status || "explorateur";
       const isAdmin = status === "admin" || adminStatusMap.get(post.author_id) === true;
       const isTemoinOrAdmin = status === "temoin" || isAdmin;
+
+      // Si un nom fictif est défini (publication #ASM de démo), l'utiliser
+      const fakeAuthorName = (post as any).display_author_name as string | null | undefined;
+      const displayName = fakeAuthorName
+        ? fakeAuthorName
+        : isAdmin
+          ? "Équipe Aurea"
+          : (profile?.display_name || "Anonyme");
+
+      const initials = fakeAuthorName
+        ? fakeAuthorName.slice(0, 2).toUpperCase()
+        : isAdmin
+          ? "AU"
+          : (profile?.avatar_initials || "?");
+
       return {
         id: post.id,
         content: post.content,
@@ -106,11 +121,10 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
         is_pinned: post.is_pinned ?? false,
         created_at: post.created_at,
         author_id: post.author_id,
-        // Admins affichent "Équipe Aurea", témoins affichent leur nom
-        author_name: isAdmin ? "Équipe Aurea" : (profile?.display_name || "Anonyme"),
-        author_initials: isAdmin ? "AU" : (profile?.avatar_initials || "?"),
-        author_university: isAdmin ? null : (profile?.university || null),
-        author_verified: isTemoinOrAdmin,
+        author_name: displayName,
+        author_initials: initials,
+        author_university: fakeAuthorName ? null : (isAdmin ? null : (profile?.university || null)),
+        author_verified: fakeAuthorName ? false : isTemoinOrAdmin,
         liked_by_me: likedSet.has(post.id),
       };
     });
