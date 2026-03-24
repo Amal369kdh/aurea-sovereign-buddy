@@ -170,10 +170,11 @@ const allPhases: ChecklistPhase[] = [
       },
       {
         id: "banque", label: "Ouverture de compte bancaire", done: false,
-        link: "https://www.boursobank.com/",
-        tip: "Banque en ligne (Bourso, Revolut) ou agence — apporte ton passeport et justificatif de domicile.",
+        link: "/",
+        tip: "Banque en ligne (Bourso, Revolut) ou agence — apporte ton passeport et justificatif de domicile. Voir les banques partenaires depuis le dashboard → Cash flow mode.",
         guide: {
           steps: [
+            "Depuis le Dashboard, va dans « Cash flow mode 💸 » pour voir toutes les banques disponibles et nos partenaires",
             "Choisis entre banque traditionnelle (BNP, Société Générale) ou en ligne (Bourso, Revolut)",
             "Prends RDV en agence ou inscris-toi en ligne",
             "Fournis les documents demandés",
