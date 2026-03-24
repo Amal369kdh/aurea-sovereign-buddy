@@ -170,11 +170,9 @@ const PhaseChecklist = () => {
           const allDone = activeItems.length > 0 && doneCount === activeItems.length;
           const isLocked = phase.locked;
 
-          // Determine lock reason for display
+          // Determine lock reason for display — uniquement basé sur isInFrance
           const lockReason = isLocked
-            ? isInFrance && !isTemoin
-              ? "Vérifie ton email étudiant pour débloquer"
-              : `${phase.items.length} étapes — disponible une fois en France`
+            ? `${phase.items.length} étapes — disponible une fois en France`
             : null;
 
           return (
@@ -189,7 +187,7 @@ const PhaseChecklist = () => {
                     <p className="text-sm font-bold text-foreground">{phase.title}</p>
                     {isLocked && (
                       <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                        <Lock className="h-3 w-3" /> {isInFrance && !isTemoin ? "🔐 Vérification" : "Aperçu"}
+                        <Lock className="h-3 w-3" /> Aperçu
                       </span>
                     )}
                   </div>
@@ -199,14 +197,6 @@ const PhaseChecklist = () => {
                       : `${doneCount}/${activeItems.length} complétées`}
                   </p>
                 </div>
-                {isLocked && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setVerifyOpen(true); }}
-                    className="flex items-center gap-1 rounded-full gold-gradient px-3 py-1 text-[10px] font-bold text-primary-foreground cursor-pointer"
-                  >
-                    <ShieldCheck className="h-3 w-3" /> Vérifier
-                  </button>
-                )}
                 {!isLocked && (
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary">
                     <span className="text-xs font-bold text-foreground">
