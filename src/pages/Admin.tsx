@@ -175,6 +175,12 @@ const Admin = () => {
   const [cityResourcesCache, setCityResourcesCache] = useState<{ city: string; last_updated_at: string }[]>([]);
   const [refreshingCity, setRefreshingCity] = useState<string | null>(null);
 
+  // Cities states
+  type CityFlag = { id: string; key: string; label: string; enabled: boolean };
+  const [cityFlags, setCityFlags] = useState<CityFlag[]>([]);
+  const [newCityName, setNewCityName] = useState("");
+  const [savingCity, setSavingCity] = useState(false);
+
   // Form states
   const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "", url: "" });
   const [newDomain, setNewDomain] = useState({ domain: "", university_name: "" });
