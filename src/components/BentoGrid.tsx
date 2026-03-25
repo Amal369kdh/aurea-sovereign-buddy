@@ -575,9 +575,9 @@ const BentoGrid = () => {
       });
   }, [user]);
 
-  // Villes actives avec ressources IA disponibles
-  const ACTIVE_CITIES = ["grenoble"];
-  const isActiveCity = ACTIVE_CITIES.includes(city.toLowerCase().trim());
+  // Villes actives avec ressources IA disponibles (depuis feature_flags)
+  const { activeCities } = useActiveCities();
+  const isActiveCity = activeCities.includes(city.toLowerCase().trim());
 
   // On n'appelle Perplexity que pour les villes actives
   const { data: cityData, loading: cityLoading } = useCityResources(isActiveCity ? city : null);
