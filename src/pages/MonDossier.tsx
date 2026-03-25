@@ -19,6 +19,7 @@ const MonDossier = () => {
   const { isInFrance, setIsInFrance } = useIntegration();
   const { user } = useAuth();
   const dossierEnabled = flags["mon_dossier"] !== false;
+  const { activeCities, loading: activeCitiesLoading } = useActiveCities();
 
   const [userCity, setUserCity] = useState<string | null>(null);
   const [cityLoading, setCityLoading] = useState(true);
@@ -37,7 +38,7 @@ const MonDossier = () => {
       });
   }, [user]);
 
-  const isCityActive = !cityLoading && ACTIVE_CITIES.includes(userCity ?? "");
+  const isCityActive = !cityLoading && !activeCitiesLoading && activeCities.includes(userCity ?? "");
 
   return (
     <div className="flex min-h-screen bg-background">
