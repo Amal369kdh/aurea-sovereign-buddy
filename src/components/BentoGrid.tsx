@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCityResources } from "@/hooks/useCityResources";
+import { useActiveCities } from "@/hooks/useActiveCities";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import VerificationDialog from "@/components/VerificationDialog";
