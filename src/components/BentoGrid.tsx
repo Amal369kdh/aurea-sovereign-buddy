@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCityResources } from "@/hooks/useCityResources";
+import { useActiveCities } from "@/hooks/useActiveCities";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import VerificationDialog from "@/components/VerificationDialog";
@@ -574,9 +575,9 @@ const BentoGrid = () => {
       });
   }, [user]);
 
-  // Villes actives avec ressources IA disponibles
-  const ACTIVE_CITIES = ["grenoble"];
-  const isActiveCity = ACTIVE_CITIES.includes(city.toLowerCase().trim());
+  // Villes actives avec ressources IA disponibles (depuis feature_flags)
+  const { activeCities } = useActiveCities();
+  const isActiveCity = activeCities.includes(city.toLowerCase().trim());
 
   // On n'appelle Perplexity que pour les villes actives
   const { data: cityData, loading: cityLoading } = useCityResources(isActiveCity ? city : null);

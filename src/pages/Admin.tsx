@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin,
+  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin, Globe,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -23,7 +23,8 @@ type TabKey =
   | "features"
   | "domains"
   | "moderation"
-  | "city_resources";
+  | "city_resources"
+  | "cities";
 
 type UserRow = {
   user_id: string;
@@ -142,6 +143,7 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "features", label: "Fonctionnalités", icon: Zap },
   { key: "domains", label: "Domaines", icon: GraduationCap },
   { key: "city_resources", label: "Ressources Ville", icon: MapPin },
+  { key: "cities", label: "Villes", icon: Globe },
 ];
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -172,6 +174,12 @@ const Admin = () => {
   // City resources states
   const [cityResourcesCache, setCityResourcesCache] = useState<{ city: string; last_updated_at: string }[]>([]);
   const [refreshingCity, setRefreshingCity] = useState<string | null>(null);
+
+  // Cities states
+  type CityFlag = { id: string; key: string; label: string; enabled: boolean };
+  const [cityFlags, setCityFlags] = useState<CityFlag[]>([]);
+  const [newCityName, setNewCityName] = useState("");
+  const [savingCity, setSavingCity] = useState(false);
 
   // Form states
   const [newPartner, setNewPartner] = useState({ name: "", type: "bank", offer: "", url: "" });
@@ -246,6 +254,14 @@ const Admin = () => {
       .select("city, last_updated_at")
       .order("city");
     if (cityData) setCityResourcesCache(cityData as { city: string; last_updated_at: string }[]);
+
+    // Fetch city flags (city_active_*)
+    const { data: cityFlagsData } = await supabase
+      .from("feature_flags")
+      .select("id, key, label, enabled")
+      .like("key", "city_active_%")
+      .order("key");
+    if (cityFlagsData) setCityFlags(cityFlagsData as CityFlag[]);
 
     // Build league from profiles
     if (profilesRes.data) {
@@ -925,6 +941,107 @@ const Admin = () => {
     </div>
   );
 
+  const renderCities = () => {
+    const toggleCity = async (flag: CityFlag) => {
+      const { error } = await supabase
+        .from("feature_flags")
+        .update({ enabled: !flag.enabled, updated_at: new Date().toISOString() })
+        .eq("id", flag.id);
+      if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      else {
+        setCityFlags((prev) => prev.map((f) => f.id === flag.id ? { ...f, enabled: !f.enabled } : f));
+        toast({ title: `${flag.label} ${!flag.enabled ? "activée ✅" : "désactivée"}` });
+      }
+    };
+
+    const addCity = async () => {
+      const name = newCityName.trim().toLowerCase();
+      if (!name) return;
+      setSavingCity(true);
+      const key = `city_active_${name}`;
+      const label = name.charAt(0).toUpperCase() + name.slice(1);
+      const { error } = await supabase.from("feature_flags").insert({
+        key,
+        label,
+        enabled: true,
+        description: `Ville active : ${label} — débloque Dashboard et Dossier complets`,
+      });
+      setSavingCity(false);
+      if (error) toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      else { toast({ title: `${label} ajoutée et activée ✅` }); setNewCityName(""); fetchAll(); }
+    };
+
+    return (
+      <div className="space-y-4">
+        <Section title="Villes actives">
+          <p className="mb-4 text-xs text-muted-foreground">
+            Activer une ville débloque automatiquement le Dashboard complet et toutes les phases du Dossier pour ses utilisateurs. Grenoble est toujours active.
+          </p>
+          {/* Grenoble — toujours active */}
+          <div className="mb-3 flex items-center justify-between rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3">
+            <div>
+              <p className="text-sm font-bold text-foreground">🏔️ Grenoble</p>
+              <p className="text-xs text-muted-foreground">Ville principale — toujours active</p>
+            </div>
+            <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-bold text-primary">Toujours ON</span>
+          </div>
+          {cityFlags.length === 0 && (
+            <p className="text-sm text-muted-foreground">Aucune autre ville configurée.</p>
+          )}
+          {cityFlags.map((flag) => {
+            const cityName = flag.key.replace("city_active_", "");
+            return (
+              <div key={flag.id} className="mb-3 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 last:mb-0">
+                <div>
+                  <p className="text-sm font-bold text-foreground capitalize">{cityName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {flag.enabled ? "✅ Dashboard & Dossier activés" : "🔒 Contenu verrouillé pour les utilisateurs"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => toggleCity(flag)}
+                  className="flex items-center gap-2 transition-colors"
+                  aria-label={`Toggle ${flag.label}`}
+                >
+                  {flag.enabled ? (
+                    <ToggleRight className="h-8 w-8 text-primary" />
+                  ) : (
+                    <ToggleLeft className="h-8 w-8 text-muted-foreground" />
+                  )}
+                  <span className={`text-xs font-bold ${flag.enabled ? "text-primary" : "text-muted-foreground"}`}>
+                    {flag.enabled ? "ON" : "OFF"}
+                  </span>
+                </button>
+              </div>
+            );
+          })}
+        </Section>
+        <Section title="Ajouter une ville">
+          <p className="mb-3 text-xs text-muted-foreground">
+            Saisir le nom exact (en minuscules) tel qu'il apparaît dans le champ "ville" des profils. Ex: <span className="font-mono">paris</span>, <span className="font-mono">lyon</span>, <span className="font-mono">bordeaux</span>
+          </p>
+          <div className="flex gap-2">
+            <input
+              className={inputCls}
+              placeholder="Ex: paris, lyon, bordeaux…"
+              value={newCityName}
+              onChange={(e) => setNewCityName(e.target.value.toLowerCase())}
+              onKeyDown={(e) => e.key === "Enter" && addCity()}
+            />
+            <button
+              onClick={addCity}
+              disabled={!newCityName.trim() || savingCity}
+              className="flex shrink-0 items-center gap-1.5 rounded-2xl gold-gradient px-4 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-50"
+            >
+              {savingCity ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              Ajouter
+            </button>
+          </div>
+        </Section>
+      </div>
+    );
+  };
+
   const RENDERERS: Record<TabKey, () => React.ReactNode> = {
     overview: renderOverview,
     users: renderUsers,
@@ -936,6 +1053,7 @@ const Admin = () => {
     features: renderFeatures,
     domains: renderDomains,
     city_resources: renderCityResources,
+    cities: renderCities,
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
