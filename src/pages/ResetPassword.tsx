@@ -36,18 +36,19 @@ const ResetPassword = () => {
     const isQueryRecovery = !!tokenHash && qType === "recovery";
 
     if (!isHashRecovery && !isQueryRecovery) {
-      // No recovery token at all → back to login
       navigate("/auth", { replace: true });
       return;
     }
 
     handled.current = true;
 
-    // ⚠️ CRITICAL: Sign out any existing session FIRST to prevent a saved account
-    // in the browser from hijacking the reset link (cross-account contamination).
-    supabase.auth.signOut({ scope: "local" }).finally(async () => {
+    const handleRecovery = async () => {
       if (isHashRecovery) {
-        const { error } = await supabase.auth.setSession({ access_token: accessToken!, refresh_token: refreshToken! });
+        // Fragment-based recovery (older Supabase flow)
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken!,
+          refresh_token: refreshToken!,
+        });
         if (error) {
           setError("Lien expiré ou invalide. Redemande une réinitialisation.");
         } else {
@@ -55,7 +56,13 @@ const ResetPassword = () => {
           setSessionReady(true);
         }
       } else {
-        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash!, type: "recovery" });
+        // PKCE / token_hash flow (current Supabase default)
+        // Do NOT sign out before verifyOtp — it clears the PKCE code verifier
+        // stored in sessionStorage which is required to complete the exchange.
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash!,
+          type: "recovery",
+        });
         if (error) {
           setError("Lien expiré ou invalide. Redemande une réinitialisation.");
         } else {
@@ -63,7 +70,9 @@ const ResetPassword = () => {
           setSessionReady(true);
         }
       }
-    });
+    };
+
+    handleRecovery();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
