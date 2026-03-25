@@ -12,9 +12,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Villes actuellement actives (dashboard + dossier complets)
-const ACTIVE_CITIES = ["grenoble"];
+import { useActiveCities } from "@/hooks/useActiveCities";
 
 const MonDossier = () => {
   const { flags } = useFeatureFlags();
