@@ -255,6 +255,14 @@ const Admin = () => {
       .order("city");
     if (cityData) setCityResourcesCache(cityData as { city: string; last_updated_at: string }[]);
 
+    // Fetch city flags (city_active_*)
+    const { data: cityFlagsData } = await supabase
+      .from("feature_flags")
+      .select("id, key, label, enabled")
+      .like("key", "city_active_%")
+      .order("key");
+    if (cityFlagsData) setCityFlags(cityFlagsData as CityFlag[]);
+
     // Build league from profiles
     if (profilesRes.data) {
       const leagueMap: Record<string, { total: number; count: number }> = {};
