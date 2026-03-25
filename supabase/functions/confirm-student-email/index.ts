@@ -59,26 +59,8 @@ serve(async (req) => {
         .eq("token_hash", tokenHash)
         .maybeSingle();
 
-      // Token introuvable : soit invalide, soit déjà consommé par un appel parallèle
-      // → On cherche si un enregistrement "verified=true" pour ce user existe déjà
-      // (pour retourner un succès idempotent au lieu d'une erreur)
+      // Token introuvable : invalide ou déjà consommé
       if (fetchError || !verification) {
-        // Tenter de récupérer via le token brut (stocké en clair pour l'idempotence)
-        const { data: consumed } = await supabase
-          .from("student_email_verifications")
-          .select("id, user_id, student_email, verified")
-          .eq("token", postToken)
-          .eq("verified", true)
-          .maybeSingle();
-
-        if (consumed) {
-          // Race condition gagnée par un appel parallèle — succès idempotent
-          return new Response(
-            JSON.stringify({ success: true, already_verified: true, user_id: consumed.user_id }),
-            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
         return new Response(JSON.stringify({ error: "invalid_token" }), {
           status: 404,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
