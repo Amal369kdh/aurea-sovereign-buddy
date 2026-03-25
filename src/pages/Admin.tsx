@@ -23,7 +23,8 @@ type TabKey =
   | "features"
   | "domains"
   | "moderation"
-  | "city_resources";
+  | "city_resources"
+  | "cities";
 
 type UserRow = {
   user_id: string;
