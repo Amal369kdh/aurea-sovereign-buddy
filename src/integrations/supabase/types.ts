@@ -1091,6 +1091,7 @@ export type Database = {
       get_own_profile_status: { Args: { _user_id: string }; Returns: string }
       has_dating_profile: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_bypass_verification_active: { Args: never; Returns: boolean }
       is_student_verified: { Args: { _user_id: string }; Returns: boolean }
       is_temoin: { Args: { _user_id: string }; Returns: boolean }
       is_verified_organization: { Args: { _user_id: string }; Returns: boolean }

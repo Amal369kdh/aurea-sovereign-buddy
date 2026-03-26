@@ -71,8 +71,8 @@ type ResourceRow = {
   created_at: string;
 };
 
-type UniversityLeague = {
-  university: string;
+type CityLeague = {
+  city: string;
   total_points: number;
   member_count: number;
 };
@@ -139,7 +139,7 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "premium", label: "Premium", icon: Crown },
   { key: "partners", label: "Partenaires", icon: Handshake },
   { key: "resources", label: "Ressources", icon: Link2 },
-  { key: "league", label: "Ligue des Facs", icon: Trophy },
+  { key: "league", label: "Ligue des Villes", icon: Trophy },
   { key: "features", label: "Fonctionnalités", icon: Zap },
   { key: "domains", label: "Domaines", icon: GraduationCap },
   { key: "city_resources", label: "Ressources Ville", icon: MapPin },
@@ -162,7 +162,7 @@ const Admin = () => {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [domains, setDomains] = useState<AllowedDomain[]>([]);
   const [resources, setResources] = useState<ResourceRow[]>([]);
-  const [league, setLeague] = useState<UniversityLeague[]>([]);
+  const [league, setLeague] = useState<CityLeague[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Moderation states
@@ -263,17 +263,18 @@ const Admin = () => {
       .order("key");
     if (cityFlagsData) setCityFlags(cityFlagsData as CityFlag[]);
 
-    // Build league from profiles
+    // Build league from profiles — grouped by city
     if (profilesRes.data) {
       const leagueMap: Record<string, { total: number; count: number }> = {};
       for (const p of profilesRes.data) {
-        if (!p.university) continue;
-        if (!leagueMap[p.university]) leagueMap[p.university] = { total: 0, count: 0 };
-        leagueMap[p.university].total += p.points_social ?? 0;
-        leagueMap[p.university].count += 1;
+        const city = (p.city ?? "").trim().toLowerCase();
+        if (!city) continue;
+        if (!leagueMap[city]) leagueMap[city] = { total: 0, count: 0 };
+        leagueMap[city].total += p.points_social ?? 0;
+        leagueMap[city].count += 1;
       }
       const sorted = Object.entries(leagueMap)
-        .map(([university, v]) => ({ university, total_points: v.total, member_count: v.count }))
+        .map(([city, v]) => ({ city: city.charAt(0).toUpperCase() + city.slice(1), total_points: v.total, member_count: v.count }))
         .sort((a, b) => b.total_points - a.total_points);
       setLeague(sorted);
     }
@@ -717,15 +718,15 @@ const Admin = () => {
 
   const renderLeague = () => (
     <div className="space-y-4">
-      <Section title="Classement des universités">
+      <Section title="Classement des villes">
         {league.length === 0 && <p className="text-sm text-muted-foreground">Aucune donnée.</p>}
         {league.map((l, i) => (
-          <div key={l.university} className="mb-3 flex items-center gap-3 last:mb-0">
+          <div key={l.city} className="mb-3 flex items-center gap-3 last:mb-0">
             <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-extrabold ${i === 0 ? "gold-gradient text-primary-foreground" : i === 1 ? "bg-secondary text-foreground" : "bg-muted text-muted-foreground"}`}>
               {i + 1}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-bold text-foreground">{l.university}</p>
+              <p className="truncate text-sm font-bold text-foreground">{l.city}</p>
               <p className="text-xs text-muted-foreground">{l.member_count} membre(s)</p>
             </div>
             <span className="font-extrabold text-primary">{l.total_points} pts</span>
