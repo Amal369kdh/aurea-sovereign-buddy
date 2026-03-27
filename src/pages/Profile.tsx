@@ -542,8 +542,15 @@ const Profile = () => {
           </motion.div>
         )}
 
+        {/* ── Notifications Push ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+          <Section title="Notifications">
+            <PushNotificationToggle />
+          </Section>
+        </motion.div>
+
         {/* ── Danger zone ── */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
           <Section title="Zone de danger">
             <DeleteAccountButton />
           </Section>
