@@ -40,28 +40,48 @@ function parseHashtags(content: string): { text: string; tags: string[] } {
   return { text: content, tags };
 }
 
+const COLLAPSE_THRESHOLD = 200;
+
 /** Rendu du contenu avec hashtags mis en évidence — #ASM en bleu, autres en doré */
 function ContentWithHashtags({ content }: { content: string }) {
-  const parts = content.split(/(#[\wÀ-ÿ]+)/g);
+  const [expanded, setExpanded] = useState(false);
+  const isLong = content.length > COLLAPSE_THRESHOLD;
+  const displayContent = isLong && !expanded ? content.slice(0, COLLAPSE_THRESHOLD) + "…" : content;
+  const parts = displayContent.split(/(#[\wÀ-ÿ]+)/g);
+
   return (
-    <p className="mb-4 text-sm leading-relaxed text-foreground/90">
-      {parts.map((part, i) =>
-        part.startsWith("#") ? (
-          <span
-            key={i}
-            className={
-              part.toLowerCase() === "#asm"
-                ? "font-semibold text-info"
-                : "font-semibold text-primary"
-            }
-          >
-            {part}
-          </span>
-        ) : (
-          part
-        )
+    <div className="mb-4">
+      <p className="text-sm leading-relaxed text-foreground/90">
+        {parts.map((part, i) =>
+          part.startsWith("#") ? (
+            <span
+              key={i}
+              className={
+                part.toLowerCase() === "#asm"
+                  ? "font-semibold text-info"
+                  : "font-semibold text-primary"
+              }
+            >
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </p>
+      {isLong && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="mt-1 flex items-center gap-1 text-xs font-semibold text-primary hover:underline cursor-pointer"
+        >
+          {expanded ? (
+            <>Voir moins <ChevronUp className="h-3 w-3" /></>
+          ) : (
+            <>Voir plus <ChevronDown className="h-3 w-3" /></>
+          )}
+        </button>
       )}
-    </p>
+    </div>
   );
 }
 
