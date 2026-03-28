@@ -294,7 +294,10 @@ const defaultTiles = (city: string) => [
     links: [
       { icon: ClipboardCheck, label: "Check-list administrative", sub: "Visa, CAF, Sécu, banque — tout en un", route: "/mon-dossier" },
       { icon: HandCoins, label: "Bourse CROUS (DSE)", sub: "Demande en ligne — deadline octobre", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
-      { icon: GraduationCap, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" },
+      ...(city.toLowerCase() === "lyon"
+        ? [{ icon: GraduationCap as React.ElementType, label: "LyonCampus — Mode d'emploi", sub: "Le guide complet pour étudier à Lyon", href: "https://www.lyoncampus.com/etudier/etudier-a-lyon-mode-demploi" }]
+        : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+      ),
     ] as QuickLink[],
   },
   // ÉTAPE 4 — Banque
@@ -328,10 +331,15 @@ const defaultTiles = (city: string) => [
       { icon: Stethoscope, label: "Médecins secteur 1", sub: "Sans avance de frais — Annuaire Ameli", href: "https://annuairesante.ameli.fr/" },
       ...(city.toLowerCase() === "grenoble"
         ? [{ icon: MapPin as React.ElementType, label: "Centre de Santé Étudiant — MUSE", sub: "80 allée Ampère, St-Martin-d'Hères • Secteur 1, sans avance de frais", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Saint-Martin-d%27Hères" }]
-        : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+        : city.toLowerCase() === "lyon"
+          ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lyon", sub: "Campus La Doua, Villeurbanne • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+La+Doua+Villeurbanne" }]
+          : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
-      { icon: Heart, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" },
+      ...(city.toLowerCase() === "lyon"
+        ? [{ icon: Heart as React.ElementType, label: "Nightline Lyon", sub: "Écoute étudiante gratuite 21h-2h", href: "https://www.nightline.fr/" }]
+        : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+      ),
     ] as QuickLink[],
   },
   // ÉTAPE 6 — Vie pratique
@@ -344,11 +352,30 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: Bus, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-      { icon: Globe, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+      ...(city.toLowerCase() === "lyon"
+        ? [
+            { icon: Bus as React.ElementType, label: "TCL — Abo étudiant", sub: "~25€/mois • Gratuité pour boursiers échelon 7", href: "https://www.tcl.fr" },
+          ]
+        : [
+            { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+            { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+          ]
+      ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
-      { icon: Dumbbell, label: "Sport universitaire (ETC Sport)", sub: "50+ activités — crédits ECTS possibles", href: "https://www.univ-grenoble-alpes.fr/formation/enrichir-son-parcours/personnaliser-votre-formation/les-etc-de-sport/les-enseignements-transversaux-a-choix-etc-de-sport-723373.kjsp" },
-      { icon: Phone, label: "Ticket SMS dépannage", sub: "SMS au 93123 — achète un ticket de bus sans appli", href: "sms:93123" },
+      ...(city.toLowerCase() === "grenoble"
+        ? [
+            { icon: Dumbbell as React.ElementType, label: "Sport universitaire (ETC Sport)", sub: "50+ activités — crédits ECTS possibles", href: "https://www.univ-grenoble-alpes.fr/formation/enrichir-son-parcours/personnaliser-votre-formation/les-etc-de-sport/les-enseignements-transversaux-a-choix-etc-de-sport-723373.kjsp" },
+            { icon: Phone as React.ElementType, label: "Ticket SMS dépannage", sub: "SMS au 93123 — achète un ticket de bus sans appli", href: "sms:93123" },
+          ]
+        : city.toLowerCase() === "lyon"
+          ? [
+              { icon: Dumbbell as React.ElementType, label: "Pass'Sport — 50€", sub: "Aide de l'État pour licence sportive ou salle de sport", href: "https://www.pass.sports.gouv.fr/" },
+              { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+            ]
+          : [
+              { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+            ]
+      ),
     ] as QuickLink[],
   },
   // ÉTAPE 7 — Carrière & avenir
@@ -361,7 +388,10 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: MapPin, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" },
+      ...(city.toLowerCase() === "lyon"
+        ? [{ icon: MapPin as React.ElementType, label: "Orientation — Universités de Lyon", sub: "Réorientation, coaching, forums à la MDE", href: "https://www.lyoncampus.com" }]
+        : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+      ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
       { icon: Globe, label: "France Travail", sub: "Accompagnement et offres d'emploi", href: "https://www.francetravail.fr/" },
@@ -378,13 +408,32 @@ const defaultTiles = (city: string) => [
     className: "",
     lockable: true,
     links: [
-      { icon: Utensils, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-      { icon: Utensils, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-      { icon: HandCoins, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-      { icon: Phone, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+      ...(city.toLowerCase() === "lyon"
+        ? [
+            { icon: Utensils as React.ElementType, label: "AGORAé Lyon — Épicerie solidaire", sub: "Campus La Doua & Lyon 2 • Produits à 10% du prix", href: "https://www.fage.org/innovation-sociale/agorae/" },
+            { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+            { icon: HandCoins as React.ElementType, label: "RSJ — Revenu Solidarité Jeunes", sub: "Aide Métropole de Lyon pour 18-24 ans sans ressources", href: "https://www.grandlyon.com" },
+            { icon: HandCoins as React.ElementType, label: "Aides CROUS Lyon", sub: "Aides spécifiques & financières", href: "https://www.crous-lyon.fr" },
+            { icon: MapPin as React.ElementType, label: "MDE — Maison des Étudiants", sub: "90 rue de Marseille, Lyon 7e • 400 événements/an", href: "https://maps.google.com/?q=Maison+des+étudiants+90+rue+de+Marseille+Lyon" },
+            { icon: Globe as React.ElementType, label: "ESN Cosmo Lyon", sub: "Accompagnement étudiants internationaux & Buddy System", href: "https://www.lyoncampus.com/etudier/etudiants-internationaux" },
+          ]
+        : [
+            { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+            { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+            { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+            { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+          ]
+      ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
-      { icon: Scale, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+      ...(city.toLowerCase() === "lyon"
+        ? [
+            { icon: Globe as React.ElementType, label: "Culture Campus", sub: "Spectacles à ~4,50€ — Point de vente à la MDE", href: "https://www.lyoncampus.com" },
+          ]
+        : [
+            { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+          ]
+      ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
   },
