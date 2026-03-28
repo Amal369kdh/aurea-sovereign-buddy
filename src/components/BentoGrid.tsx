@@ -607,7 +607,6 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
 
 // Cities coming soon (purely decorative, no Perplexity call)
 const COMING_SOON_CITIES = [
-  { name: "Lyon", emoji: "🦁", label: "2ème ville étudiante de France" },
   { name: "Paris", emoji: "🗼", label: "Île-de-France" },
   { name: "Bordeaux", emoji: "🍷", label: "Nouvelle-Aquitaine" },
   { name: "Montpellier", emoji: "🏖️", label: "Occitanie" },
