@@ -245,7 +245,9 @@ const defaultTiles = (city: string) => [
     lockable: true,
     _alerte: city.toLowerCase() === "grenoble"
       ? "⚠️ Renouvellement CROUS 2026 : du 10 mars au 4 mai. Sur messervices.etudiant.gouv.fr → Cité'U → Grenoble → « Mon logement actuel » → « Demander mon renouvellement ». Passé le 4 mai = perte de ta chambre pour la rentrée."
-      : undefined,
+      : city.toLowerCase() === "lyon"
+        ? "⚠️ Lyon est en zone tendue. DSE à faire entre mars et le 31 mai (même sans confirmation d'admission). Pense à la Caution Visale (garant gratuit de l'État)."
+        : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
@@ -264,8 +266,20 @@ const defaultTiles = (city: string) => [
     lockable: true,
     links: [
       { icon: Globe, label: "Portail ANEF — VLS-TS en ligne", sub: "Validation du titre de séjour • 75 €", href: "https://administration-etrangers-en-france.interieur.gouv.fr/" },
-      { icon: MapPin, label: "Bâtiment MUSE (antenne campus)", sub: "80 allée Ampère, Domaine Universitaire • ex-ISSO", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Grenoble" },
-      { icon: MapPin, label: "Préfecture de l'Isère", sub: "Place de Verdun, Grenoble • retrait carte de séjour", href: "https://maps.google.com/?q=Préfecture+Isère+Place+de+Verdun+Grenoble" },
+      ...(city.toLowerCase() === "grenoble"
+        ? [
+            { icon: MapPin as React.ElementType, label: "Bâtiment MUSE (antenne campus)", sub: "80 allée Ampère, Domaine Universitaire • ex-ISSO", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Grenoble" },
+            { icon: MapPin as React.ElementType, label: "Préfecture de l'Isère", sub: "Place de Verdun, Grenoble • retrait carte de séjour", href: "https://maps.google.com/?q=Préfecture+Isère+Place+de+Verdun+Grenoble" },
+          ]
+        : city.toLowerCase() === "lyon"
+          ? [
+              { icon: MapPin as React.ElementType, label: "Préfecture du Rhône", sub: "106 rue Pierre Corneille, 69003 Lyon", href: "https://maps.google.com/?q=Préfecture+Rhône+106+rue+Pierre+Corneille+Lyon" },
+              { icon: MapPin as React.ElementType, label: "Students Welcome Desk", sub: "Guichet unique étudiants internationaux — chaque rentrée", href: "https://www.lyoncampus.com/etudier/etudiants-internationaux" },
+            ]
+          : [
+              { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+            ]
+      ),
     ] as QuickLink[],
   },
   // ÉTAPE 3 — Aides financières & administratif
