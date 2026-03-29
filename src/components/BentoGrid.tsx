@@ -247,7 +247,9 @@ const defaultTiles = (city: string) => [
       ? "⚠️ Renouvellement CROUS 2026 : du 10 mars au 4 mai. Sur messervices.etudiant.gouv.fr → Cité'U → Grenoble → « Mon logement actuel » → « Demander mon renouvellement ». Passé le 4 mai = perte de ta chambre pour la rentrée."
       : city.toLowerCase() === "lyon"
         ? "⚠️ Lyon est en zone tendue. DSE à faire entre mars et le 31 mai (même sans confirmation d'admission). Pense à la Caution Visale (garant gratuit de l'État)."
-        : undefined,
+        : city.toLowerCase() === "montpellier"
+          ? "⚠️ Montpellier : transports gratuits pour les résidents de la Métropole ! Fais ton Pass Gratuité dès ton arrivée (pièce d'identité + justificatif de domicile)."
+          : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
@@ -276,9 +278,14 @@ const defaultTiles = (city: string) => [
               { icon: MapPin as React.ElementType, label: "Préfecture du Rhône", sub: "106 rue Pierre Corneille, 69003 Lyon", href: "https://maps.google.com/?q=Préfecture+Rhône+106+rue+Pierre+Corneille+Lyon" },
               { icon: MapPin as React.ElementType, label: "Students Welcome Desk", sub: "Guichet unique étudiants internationaux — chaque rentrée", href: "https://www.lyoncampus.com/etudier/etudiants-internationaux" },
             ]
-          : [
-              { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-            ]
+          : city.toLowerCase() === "montpellier"
+            ? [
+                { icon: MapPin as React.ElementType, label: "Préfecture de l'Hérault", sub: "34 place des Martyrs de la Résistance, 34000 Montpellier", href: "https://maps.google.com/?q=Préfecture+Hérault+34+place+Martyrs+Résistance+Montpellier" },
+                { icon: MapPin as React.ElementType, label: "Espace Montpellier Jeunesse", sub: "1 place Francis Ponge • Emploi, logement, orientation 12-29 ans", href: "https://maps.google.com/?q=Espace+Montpellier+Jeunesse+1+place+Francis+Ponge" },
+              ]
+            : [
+                { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+              ]
       ),
     ] as QuickLink[],
   },
@@ -296,7 +303,9 @@ const defaultTiles = (city: string) => [
       { icon: HandCoins, label: "Bourse CROUS (DSE)", sub: "Demande en ligne — deadline octobre", href: "https://www.messervices.etudiant.gouv.fr/envole/" },
       ...(city.toLowerCase() === "lyon"
         ? [{ icon: GraduationCap as React.ElementType, label: "LyonCampus — Mode d'emploi", sub: "Le guide complet pour étudier à Lyon", href: "https://www.lyoncampus.com/etudier/etudier-a-lyon-mode-demploi" }]
-        : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+        : city.toLowerCase() === "montpellier"
+          ? [{ icon: GraduationCap as React.ElementType, label: "Montpellier — Études & orientation", sub: "Maison des Relations Internationales, échanges étudiants", href: "https://www.montpellier.fr/actions/competences/jeunesse" }]
+          : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
