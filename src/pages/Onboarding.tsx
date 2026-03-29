@@ -338,7 +338,7 @@ const Onboarding = () => {
                   <MapPin className="h-4 w-4 text-primary shrink-0" />
                   <p className="text-xs text-primary font-medium">
                     Ville : <strong>{selectedCity}</strong>
-                    {selectedCity === "Grenoble" && " — ville pilote 🏔️"}
+                    {CITIES.find(c => c.name === selectedCity)?.pilot && ` — ville active 🔥`}
                   </p>
                 </div>
                 <input
