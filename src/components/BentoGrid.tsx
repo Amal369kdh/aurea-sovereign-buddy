@@ -467,9 +467,13 @@ const defaultTiles = (city: string) => [
         ? [
             { icon: Globe as React.ElementType, label: "Culture Campus", sub: "Spectacles à ~4,50€ — Point de vente à la MDE", href: "https://www.lyoncampus.com" },
           ]
-        : [
-            { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-          ]
+        : city.toLowerCase() === "montpellier"
+          ? [
+              { icon: Globe as React.ElementType, label: "Bons plans culture CROUS", sub: "Billetterie, sport gratuit, ateliers artistiques", href: "https://www.crous-montpellier.fr" },
+            ]
+          : [
+              { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+            ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
