@@ -342,12 +342,16 @@ const defaultTiles = (city: string) => [
         ? [{ icon: MapPin as React.ElementType, label: "Centre de Santé Étudiant — MUSE", sub: "80 allée Ampère, St-Martin-d'Hères • Secteur 1, sans avance de frais", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Saint-Martin-d%27Hères" }]
         : city.toLowerCase() === "lyon"
           ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lyon", sub: "Campus La Doua, Villeurbanne • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+La+Doua+Villeurbanne" }]
-          : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+          : city.toLowerCase() === "montpellier"
+            ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Montpellier", sub: "Campus Triolet • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Triolet+Montpellier" }]
+            : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
         ? [{ icon: Heart as React.ElementType, label: "Nightline Lyon", sub: "Écoute étudiante gratuite 21h-2h", href: "https://www.nightline.fr/" }]
-        : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+        : city.toLowerCase() === "montpellier"
+          ? [{ icon: Heart as React.ElementType, label: "Nightline Montpellier", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+          : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
@@ -365,10 +369,14 @@ const defaultTiles = (city: string) => [
         ? [
             { icon: Bus as React.ElementType, label: "TCL — Abo étudiant", sub: "~25€/mois • Gratuité pour boursiers échelon 7", href: "https://www.tcl.fr" },
           ]
-        : [
-            { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-            { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
-          ]
+        : city.toLowerCase() === "montpellier"
+          ? [
+              { icon: Bus as React.ElementType, label: "TaM — Transports GRATUITS", sub: "Pass Gratuité pour résidents de la Métropole • Appli M'Ticket", href: "https://www.tam-voyages.com" },
+            ]
+          : [
+              { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+              { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+            ]
       ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
       ...(city.toLowerCase() === "grenoble"
@@ -381,9 +389,15 @@ const defaultTiles = (city: string) => [
               { icon: Dumbbell as React.ElementType, label: "Pass'Sport — 50€", sub: "Aide de l'État pour licence sportive ou salle de sport", href: "https://www.pass.sports.gouv.fr/" },
               { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
             ]
-          : [
-              { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
-            ]
+          : city.toLowerCase() === "montpellier"
+            ? [
+                { icon: Dumbbell as React.ElementType, label: "Coup de Pouce Jeune — 50-75€", sub: "Aide sport/culture dans une association montpelliéraine", href: "https://www.montpellier.fr/actions/competences/jeunesse/dispositifs-de-soutien-la-jeunesse" },
+                { icon: Globe as React.ElementType, label: "Carte Été Jeunes — 25€", sub: "Activités gratuites du 15 juin au 15 sept (musée Fabre, MO.CO., piscines…)", href: "https://www.montpellier.fr/actions/competences/jeunesse/dispositifs-de-soutien-la-jeunesse/carte-ete-jeunes" },
+                { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+              ]
+            : [
+                { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+              ]
       ),
     ] as QuickLink[],
   },
