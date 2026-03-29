@@ -4,6 +4,7 @@ import AppSidebar from "@/components/AppSidebar";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import SocialFeed from "@/components/SocialFeed";
+import LigueFacs from "@/components/LigueFacs";
 import DatingGrid from "@/components/DatingGrid";
 import DatingMatches from "@/components/DatingMatches";
 import GoldModal from "@/components/GoldModal";
@@ -177,7 +178,10 @@ const HubSocial = () => {
           </AnimatePresence>
 
           {tab === "hub" ? (
-            <SocialFeed activeCategory={category} onCategoryChange={setCategory} readOnly={!isVerified} isVerified={!!isVerified} highlightPostId={deepLinkPostId} />
+            <>
+              <LigueFacs />
+              <SocialFeed activeCategory={category} onCategoryChange={setCategory} readOnly={!isVerified} isVerified={!!isVerified} highlightPostId={deepLinkPostId} />
+            </>
           ) : tab === "rencontres" ? (
             datingEnabled ? (
               <DatingGrid onConnectClick={() => setGoldOpen(true)} />
