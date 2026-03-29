@@ -20,11 +20,11 @@ const NATIONALITIES = [
 // Grenoble est la ville pilote — les autres villes afficheront "Ta ville arrive bientôt"
 const CITIES = [
   { name: "Grenoble", pilot: true },
-  { name: "Lyon", pilot: false },
+  { name: "Lyon", pilot: true },
   { name: "Paris", pilot: false },
   { name: "Bordeaux", pilot: false },
   { name: "Toulouse", pilot: false },
-  { name: "Montpellier", pilot: false },
+  { name: "Montpellier", pilot: true },
   { name: "Strasbourg", pilot: false },
   { name: "Nantes", pilot: false },
   { name: "Lille", pilot: false },
@@ -290,7 +290,7 @@ const Onboarding = () => {
 
             {currentStep === "city" && (
               <StepLayout icon={<MapPin className="h-5 w-5" />} title="Ta ville d'études ?">
-                <p className="mb-3 text-xs text-muted-foreground">Grenoble est notre ville pilote avec toutes les ressources activées ⚡</p>
+                <p className="mb-3 text-xs text-muted-foreground">Grenoble, Lyon et Montpellier sont actives avec toutes les ressources ⚡</p>
                 <div className="grid grid-cols-2 gap-2">
                   {CITIES.map((c) => (
                     <button
@@ -312,7 +312,7 @@ const Onboarding = () => {
                     </button>
                   ))}
                 </div>
-                {selectedCity !== "Grenoble" && (
+                {!CITIES.find(c => c.name === selectedCity)?.pilot && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
