@@ -67,8 +67,8 @@ const LigueFacs = () => {
             <Trophy className="h-4 w-4 text-primary-foreground" />
           </div>
           <div className="text-left">
-            <h3 className="text-sm font-bold text-foreground">Ligue des Facs 🏆</h3>
-            <p className="text-[10px] text-muted-foreground">Classement par points sociaux cumulés</p>
+            <h3 className="text-sm font-bold text-foreground">Ligue des Villes 🏆</h3>
+            <p className="text-[10px] text-muted-foreground">Classement des villes par points sociaux cumulés</p>
           </div>
         </div>
         {expanded ? (
@@ -90,7 +90,7 @@ const LigueFacs = () => {
             <div className="mt-4 space-y-2">
               {top3.map((r, i) => (
                 <div
-                  key={r.university}
+                  key={r.city}
                   className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${
                     i === 0
                       ? "border-primary/30 bg-primary/5"
@@ -99,7 +99,7 @@ const LigueFacs = () => {
                 >
                   <span className="text-lg">{medals[i]}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground truncate">{r.university}</p>
+                    <p className="text-sm font-bold text-foreground truncate">{r.city}</p>
                     <p className="text-[10px] text-muted-foreground">
                       {r.member_count} membre{r.member_count > 1 ? "s" : ""} actif{r.member_count > 1 ? "s" : ""}
                     </p>
@@ -116,14 +116,14 @@ const LigueFacs = () => {
                 <div className="space-y-1.5 pt-1">
                   {rest.map((r, i) => (
                     <div
-                      key={r.university}
+                      key={r.city}
                       className="flex items-center gap-3 rounded-xl px-4 py-2"
                     >
                       <span className="text-xs font-bold text-muted-foreground w-5 text-right">
                         {i + 4}.
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground truncate">{r.university}</p>
+                        <p className="text-xs font-medium text-foreground truncate">{r.city}</p>
                       </div>
                       <span className="text-xs font-semibold text-muted-foreground">{r.total_points} pts</span>
                     </div>
@@ -133,7 +133,7 @@ const LigueFacs = () => {
             </div>
 
             <p className="mt-3 text-[10px] text-muted-foreground text-center">
-              +5 pts par post Entraide · Poste sur le Hub pour représenter ta fac 💪
+              +5 pts par post Entraide · Poste sur le Hub pour représenter ta ville 💪
             </p>
           </motion.div>
         )}
