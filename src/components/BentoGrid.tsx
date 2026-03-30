@@ -351,16 +351,20 @@ const defaultTiles = (city: string) => [
         ? [{ icon: MapPin as React.ElementType, label: "Centre de Santé Étudiant — MUSE", sub: "80 allée Ampère, St-Martin-d'Hères • Secteur 1, sans avance de frais", href: "https://maps.google.com/?q=Bâtiment+MUSE+80+allée+Ampère+Saint-Martin-d%27Hères" }]
         : city.toLowerCase() === "lyon"
           ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lyon", sub: "Campus La Doua, Villeurbanne • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+La+Doua+Villeurbanne" }]
-          : city.toLowerCase() === "montpellier"
-            ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Montpellier", sub: "Campus Triolet • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Triolet+Montpellier" }]
-            : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+            : city.toLowerCase() === "montpellier"
+              ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Montpellier", sub: "Campus Triolet • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Triolet+Montpellier" }]
+              : city.toLowerCase() === "toulouse"
+                ? [{ icon: MapPin as React.ElementType, label: "SIMPPS Toulouse", sub: "Campus Paul Sabatier • Consultations gratuites", href: "https://maps.google.com/?q=SIMPPS+Campus+Paul+Sabatier+Toulouse" }]
+                : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
         ? [{ icon: Heart as React.ElementType, label: "Nightline Lyon", sub: "Écoute étudiante gratuite 21h-2h", href: "https://www.nightline.fr/" }]
         : city.toLowerCase() === "montpellier"
           ? [{ icon: Heart as React.ElementType, label: "Nightline Montpellier", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-          : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+          : city.toLowerCase() === "toulouse"
+            ? [{ icon: Heart as React.ElementType, label: "Nightline Toulouse", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+            : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
