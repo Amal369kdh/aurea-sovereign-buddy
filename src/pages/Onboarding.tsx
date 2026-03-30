@@ -23,7 +23,7 @@ const CITIES = [
   { name: "Lyon", pilot: true },
   { name: "Paris", pilot: false },
   { name: "Bordeaux", pilot: false },
-  { name: "Toulouse", pilot: false },
+  { name: "Toulouse", pilot: true },
   { name: "Montpellier", pilot: true },
   { name: "Strasbourg", pilot: false },
   { name: "Nantes", pilot: false },

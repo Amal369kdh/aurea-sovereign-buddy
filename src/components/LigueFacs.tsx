@@ -3,38 +3,38 @@ import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Medal, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface UniRank {
-  university: string;
+interface CityRank {
+  city: string;
   total_points: number;
   member_count: number;
 }
 
 const LigueFacs = () => {
-  const [rankings, setRankings] = useState<UniRank[]>([]);
+  const [rankings, setRankings] = useState<CityRank[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const fetchRankings = async () => {
-      // Aggregate points_social by university from public view
+      // Aggregate points_social by city from public view
       const { data } = await supabase
         .from("profiles_public")
-        .select("university, points_social");
+        .select("city, points_social");
 
       if (data) {
         const map = new Map<string, { total: number; count: number }>();
         for (const row of data) {
-          const uni = row.university?.trim();
-          if (!uni || uni.length < 2) continue;
-          const existing = map.get(uni) || { total: 0, count: 0 };
+          const c = row.city?.trim();
+          if (!c || c.length < 2) continue;
+          const existing = map.get(c) || { total: 0, count: 0 };
           existing.total += (row.points_social || 0);
           existing.count += 1;
-          map.set(uni, existing);
+          map.set(c, existing);
         }
 
         const sorted = Array.from(map.entries())
-          .map(([university, { total, count }]) => ({
-            university,
+          .map(([city, { total, count }]) => ({
+            city,
             total_points: total,
             member_count: count,
           }))
