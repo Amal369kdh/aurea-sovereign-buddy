@@ -249,7 +249,9 @@ const defaultTiles = (city: string) => [
         ? "⚠️ Lyon est en zone tendue. DSE à faire entre mars et le 31 mai (même sans confirmation d'admission). Pense à la Caution Visale (garant gratuit de l'État)."
         : city.toLowerCase() === "montpellier"
           ? "⚠️ Montpellier : transports gratuits pour les résidents de la Métropole ! Fais ton Pass Gratuité dès ton arrivée (pièce d'identité + justificatif de domicile)."
-          : undefined,
+          : city.toLowerCase() === "toulouse"
+            ? "⚠️ Toulouse : Instal'Toit = prêt 0% jusqu'à 500€ pour les 18-29 ans locataires depuis moins de 3 mois. Pense aussi à Visale (garant gratuit)."
+            : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
