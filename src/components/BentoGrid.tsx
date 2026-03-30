@@ -386,10 +386,15 @@ const defaultTiles = (city: string) => [
           ? [
               { icon: Bus as React.ElementType, label: "TaM — Transports GRATUITS", sub: "Pass Gratuité pour résidents de la Métropole • Appli M'Ticket", href: "https://www.tam-voyages.com" },
             ]
-          : [
-              { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-              { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
-            ]
+          : city.toLowerCase() === "toulouse"
+            ? [
+                { icon: Bus as React.ElementType, label: "Tisséo — Carte Pastel", sub: "Tarif réduit -26 ans • Métro 5h-minuit (3h jeu-sam)", href: "https://www.tisseo.fr" },
+                { icon: Globe as React.ElementType, label: "VélôToulouse", sub: "2600 vélos, 1ère demi-heure gratuite, abo 1,66€/an", href: "https://www.velouse.toulouse.fr" },
+              ]
+            : [
+                { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+                { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+              ]
       ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
       ...(city.toLowerCase() === "grenoble"
@@ -408,9 +413,14 @@ const defaultTiles = (city: string) => [
                 { icon: Globe as React.ElementType, label: "Carte Été Jeunes — 25€", sub: "Activités gratuites du 15 juin au 15 sept (musée Fabre, MO.CO., piscines…)", href: "https://www.montpellier.fr/actions/competences/jeunesse/dispositifs-de-soutien-la-jeunesse/carte-ete-jeunes" },
                 { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
               ]
-            : [
-                { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
-              ]
+            : city.toLowerCase() === "toulouse"
+              ? [
+                  { icon: Globe as React.ElementType, label: "Pass Toulouse+", sub: "Réductions culture & loisirs pendant 1 an", href: "https://metropole.toulouse.fr/actualites/nos-bons-plans-pour-un-quotidien-plus-facile" },
+                  { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                ]
+              : [
+                  { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+                ]
       ),
     ] as QuickLink[],
   },
