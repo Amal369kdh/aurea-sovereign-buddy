@@ -441,7 +441,12 @@ const defaultTiles = (city: string) => [
               { icon: MapPin as React.ElementType, label: "Espace Montpellier Jeunesse", sub: "Emploi, stages, BAFA, permis, ateliers CV — 12-29 ans", href: "https://www.montpellier.fr/actions/competences/jeunesse" },
               { icon: MapPin as React.ElementType, label: "Mission Locale Montpellier", sub: "Accompagnement 16-25 ans sortis du système scolaire", href: "https://www.montpellier.fr/vie-quotidienne/vivre-ici/trouver-un-emploi" },
             ]
-          : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+          : city.toLowerCase() === "toulouse"
+            ? [
+                { icon: MapPin as React.ElementType, label: "Info Jeunes Toulouse", sub: "17 rue de Metz • Ateliers CV, job dating, orientation", href: "https://maps.google.com/?q=Info+Jeunes+Toulouse+17+rue+de+Metz" },
+                { icon: MapPin as React.ElementType, label: "LIJ Soupetard — Accompagnement", sub: "CV, Parcoursup, orientation, stages, Mission Locale", href: "https://maps.google.com/?q=LIJ+Soupetard+Toulouse" },
+              ]
+            : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
@@ -477,12 +482,20 @@ const defaultTiles = (city: string) => [
               { icon: Home as React.ElementType, label: "Boutique Logement Jeunes", sub: "Accompagnement gratuit 18-30 ans : logement, aides, propriétaires", href: "https://www.montpellier.fr/actions/competences/jeunesse/dispositifs-de-soutien-la-jeunesse/aide-au-logement-pour-les-etudiants" },
               { icon: Globe as React.ElementType, label: "Maison Relations Internationales", sub: "Nelson Mandela • Échanges, bourses mobilité 500€", href: "https://www.montpellier.fr/actions/competences/action-internationale/programmes-dechanges-etudiants" },
             ]
-          : [
-              { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-              { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-              { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-              { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-            ]
+          : city.toLowerCase() === "toulouse"
+            ? [
+                { icon: Utensils as React.ElementType, label: "Restos du Cœur Toulouse", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                { icon: HandCoins as React.ElementType, label: "Fonds d'Aide aux Jeunes (FAJ)", sub: "Aide exceptionnelle étudiants en précarité — via assistante sociale CROUS", href: "https://www.crous-toulouse.fr" },
+                { icon: HandCoins as React.ElementType, label: "Instal'Toit — Prêt 0%", sub: "Jusqu'à 500€ pour les 18-29 ans, remboursable sur 2 ans", href: "https://metropole.toulouse.fr" },
+                { icon: HandCoins as React.ElementType, label: "Aides CROUS Toulouse", sub: "Aides spécifiques & financières", href: "https://www.crous-toulouse.fr" },
+                { icon: Globe as React.ElementType, label: "Espace Diversités Laïcité", sub: "Droits humains, égalité, accueil LGBT+, événements", href: "https://maps.google.com/?q=Espace+Diversités+Laïcité+Toulouse" },
+              ]
+            : [
+                { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+                { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+                { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+              ]
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
