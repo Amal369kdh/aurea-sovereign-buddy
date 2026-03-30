@@ -285,9 +285,14 @@ const defaultTiles = (city: string) => [
                 { icon: MapPin as React.ElementType, label: "Préfecture de l'Hérault", sub: "34 place des Martyrs de la Résistance, 34000 Montpellier", href: "https://maps.google.com/?q=Préfecture+Hérault+34+place+Martyrs+Résistance+Montpellier" },
                 { icon: MapPin as React.ElementType, label: "Espace Montpellier Jeunesse", sub: "1 place Francis Ponge • Emploi, logement, orientation 12-29 ans", href: "https://maps.google.com/?q=Espace+Montpellier+Jeunesse+1+place+Francis+Ponge" },
               ]
-            : [
-                { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-              ]
+            : city.toLowerCase() === "toulouse"
+              ? [
+                  { icon: MapPin as React.ElementType, label: "Préfecture de Haute-Garonne", sub: "1 place Saint-Étienne, 31038 Toulouse", href: "https://maps.google.com/?q=Préfecture+Haute-Garonne+1+place+Saint-Étienne+Toulouse" },
+                  { icon: MapPin as React.ElementType, label: "Welcome Desk Toulouse", sub: "Guichet unique étudiants internationaux — chaque rentrée", href: "https://metropole.toulouse.fr" },
+                ]
+              : [
+                  { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                ]
       ),
     ] as QuickLink[],
   },
@@ -307,7 +312,9 @@ const defaultTiles = (city: string) => [
         ? [{ icon: GraduationCap as React.ElementType, label: "LyonCampus — Mode d'emploi", sub: "Le guide complet pour étudier à Lyon", href: "https://www.lyoncampus.com/etudier/etudier-a-lyon-mode-demploi" }]
         : city.toLowerCase() === "montpellier"
           ? [{ icon: GraduationCap as React.ElementType, label: "Montpellier — Études & orientation", sub: "Maison des Relations Internationales, échanges étudiants", href: "https://www.montpellier.fr/actions/competences/jeunesse" }]
-          : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+          : city.toLowerCase() === "toulouse"
+            ? [{ icon: GraduationCap as React.ElementType, label: "Guide Jeunes Toulouse 2025-2026", sub: "Logement, santé, transport, emploi, culture — tout en un", href: "https://metropole.toulouse.fr/sites/toulouse-fr/files/2025-08/20250725_toulouse_guidejeunes_interieur-web_2.pdf" }]
+            : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
