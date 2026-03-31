@@ -511,7 +511,7 @@ const defaultTiles = (city: string) => [
               { icon: Home as React.ElementType, label: "Boutique Logement Jeunes", sub: "Accompagnement gratuit 18-30 ans : logement, aides, propriétaires", href: "https://www.montpellier.fr/actions/competences/jeunesse/dispositifs-de-soutien-la-jeunesse/aide-au-logement-pour-les-etudiants" },
               { icon: Globe as React.ElementType, label: "Maison Relations Internationales", sub: "Nelson Mandela • Échanges, bourses mobilité 500€", href: "https://www.montpellier.fr/actions/competences/action-internationale/programmes-dechanges-etudiants" },
             ]
-          : city.toLowerCase() === "toulouse"
+           : city.toLowerCase() === "toulouse"
             ? [
                 { icon: Utensils as React.ElementType, label: "Restos du Cœur Toulouse", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
                 { icon: HandCoins as React.ElementType, label: "Fonds d'Aide aux Jeunes (FAJ)", sub: "Aide exceptionnelle étudiants en précarité — via assistante sociale CROUS", href: "https://www.crous-toulouse.fr" },
@@ -519,12 +519,14 @@ const defaultTiles = (city: string) => [
                 { icon: HandCoins as React.ElementType, label: "Aides CROUS Toulouse", sub: "Aides spécifiques & financières", href: "https://www.crous-toulouse.fr" },
                 { icon: Globe as React.ElementType, label: "Espace Diversités Laïcité", sub: "Droits humains, égalité, accueil LGBT+, événements", href: "https://maps.google.com/?q=Espace+Diversités+Laïcité+Toulouse" },
               ]
-            : [
-                { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-                { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-                { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-              ]
+            : city.toLowerCase() === "clermont-ferrand"
+              ? [
+                  { icon: Utensils as React.ElementType, label: "Restos du Cœur Clermont", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                  { icon: HandCoins as React.ElementType, label: "Aides CROUS Clermont Auvergne", sub: "Aides spécifiques & financières", href: "https://www.crous-clermont.fr" },
+                  { icon: MapPin as React.ElementType, label: "Espace Info Jeunes", sub: "Offres logement gratuites, accompagnement jeunes", href: "https://clermont-ferrand.fr/se-loger" },
+                  { icon: Globe as React.ElementType, label: "Service Université Culture", sub: "Ateliers arts plastiques, danse, théâtre — gratuit/pas cher", href: "https://clermont-ferrand.fr/etudiants" },
+                ]
+              : [
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
