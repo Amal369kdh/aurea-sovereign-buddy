@@ -538,14 +538,18 @@ const defaultTiles = (city: string) => [
           ? [
               { icon: Globe as React.ElementType, label: "Bons plans culture CROUS", sub: "Billetterie, sport gratuit, ateliers artistiques", href: "https://www.crous-montpellier.fr" },
             ]
-          : city.toLowerCase() === "toulouse"
+           : city.toLowerCase() === "toulouse"
             ? [
                 { icon: Globe as React.ElementType, label: "Saisons Étudiantes Toulouse", sub: "Musées gratuits 6-15 mars + automne • Spectacles & expos", href: "https://metropole.toulouse.fr/actualites/les-rendez-vous-etudiants-culture" },
                 { icon: Globe as React.ElementType, label: "Pause Musicale", sub: "Concerts gratuits le jeudi à 12h30 — Salle du Sénéchal", href: "https://metropole.toulouse.fr/sortir/culture-et-loisirs/bons-plans-culturels" },
               ]
-            : [
-                { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-              ]
+            : city.toLowerCase() === "clermont-ferrand"
+              ? [
+                  { icon: Globe as React.ElementType, label: "Clermont fête ses étudiants", sub: "Événement d'intégration annuel — soirées gratuites à la rentrée", href: "https://clermont-ferrand.fr/etudiants" },
+                ]
+              : [
+                  { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
