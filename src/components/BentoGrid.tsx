@@ -319,9 +319,11 @@ const defaultTiles = (city: string) => [
         ? [{ icon: GraduationCap as React.ElementType, label: "LyonCampus — Mode d'emploi", sub: "Le guide complet pour étudier à Lyon", href: "https://www.lyoncampus.com/etudier/etudier-a-lyon-mode-demploi" }]
         : city.toLowerCase() === "montpellier"
           ? [{ icon: GraduationCap as React.ElementType, label: "Montpellier — Études & orientation", sub: "Maison des Relations Internationales, échanges étudiants", href: "https://www.montpellier.fr/actions/competences/jeunesse" }]
-          : city.toLowerCase() === "toulouse"
+           : city.toLowerCase() === "toulouse"
             ? [{ icon: GraduationCap as React.ElementType, label: "Guide Jeunes Toulouse 2025-2026", sub: "Logement, santé, transport, emploi, culture — tout en un", href: "https://metropole.toulouse.fr/sites/toulouse-fr/files/2025-08/20250725_toulouse_guidejeunes_interieur-web_2.pdf" }]
-            : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+            : city.toLowerCase() === "clermont-ferrand"
+              ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Clermont Auvergne", sub: "Bourses, logements, restauration, aides financières", href: "https://www.crous-clermont.fr" }]
+              : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
