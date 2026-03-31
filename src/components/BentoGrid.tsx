@@ -292,9 +292,14 @@ const defaultTiles = (city: string) => [
                   { icon: MapPin as React.ElementType, label: "Préfecture de Haute-Garonne", sub: "1 place Saint-Étienne, 31038 Toulouse", href: "https://maps.google.com/?q=Préfecture+Haute-Garonne+1+place+Saint-Étienne+Toulouse" },
                   { icon: MapPin as React.ElementType, label: "Welcome Desk Toulouse", sub: "Guichet unique étudiants internationaux — chaque rentrée", href: "https://metropole.toulouse.fr" },
                 ]
-              : [
-                  { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                ]
+              : city.toLowerCase() === "clermont-ferrand"
+                ? [
+                    { icon: MapPin as React.ElementType, label: "Préfecture du Puy-de-Dôme", sub: "18 bd Desaix, 63000 Clermont-Ferrand", href: "https://maps.google.com/?q=Préfecture+Puy-de-Dôme+18+boulevard+Desaix+Clermont-Ferrand" },
+                    { icon: MapPin as React.ElementType, label: "Welcome Clermont", sub: "Guide d'installation pour étudiants et nouveaux arrivants", href: "https://welcomeclermont.com/etudiants-francais/" },
+                  ]
+                : [
+                    { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                  ]
       ),
     ] as QuickLink[],
   },
