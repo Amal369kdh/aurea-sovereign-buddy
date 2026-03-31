@@ -364,7 +364,9 @@ const defaultTiles = (city: string) => [
               ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Montpellier", sub: "Campus Triolet • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Triolet+Montpellier" }]
               : city.toLowerCase() === "toulouse"
                 ? [{ icon: MapPin as React.ElementType, label: "SIMPPS Toulouse", sub: "Campus Paul Sabatier • Consultations gratuites", href: "https://maps.google.com/?q=SIMPPS+Campus+Paul+Sabatier+Toulouse" }]
-                : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                : city.toLowerCase() === "clermont-ferrand"
+                  ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus des Cézeaux, Aubière • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Cézeaux+Aubière" }]
+                  : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
