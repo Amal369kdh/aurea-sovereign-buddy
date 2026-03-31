@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Trophy, Medal, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Trophy, TrendingUp, ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CityRank {
@@ -10,13 +11,15 @@ interface CityRank {
 }
 
 const LigueFacs = () => {
+  const { user } = useAuth();
   const [rankings, setRankings] = useState<CityRank[]>([]);
+  const [userCity, setUserCity] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const fetchRankings = async () => {
-      // Aggregate points_social by city from public view
+      // Fetch all cities + points from public view (no PII exposed)
       const { data } = await supabase
         .from("profiles_public")
         .select("city, points_social");
@@ -43,18 +46,34 @@ const LigueFacs = () => {
 
         setRankings(sorted);
       }
+
+      // Get user's city from their own profile (RLS-safe)
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("city")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (profile?.city) setUserCity(profile.city.trim());
+      }
+
       setLoading(false);
     };
 
     fetchRankings();
-  }, []);
+  }, [user?.id]);
 
   if (loading) return null;
   if (rankings.length === 0) return null;
 
-  const top3 = rankings.slice(0, 3);
-  const rest = rankings.slice(3, 10);
+  const top10 = rankings.slice(0, 10);
   const medals = ["🥇", "🥈", "🥉"];
+
+  // User's city rank (1-indexed)
+  const userCityRank = userCity
+    ? rankings.findIndex((r) => r.city.toLowerCase() === userCity.toLowerCase()) + 1
+    : 0;
+  const userCityData = userCityRank > 0 ? rankings[userCityRank - 1] : null;
 
   return (
     <div className="rounded-3xl border border-border bg-card p-5 mb-5">
@@ -68,7 +87,7 @@ const LigueFacs = () => {
           </div>
           <div className="text-left">
             <h3 className="text-sm font-bold text-foreground">Ligue des Villes 🏆</h3>
-            <p className="text-[10px] text-muted-foreground">Classement des villes par points sociaux cumulés</p>
+            <p className="text-[10px] text-muted-foreground">Classement national par points sociaux cumulés</p>
           </div>
         </div>
         {expanded ? (
@@ -87,48 +106,93 @@ const LigueFacs = () => {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="mt-4 space-y-2">
-              {top3.map((r, i) => (
-                <div
-                  key={r.city}
-                  className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${
-                    i === 0
-                      ? "border-primary/30 bg-primary/5"
-                      : "border-border bg-secondary/50"
-                  }`}
-                >
-                  <span className="text-lg">{medals[i]}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground truncate">{r.city}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {r.member_count} membre{r.member_count > 1 ? "s" : ""} actif{r.member_count > 1 ? "s" : ""}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <TrendingUp className="h-3 w-3 text-primary" />
-                    <span className="text-sm font-bold text-primary">{r.total_points}</span>
-                    <span className="text-[10px] text-muted-foreground">pts</span>
-                  </div>
+            {/* User's city highlight */}
+            {userCityData && userCityRank > 0 && (
+              <div className="mt-4 mb-3 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3">
+                <MapPin className="h-4 w-4 shrink-0 text-primary" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-primary">
+                    Ta ville : {userCityData.city}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    Rang #{userCityRank} sur {rankings.length} villes · {userCityData.member_count} membre{userCityData.member_count > 1 ? "s" : ""} · {userCityData.total_points} pts
+                  </p>
                 </div>
-              ))}
+                {userCityRank <= 3 && <span className="text-lg">{medals[userCityRank - 1]}</span>}
+              </div>
+            )}
 
-              {rest.length > 0 && (
-                <div className="space-y-1.5 pt-1">
-                  {rest.map((r, i) => (
-                    <div
-                      key={r.city}
-                      className="flex items-center gap-3 rounded-xl px-4 py-2"
-                    >
-                      <span className="text-xs font-bold text-muted-foreground w-5 text-right">
-                        {i + 4}.
+            {/* National Top 10 */}
+            <div className={`${!userCityData ? 'mt-4' : ''} space-y-2`}>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                🇫🇷 Classement national
+              </p>
+              {top10.map((r, i) => {
+                const isUserCity = userCity && r.city.toLowerCase() === userCity.toLowerCase();
+                return (
+                  <div
+                    key={r.city}
+                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${
+                      isUserCity
+                        ? "border-primary/40 bg-primary/10"
+                        : i < 3
+                          ? i === 0 ? "border-primary/30 bg-primary/5" : "border-border bg-secondary/50"
+                          : "border-transparent"
+                    }`}
+                  >
+                    {i < 3 ? (
+                      <span className="text-lg w-6 text-center">{medals[i]}</span>
+                    ) : (
+                      <span className="text-xs font-bold text-muted-foreground w-6 text-center">
+                        {i + 1}.
                       </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-foreground truncate">{r.city}</p>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className={`text-sm font-bold truncate ${isUserCity ? 'text-primary' : 'text-foreground'}`}>
+                          {r.city}
+                        </p>
+                        {isUserCity && <MapPin className="h-3 w-3 shrink-0 text-primary" />}
                       </div>
-                      <span className="text-xs font-semibold text-muted-foreground">{r.total_points} pts</span>
+                      <p className="text-[10px] text-muted-foreground">
+                        {r.member_count} membre{r.member_count > 1 ? "s" : ""} actif{r.member_count > 1 ? "s" : ""}
+                      </p>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <TrendingUp className="h-3 w-3 text-primary" />
+                      <span className="text-sm font-bold text-primary">{r.total_points}</span>
+                      <span className="text-[10px] text-muted-foreground">pts</span>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* If user's city is not in top 10, show it at the bottom */}
+              {userCityData && userCityRank > 10 && (
+                <>
+                  <div className="flex items-center justify-center py-1">
+                    <span className="text-[10px] text-muted-foreground">···</span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-primary/10 px-4 py-3">
+                    <span className="text-xs font-bold text-primary w-6 text-center">
+                      {userCityRank}.
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-bold text-primary truncate">{userCityData.city}</p>
+                        <MapPin className="h-3 w-3 shrink-0 text-primary" />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">
+                        {userCityData.member_count} membre{userCityData.member_count > 1 ? "s" : ""} actif{userCityData.member_count > 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <TrendingUp className="h-3 w-3 text-primary" />
+                      <span className="text-sm font-bold text-primary">{userCityData.total_points}</span>
+                      <span className="text-[10px] text-muted-foreground">pts</span>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
 
