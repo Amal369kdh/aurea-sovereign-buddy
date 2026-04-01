@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, ShieldCheck, Save, Heart, Sparkles } from "lucide-react";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
+import UserStats from "@/components/UserStats";
 
 const NATIONALITIES = [
   "🇫🇷 Française",
