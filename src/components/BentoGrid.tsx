@@ -292,14 +292,19 @@ const defaultTiles = (city: string) => [
                   { icon: MapPin as React.ElementType, label: "Préfecture de Haute-Garonne", sub: "1 place Saint-Étienne, 31038 Toulouse", href: "https://maps.google.com/?q=Préfecture+Haute-Garonne+1+place+Saint-Étienne+Toulouse" },
                   { icon: MapPin as React.ElementType, label: "Welcome Desk Toulouse", sub: "Guichet unique étudiants internationaux — chaque rentrée", href: "https://metropole.toulouse.fr" },
                 ]
-              : city.toLowerCase() === "clermont-ferrand"
+               : city.toLowerCase() === "clermont-ferrand"
                 ? [
                     { icon: MapPin as React.ElementType, label: "Préfecture du Puy-de-Dôme", sub: "18 bd Desaix, 63000 Clermont-Ferrand", href: "https://maps.google.com/?q=Préfecture+Puy-de-Dôme+18+boulevard+Desaix+Clermont-Ferrand" },
                     { icon: MapPin as React.ElementType, label: "Welcome Clermont", sub: "Guide d'installation pour étudiants et nouveaux arrivants", href: "https://welcomeclermont.com/etudiants-francais/" },
                   ]
-                : [
-                    { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                  ]
+                : city.toLowerCase() === "marseille"
+                  ? [
+                      { icon: MapPin as React.ElementType, label: "Préfecture des Bouches-du-Rhône", sub: "Place Félix Baret, 13282 Marseille", href: "https://maps.google.com/?q=Préfecture+Bouches-du-Rhône+Place+Félix+Baret+Marseille" },
+                      { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant", sub: "96 La Canebière, 13001 Marseille • Info, accompagnement, événements", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
+                    ]
+                  : [
+                      { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                    ]
       ),
     ] as QuickLink[],
   },
@@ -321,9 +326,11 @@ const defaultTiles = (city: string) => [
           ? [{ icon: GraduationCap as React.ElementType, label: "Montpellier — Études & orientation", sub: "Maison des Relations Internationales, échanges étudiants", href: "https://www.montpellier.fr/actions/competences/jeunesse" }]
            : city.toLowerCase() === "toulouse"
             ? [{ icon: GraduationCap as React.ElementType, label: "Guide Jeunes Toulouse 2025-2026", sub: "Logement, santé, transport, emploi, culture — tout en un", href: "https://metropole.toulouse.fr/sites/toulouse-fr/files/2025-08/20250725_toulouse_guidejeunes_interieur-web_2.pdf" }]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Clermont Auvergne", sub: "Bourses, logements, restauration, aides financières", href: "https://www.crous-clermont.fr" }]
-              : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Clermont Auvergne", sub: "Bourses, logements, restauration, aides financières", href: "https://www.crous-clermont.fr" }]
+               : city.toLowerCase() === "marseille"
+                 ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Aix-Marseille Avignon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-aix-marseille.fr" }]
+                 : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
@@ -366,7 +373,9 @@ const defaultTiles = (city: string) => [
                 ? [{ icon: MapPin as React.ElementType, label: "SIMPPS Toulouse", sub: "Campus Paul Sabatier • Consultations gratuites", href: "https://maps.google.com/?q=SIMPPS+Campus+Paul+Sabatier+Toulouse" }]
                 : city.toLowerCase() === "clermont-ferrand"
                   ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus des Cézeaux, Aubière • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Cézeaux+Aubière" }]
-                  : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                  : city.toLowerCase() === "marseille"
+                    ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante AMU", sub: "Campus Saint-Charles • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Saint-Charles+Marseille" }]
+                    : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
@@ -375,9 +384,11 @@ const defaultTiles = (city: string) => [
           ? [{ icon: Heart as React.ElementType, label: "Nightline Montpellier", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
            : city.toLowerCase() === "toulouse"
             ? [{ icon: Heart as React.ElementType, label: "Nightline Toulouse", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [{ icon: Heart as React.ElementType, label: "Nightline Clermont", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-              : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [{ icon: Heart as React.ElementType, label: "Nightline Clermont", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+               : city.toLowerCase() === "marseille"
+                 ? [{ icon: Heart as React.ElementType, label: "Nightline Aix-Marseille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                 : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
@@ -404,12 +415,17 @@ const defaultTiles = (city: string) => [
                 { icon: Bus as React.ElementType, label: "Tisséo — Carte Pastel", sub: "Tarif réduit -26 ans • Métro 5h-minuit (3h jeu-sam)", href: "https://www.tisseo.fr" },
                 { icon: Globe as React.ElementType, label: "VélôToulouse", sub: "2600 vélos, 1ère demi-heure gratuite, abo 1,66€/an", href: "https://www.velouse.toulouse.fr" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: Bus as React.ElementType, label: "T2C — Abo étudiant", sub: "~24€/mois • Tarif solidaire pour boursiers", href: "https://www.t2c.fr" },
-                  { icon: Globe as React.ElementType, label: "C.Vélo — Vélos en location", sub: "Trajets courts, formule accessible étudiants", href: "https://www.c-velo.fr" },
-                ]
-              : [
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: Bus as React.ElementType, label: "T2C — Abo étudiant", sub: "~24€/mois • Tarif solidaire pour boursiers", href: "https://www.t2c.fr" },
+                   { icon: Globe as React.ElementType, label: "C.Vélo — Vélos en location", sub: "Trajets courts, formule accessible étudiants", href: "https://www.c-velo.fr" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: Bus as React.ElementType, label: "RTM — Abo Jeune -26 ans", sub: "~33€/mois • Métro, tramway, bus", href: "https://www.rtm.fr" },
+                     { icon: Globe as React.ElementType, label: "Le Vélo — Vélos en libre-service", sub: "Stations dans tout Marseille", href: "https://www.levelo-mpm.fr" },
+                   ]
+                 : [
                 { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
                 { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
               ]
@@ -436,13 +452,19 @@ const defaultTiles = (city: string) => [
                   { icon: Globe as React.ElementType, label: "Pass Toulouse+", sub: "Réductions culture & loisirs pendant 1 an", href: "https://metropole.toulouse.fr/actualites/nos-bons-plans-pour-un-quotidien-plus-facile" },
                   { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                 ]
-              : city.toLowerCase() === "clermont-ferrand"
-                ? [
-                    { icon: Globe as React.ElementType, label: "Carte Cité Jeune — Gratuite", sub: "Réductions culture, festivals, théâtres pour -27 ans", href: "https://clermont-ferrand.fr/etudiants" },
-                    { icon: Globe as React.ElementType, label: "Carte Si T Jeune — Gratuite", sub: "Cinémas, concerts, musées pour 12-27 ans", href: "https://clermont-ferrand.fr/etudiants" },
-                    { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                  ]
-                : [
+                 : city.toLowerCase() === "clermont-ferrand"
+                   ? [
+                       { icon: Globe as React.ElementType, label: "Carte Cité Jeune — Gratuite", sub: "Réductions culture, festivals, théâtres pour -27 ans", href: "https://clermont-ferrand.fr/etudiants" },
+                       { icon: Globe as React.ElementType, label: "Carte Si T Jeune — Gratuite", sub: "Cinémas, concerts, musées pour 12-27 ans", href: "https://clermont-ferrand.fr/etudiants" },
+                       { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                     ]
+                   : city.toLowerCase() === "marseille"
+                     ? [
+                         { icon: Utensils as React.ElementType, label: "Repas offerts RU Canebière", sub: "Mardis soirs d'octobre à décembre — gratuit", href: "https://www.crous-aix-marseille.fr/restauration/" },
+                         { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                         { icon: Globe as React.ElementType, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
+                       ]
+                     : [
                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
                 ]
       ),
@@ -470,12 +492,17 @@ const defaultTiles = (city: string) => [
                 { icon: MapPin as React.ElementType, label: "Info Jeunes Toulouse", sub: "17 rue de Metz • Ateliers CV, job dating, orientation", href: "https://maps.google.com/?q=Info+Jeunes+Toulouse+17+rue+de+Metz" },
                 { icon: MapPin as React.ElementType, label: "LIJ Soupetard — Accompagnement", sub: "CV, Parcoursup, orientation, stages, Mission Locale", href: "https://maps.google.com/?q=LIJ+Soupetard+Toulouse" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: MapPin as React.ElementType, label: "Espace Info Jeunes Clermont", sub: "Accompagnement emploi, logement, orientation", href: "https://clermont-ferrand.fr/etudiants" },
-                  { icon: Globe as React.ElementType, label: "Welcome Clermont — Emploi & stages", sub: "Guide emploi, alternance, vie étudiante", href: "https://welcomeclermont.com/etudiants-francais/" },
-                ]
-              : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: MapPin as React.ElementType, label: "Espace Info Jeunes Clermont", sub: "Accompagnement emploi, logement, orientation", href: "https://clermont-ferrand.fr/etudiants" },
+                   { icon: Globe as React.ElementType, label: "Welcome Clermont — Emploi & stages", sub: "Guide emploi, alternance, vie étudiante", href: "https://welcomeclermont.com/etudiants-francais/" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant Marseille", sub: "96 La Canebière • Info, stages, accompagnement", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
+                     { icon: Globe as React.ElementType, label: "Sortie d'Amphi Marseille", sub: "Actions gratuites de la Ville pour les étudiants", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
+                   ]
+                 : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
@@ -519,19 +546,28 @@ const defaultTiles = (city: string) => [
                 { icon: HandCoins as React.ElementType, label: "Aides CROUS Toulouse", sub: "Aides spécifiques & financières", href: "https://www.crous-toulouse.fr" },
                 { icon: Globe as React.ElementType, label: "Espace Diversités Laïcité", sub: "Droits humains, égalité, accueil LGBT+, événements", href: "https://maps.google.com/?q=Espace+Diversités+Laïcité+Toulouse" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: Utensils as React.ElementType, label: "Restos du Cœur Clermont", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                  { icon: HandCoins as React.ElementType, label: "Aides CROUS Clermont Auvergne", sub: "Aides spécifiques & financières", href: "https://www.crous-clermont.fr" },
-                  { icon: MapPin as React.ElementType, label: "Espace Info Jeunes", sub: "Offres logement gratuites, accompagnement jeunes", href: "https://clermont-ferrand.fr/se-loger" },
-                  { icon: Globe as React.ElementType, label: "Service Université Culture", sub: "Ateliers arts plastiques, danse, théâtre — gratuit/pas cher", href: "https://clermont-ferrand.fr/etudiants" },
-                ]
-              : [
-                  { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-                  { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                  { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-                  { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-                ]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: Utensils as React.ElementType, label: "Restos du Cœur Clermont", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                   { icon: HandCoins as React.ElementType, label: "Aides CROUS Clermont Auvergne", sub: "Aides spécifiques & financières", href: "https://www.crous-clermont.fr" },
+                   { icon: MapPin as React.ElementType, label: "Espace Info Jeunes", sub: "Offres logement gratuites, accompagnement jeunes", href: "https://clermont-ferrand.fr/se-loger" },
+                   { icon: Globe as React.ElementType, label: "Service Université Culture", sub: "Ateliers arts plastiques, danse, théâtre — gratuit/pas cher", href: "https://clermont-ferrand.fr/etudiants" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: Utensils as React.ElementType, label: "Repas offerts CROUS Marseille", sub: "RU Canebière, Saint-Charles, Luminy — repas gratuits ponctuels", href: "https://www.crous-aix-marseille.fr/restauration/" },
+                     { icon: Utensils as React.ElementType, label: "Restos du Cœur Marseille", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                     { icon: HandCoins as React.ElementType, label: "Aides CROUS Aix-Marseille", sub: "Aides spécifiques & financières", href: "https://www.crous-aix-marseille.fr" },
+                     { icon: Home as React.ElementType, label: "Hébergement d'urgence étudiant", sub: "Logement temporaire sans loyer, avec suivi social", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
+                     { icon: Globe as React.ElementType, label: "App Le Dégaine", sub: "Recense toutes les aides sociales et financières étudiantes", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
+                     { icon: Globe as React.ElementType, label: "Service Respect Égalité AMU", sub: "Lutte contre violences sexistes, accompagnement victimes", href: "https://www.univ-amu.fr" },
+                   ]
+                 : [
+                     { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+                     { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                     { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+                     { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+                   ]
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
@@ -548,13 +584,18 @@ const defaultTiles = (city: string) => [
                 { icon: Globe as React.ElementType, label: "Saisons Étudiantes Toulouse", sub: "Musées gratuits 6-15 mars + automne • Spectacles & expos", href: "https://metropole.toulouse.fr/actualites/les-rendez-vous-etudiants-culture" },
                 { icon: Globe as React.ElementType, label: "Pause Musicale", sub: "Concerts gratuits le jeudi à 12h30 — Salle du Sénéchal", href: "https://metropole.toulouse.fr/sortir/culture-et-loisirs/bons-plans-culturels" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: Globe as React.ElementType, label: "Clermont fête ses étudiants", sub: "Événement d'intégration annuel — soirées gratuites à la rentrée", href: "https://clermont-ferrand.fr/etudiants" },
-                ]
-              : [
-                  { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                ]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: Globe as React.ElementType, label: "Clermont fête ses étudiants", sub: "Événement d'intégration annuel — soirées gratuites à la rentrée", href: "https://clermont-ferrand.fr/etudiants" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: Globe as React.ElementType, label: "Nuit des Étudiants du Monde", sub: "Grand événement d'accueil à Marseille chaque rentrée", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
+                     { icon: Globe as React.ElementType, label: "Cohabilis — Habitat solidaire", sub: "Cohabitation intergénérationnelle étudiants-seniors", href: "https://www.cohabilis.org" },
+                   ]
+                 : [
+                     { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                   ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
@@ -734,6 +775,8 @@ const COMING_SOON_CITIES = [
   { name: "Lille", emoji: "🏭", label: "Hauts-de-France" },
   { name: "Nice", emoji: "🌊", label: "Côte d'Azur" },
   { name: "Strasbourg", emoji: "🥨", label: "Grand Est" },
+  { name: "Nantes", emoji: "🐘", label: "Pays de la Loire" },
+  { name: "Rennes", emoji: "🏰", label: "Bretagne" },
 ];
 
 /* ─── Main grid ─── */

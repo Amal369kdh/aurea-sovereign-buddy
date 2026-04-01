@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, ShieldCheck, Save, Heart, Sparkles } from "lucide-react";
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
+import UserStats from "@/components/UserStats";
 
 const NATIONALITIES = [
   "🇫🇷 Française",
@@ -269,6 +270,8 @@ const Profile = () => {
       </div>
 
       <div className="mx-auto max-w-lg space-y-4 px-4 pt-6">
+        {/* ── Statistiques utilisateur ── */}
+        <UserStats />
         {/* ── Header avatar ── */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
