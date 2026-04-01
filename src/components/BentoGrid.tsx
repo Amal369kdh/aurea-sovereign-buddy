@@ -492,12 +492,17 @@ const defaultTiles = (city: string) => [
                 { icon: MapPin as React.ElementType, label: "Info Jeunes Toulouse", sub: "17 rue de Metz • Ateliers CV, job dating, orientation", href: "https://maps.google.com/?q=Info+Jeunes+Toulouse+17+rue+de+Metz" },
                 { icon: MapPin as React.ElementType, label: "LIJ Soupetard — Accompagnement", sub: "CV, Parcoursup, orientation, stages, Mission Locale", href: "https://maps.google.com/?q=LIJ+Soupetard+Toulouse" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: MapPin as React.ElementType, label: "Espace Info Jeunes Clermont", sub: "Accompagnement emploi, logement, orientation", href: "https://clermont-ferrand.fr/etudiants" },
-                  { icon: Globe as React.ElementType, label: "Welcome Clermont — Emploi & stages", sub: "Guide emploi, alternance, vie étudiante", href: "https://welcomeclermont.com/etudiants-francais/" },
-                ]
-              : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: MapPin as React.ElementType, label: "Espace Info Jeunes Clermont", sub: "Accompagnement emploi, logement, orientation", href: "https://clermont-ferrand.fr/etudiants" },
+                   { icon: Globe as React.ElementType, label: "Welcome Clermont — Emploi & stages", sub: "Guide emploi, alternance, vie étudiante", href: "https://welcomeclermont.com/etudiants-francais/" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant Marseille", sub: "96 La Canebière • Info, stages, accompagnement", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
+                     { icon: Globe as React.ElementType, label: "Sortie d'Amphi Marseille", sub: "Actions gratuites de la Ville pour les étudiants", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
+                   ]
+                 : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
