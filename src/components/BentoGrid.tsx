@@ -584,13 +584,18 @@ const defaultTiles = (city: string) => [
                 { icon: Globe as React.ElementType, label: "Saisons Étudiantes Toulouse", sub: "Musées gratuits 6-15 mars + automne • Spectacles & expos", href: "https://metropole.toulouse.fr/actualites/les-rendez-vous-etudiants-culture" },
                 { icon: Globe as React.ElementType, label: "Pause Musicale", sub: "Concerts gratuits le jeudi à 12h30 — Salle du Sénéchal", href: "https://metropole.toulouse.fr/sortir/culture-et-loisirs/bons-plans-culturels" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: Globe as React.ElementType, label: "Clermont fête ses étudiants", sub: "Événement d'intégration annuel — soirées gratuites à la rentrée", href: "https://clermont-ferrand.fr/etudiants" },
-                ]
-              : [
-                  { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                ]
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: Globe as React.ElementType, label: "Clermont fête ses étudiants", sub: "Événement d'intégration annuel — soirées gratuites à la rentrée", href: "https://clermont-ferrand.fr/etudiants" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: Globe as React.ElementType, label: "Nuit des Étudiants du Monde", sub: "Grand événement d'accueil à Marseille chaque rentrée", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
+                     { icon: Globe as React.ElementType, label: "Cohabilis — Habitat solidaire", sub: "Cohabitation intergénérationnelle étudiants-seniors", href: "https://www.cohabilis.org" },
+                   ]
+                 : [
+                     { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                   ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
