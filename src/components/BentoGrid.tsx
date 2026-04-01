@@ -415,12 +415,17 @@ const defaultTiles = (city: string) => [
                 { icon: Bus as React.ElementType, label: "Tisséo — Carte Pastel", sub: "Tarif réduit -26 ans • Métro 5h-minuit (3h jeu-sam)", href: "https://www.tisseo.fr" },
                 { icon: Globe as React.ElementType, label: "VélôToulouse", sub: "2600 vélos, 1ère demi-heure gratuite, abo 1,66€/an", href: "https://www.velouse.toulouse.fr" },
               ]
-            : city.toLowerCase() === "clermont-ferrand"
-              ? [
-                  { icon: Bus as React.ElementType, label: "T2C — Abo étudiant", sub: "~24€/mois • Tarif solidaire pour boursiers", href: "https://www.t2c.fr" },
-                  { icon: Globe as React.ElementType, label: "C.Vélo — Vélos en location", sub: "Trajets courts, formule accessible étudiants", href: "https://www.c-velo.fr" },
-                ]
-              : [
+             : city.toLowerCase() === "clermont-ferrand"
+               ? [
+                   { icon: Bus as React.ElementType, label: "T2C — Abo étudiant", sub: "~24€/mois • Tarif solidaire pour boursiers", href: "https://www.t2c.fr" },
+                   { icon: Globe as React.ElementType, label: "C.Vélo — Vélos en location", sub: "Trajets courts, formule accessible étudiants", href: "https://www.c-velo.fr" },
+                 ]
+               : city.toLowerCase() === "marseille"
+                 ? [
+                     { icon: Bus as React.ElementType, label: "RTM — Abo Jeune -26 ans", sub: "~33€/mois • Métro, tramway, bus", href: "https://www.rtm.fr" },
+                     { icon: Globe as React.ElementType, label: "Le Vélo — Vélos en libre-service", sub: "Stations dans tout Marseille", href: "https://www.levelo-mpm.fr" },
+                   ]
+                 : [
                 { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
                 { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
               ]
