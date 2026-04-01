@@ -452,13 +452,19 @@ const defaultTiles = (city: string) => [
                   { icon: Globe as React.ElementType, label: "Pass Toulouse+", sub: "Réductions culture & loisirs pendant 1 an", href: "https://metropole.toulouse.fr/actualites/nos-bons-plans-pour-un-quotidien-plus-facile" },
                   { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                 ]
-              : city.toLowerCase() === "clermont-ferrand"
-                ? [
-                    { icon: Globe as React.ElementType, label: "Carte Cité Jeune — Gratuite", sub: "Réductions culture, festivals, théâtres pour -27 ans", href: "https://clermont-ferrand.fr/etudiants" },
-                    { icon: Globe as React.ElementType, label: "Carte Si T Jeune — Gratuite", sub: "Cinémas, concerts, musées pour 12-27 ans", href: "https://clermont-ferrand.fr/etudiants" },
-                    { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                  ]
-                : [
+                 : city.toLowerCase() === "clermont-ferrand"
+                   ? [
+                       { icon: Globe as React.ElementType, label: "Carte Cité Jeune — Gratuite", sub: "Réductions culture, festivals, théâtres pour -27 ans", href: "https://clermont-ferrand.fr/etudiants" },
+                       { icon: Globe as React.ElementType, label: "Carte Si T Jeune — Gratuite", sub: "Cinémas, concerts, musées pour 12-27 ans", href: "https://clermont-ferrand.fr/etudiants" },
+                       { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                     ]
+                   : city.toLowerCase() === "marseille"
+                     ? [
+                         { icon: Utensils as React.ElementType, label: "Repas offerts RU Canebière", sub: "Mardis soirs d'octobre à décembre — gratuit", href: "https://www.crous-aix-marseille.fr/restauration/" },
+                         { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                         { icon: Globe as React.ElementType, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
+                       ]
+                     : [
                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
                 ]
       ),
