@@ -292,14 +292,19 @@ const defaultTiles = (city: string) => [
                   { icon: MapPin as React.ElementType, label: "Préfecture de Haute-Garonne", sub: "1 place Saint-Étienne, 31038 Toulouse", href: "https://maps.google.com/?q=Préfecture+Haute-Garonne+1+place+Saint-Étienne+Toulouse" },
                   { icon: MapPin as React.ElementType, label: "Welcome Desk Toulouse", sub: "Guichet unique étudiants internationaux — chaque rentrée", href: "https://metropole.toulouse.fr" },
                 ]
-              : city.toLowerCase() === "clermont-ferrand"
+               : city.toLowerCase() === "clermont-ferrand"
                 ? [
                     { icon: MapPin as React.ElementType, label: "Préfecture du Puy-de-Dôme", sub: "18 bd Desaix, 63000 Clermont-Ferrand", href: "https://maps.google.com/?q=Préfecture+Puy-de-Dôme+18+boulevard+Desaix+Clermont-Ferrand" },
                     { icon: MapPin as React.ElementType, label: "Welcome Clermont", sub: "Guide d'installation pour étudiants et nouveaux arrivants", href: "https://welcomeclermont.com/etudiants-francais/" },
                   ]
-                : [
-                    { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                  ]
+                : city.toLowerCase() === "marseille"
+                  ? [
+                      { icon: MapPin as React.ElementType, label: "Préfecture des Bouches-du-Rhône", sub: "Place Félix Baret, 13282 Marseille", href: "https://maps.google.com/?q=Préfecture+Bouches-du-Rhône+Place+Félix+Baret+Marseille" },
+                      { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant", sub: "96 La Canebière, 13001 Marseille • Info, accompagnement, événements", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
+                    ]
+                  : [
+                      { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                    ]
       ),
     ] as QuickLink[],
   },
