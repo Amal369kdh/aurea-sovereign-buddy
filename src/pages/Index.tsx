@@ -83,6 +83,7 @@ const Index = () => {
   const [profileCity, setProfileCity] = useState<string | null>(null);
   const [showCityBanner, setShowCityBanner] = useState(false);
   const { flags } = useFeatureFlags();
+  const { activeCities } = useActiveCities();
   const hubSocialEnabled = flags["hub_social"] !== false;
 
   useEffect(() => {
@@ -99,14 +100,16 @@ const Index = () => {
           if (data.has_seen_welcome === false) {
             setShowWelcome(true);
           }
-          // Show banner if user's city is not Grenoble (our pilot city)
+          // Show banner only if user's city is NOT active
           const effectiveCity = city ?? data.target_city;
-          if (effectiveCity && effectiveCity.toLowerCase() !== "grenoble") {
+          if (effectiveCity && !activeCities.includes(effectiveCity.toLowerCase().trim())) {
             setShowCityBanner(true);
+          } else {
+            setShowCityBanner(false);
           }
         }
       });
-  }, [user?.id]);
+  }, [user?.id, activeCities]);
 
   return (
     <div className="flex min-h-screen bg-background">
