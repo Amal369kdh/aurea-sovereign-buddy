@@ -299,12 +299,17 @@ const defaultTiles = (city: string) => [
                     { icon: MapPin as React.ElementType, label: "Préfecture du Puy-de-Dôme", sub: "18 bd Desaix, 63000 Clermont-Ferrand", href: "https://maps.google.com/?q=Préfecture+Puy-de-Dôme+18+boulevard+Desaix+Clermont-Ferrand" },
                     { icon: MapPin as React.ElementType, label: "Welcome Clermont", sub: "Guide d'installation pour étudiants et nouveaux arrivants", href: "https://welcomeclermont.com/etudiants-francais/" },
                   ]
-                : city.toLowerCase() === "marseille"
-                  ? [
-                      { icon: MapPin as React.ElementType, label: "Préfecture des Bouches-du-Rhône", sub: "Place Félix Baret, 13282 Marseille", href: "https://maps.google.com/?q=Préfecture+Bouches-du-Rhône+Place+Félix+Baret+Marseille" },
-                      { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant", sub: "96 La Canebière, 13001 Marseille • Info, accompagnement, événements", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
-                    ]
-                  : [
+                   : city.toLowerCase() === "marseille"
+                   ? [
+                       { icon: MapPin as React.ElementType, label: "Préfecture des Bouches-du-Rhône", sub: "Place Félix Baret, 13282 Marseille", href: "https://maps.google.com/?q=Préfecture+Bouches-du-Rhône+Place+Félix+Baret+Marseille" },
+                       { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant", sub: "96 La Canebière, 13001 Marseille • Info, accompagnement, événements", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
+                     ]
+                   : city.toLowerCase() === "bordeaux"
+                     ? [
+                         { icon: MapPin as React.ElementType, label: "Préfecture de la Gironde", sub: "2 esplanade Charles de Gaulle, 33000 Bordeaux", href: "https://maps.google.com/?q=Préfecture+Gironde+2+esplanade+Charles+de+Gaulle+Bordeaux" },
+                         { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel d'accueil — forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
+                       ]
+                     : [
                       { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
                     ]
       ),
