@@ -251,9 +251,11 @@ const defaultTiles = (city: string) => [
           ? "⚠️ Montpellier : transports gratuits pour les résidents de la Métropole ! Fais ton Pass Gratuité dès ton arrivée (pièce d'identité + justificatif de domicile)."
           : city.toLowerCase() === "toulouse"
             ? "⚠️ Toulouse : Instal'Toit = prêt 0% jusqu'à 500€ pour les 18-29 ans locataires depuis moins de 3 mois. Pense aussi à Visale (garant gratuit)."
-            : city.toLowerCase() === "clermont-ferrand"
-              ? "⚠️ Clermont-Ferrand : loyer moyen ~366€ (une des villes les moins chères). Pense au DSE + Lokaviz + Espace Info Jeunes pour des offres gratuites toute l'année."
-              : undefined,
+              : city.toLowerCase() === "clermont-ferrand"
+               ? "⚠️ Clermont-Ferrand : loyer moyen ~366€ (une des villes les moins chères). Pense au DSE + Lokaviz + Espace Info Jeunes pour des offres gratuites toute l'année."
+               : city.toLowerCase() === "bordeaux"
+                 ? "⚠️ Bordeaux : Studapart est partenaire officiel de l'Université de Bordeaux. Pense aussi au Centre Logement de la Ville (05 24 57 16 96) et à Visale (garant gratuit)."
+                 : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
