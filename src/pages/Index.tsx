@@ -175,6 +175,9 @@ const Index = () => {
           <div className="mb-4">
             <SovereigntyWidget />
           </div>
+          <div className="mb-4">
+            <BudgetTracker />
+          </div>
           <BentoGrid />
           {hubSocialEnabled && (
             <div className="mt-4">
