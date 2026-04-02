@@ -527,7 +527,12 @@ const defaultTiles = (city: string) => [
                      { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant Marseille", sub: "96 La Canebière • Info, stages, accompagnement", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
                      { icon: Globe as React.ElementType, label: "Sortie d'Amphi Marseille", sub: "Actions gratuites de la Ville pour les étudiants", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
                    ]
-                 : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                 : city.toLowerCase() === "bordeaux"
+                   ? [
+                       { icon: MapPin as React.ElementType, label: "CRIJ Nouvelle-Aquitaine", sub: "125 cours Alsace-Lorraine • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Nouvelle-Aquitaine+125+cours+Alsace-Lorraine+Bordeaux" },
+                       { icon: Globe as React.ElementType, label: "Fédération Aliénor", sub: "Associations étudiantes de Bordeaux et Aquitaine", href: "https://www.bordeaux.fr/les-18-25-ans" },
+                     ]
+                   : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
