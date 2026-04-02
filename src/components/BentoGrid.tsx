@@ -592,12 +592,19 @@ const defaultTiles = (city: string) => [
                      { icon: Globe as React.ElementType, label: "App Le Dégaine", sub: "Recense toutes les aides sociales et financières étudiantes", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
                      { icon: Globe as React.ElementType, label: "Service Respect Égalité AMU", sub: "Lutte contre violences sexistes, accompagnement victimes", href: "https://www.univ-amu.fr" },
                    ]
-                 : [
-                     { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-                     { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                     { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-                     { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-                   ]
+                 : city.toLowerCase() === "bordeaux"
+                   ? [
+                       { icon: Utensils as React.ElementType, label: "Restos du Cœur Bordeaux", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                       { icon: HandCoins as React.ElementType, label: "Aides CROUS Bordeaux", sub: "Aides spécifiques & financières", href: "https://www.crous-bordeaux.fr" },
+                       { icon: Home as React.ElementType, label: "Vivre Avec — Habitat intergénérationnel", sub: "Logement solidaire étudiants-seniors à Bordeaux", href: "https://www.bordeaux.fr/jeunes-adultes-a-bordeaux-nos-conseils-pour-bien-commencer" },
+                       { icon: Globe as React.ElementType, label: "Opération Angela", sub: "Refuge dans commerces partenaires en cas d'insécurité", href: "https://www.bordeaux.fr/jeunes-adultes-a-bordeaux-nos-conseils-pour-bien-commencer" },
+                     ]
+                   : [
+                      { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+                      { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                      { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+                      { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+                    ]
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
