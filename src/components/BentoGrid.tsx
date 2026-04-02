@@ -382,9 +382,11 @@ const defaultTiles = (city: string) => [
                 ? [{ icon: MapPin as React.ElementType, label: "SIMPPS Toulouse", sub: "Campus Paul Sabatier • Consultations gratuites", href: "https://maps.google.com/?q=SIMPPS+Campus+Paul+Sabatier+Toulouse" }]
                 : city.toLowerCase() === "clermont-ferrand"
                   ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus des Cézeaux, Aubière • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Cézeaux+Aubière" }]
-                  : city.toLowerCase() === "marseille"
-                    ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante AMU", sub: "Campus Saint-Charles • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Saint-Charles+Marseille" }]
-                    : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                   : city.toLowerCase() === "marseille"
+                     ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante AMU", sub: "Campus Saint-Charles • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Saint-Charles+Marseille" }]
+                     : city.toLowerCase() === "bordeaux"
+                       ? [{ icon: MapPin as React.ElementType, label: "Espace Santé Étudiants Bordeaux", sub: "Campus Talence • Soins sans avance de frais, psychologues", href: "https://maps.google.com/?q=Espace+santé+étudiants+Talence+Bordeaux" }]
+                       : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
