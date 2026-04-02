@@ -22,7 +22,7 @@ const CITIES = [
   { name: "Grenoble", pilot: true },
   { name: "Lyon", pilot: true },
   { name: "Paris", pilot: false },
-  { name: "Bordeaux", pilot: false },
+  { name: "Bordeaux", pilot: true },
   { name: "Toulouse", pilot: true },
   { name: "Montpellier", pilot: true },
   { name: "Clermont-Ferrand", pilot: true },
@@ -291,7 +291,7 @@ const Onboarding = () => {
 
             {currentStep === "city" && (
               <StepLayout icon={<MapPin className="h-5 w-5" />} title="Ta ville d'études ?">
-                <p className="mb-3 text-xs text-muted-foreground">Grenoble, Lyon, Montpellier, Toulouse, Clermont-Ferrand et Marseille sont actives ⚡</p>
+                <p className="mb-3 text-xs text-muted-foreground">Grenoble, Lyon, Montpellier, Toulouse, Clermont-Ferrand, Marseille et Bordeaux sont actives ⚡</p>
                 <div className="grid grid-cols-2 gap-2">
                   {CITIES.map((c) => (
                     <button

@@ -4,6 +4,7 @@ import DashboardHeader from "@/components/DashboardHeader";
 import SovereigntyWidget from "@/components/SovereigntyWidget";
 import BentoGrid from "@/components/BentoGrid";
 import SocialPulse from "@/components/SocialPulse";
+import BudgetTracker from "@/components/BudgetTracker";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useActiveCities } from "@/hooks/useActiveCities";
 import { useNavigate } from "react-router-dom";
 import { Users, Sparkles, Globe } from "lucide-react";
 
@@ -81,6 +83,7 @@ const Index = () => {
   const [profileCity, setProfileCity] = useState<string | null>(null);
   const [showCityBanner, setShowCityBanner] = useState(false);
   const { flags } = useFeatureFlags();
+  const { activeCities } = useActiveCities();
   const hubSocialEnabled = flags["hub_social"] !== false;
 
   useEffect(() => {
@@ -97,14 +100,16 @@ const Index = () => {
           if (data.has_seen_welcome === false) {
             setShowWelcome(true);
           }
-          // Show banner if user's city is not Grenoble (our pilot city)
+          // Show banner only if user's city is NOT active
           const effectiveCity = city ?? data.target_city;
-          if (effectiveCity && effectiveCity.toLowerCase() !== "grenoble") {
+          if (effectiveCity && !activeCities.includes(effectiveCity.toLowerCase().trim())) {
             setShowCityBanner(true);
+          } else {
+            setShowCityBanner(false);
           }
         }
       });
-  }, [user?.id]);
+  }, [user?.id, activeCities]);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -169,6 +174,9 @@ const Index = () => {
           </div>
           <div className="mb-4">
             <SovereigntyWidget />
+          </div>
+          <div className="mb-4">
+            <BudgetTracker />
           </div>
           <BentoGrid />
           {hubSocialEnabled && (
