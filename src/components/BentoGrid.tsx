@@ -255,7 +255,11 @@ const defaultTiles = (city: string) => [
                ? "⚠️ Clermont-Ferrand : loyer moyen ~366€ (une des villes les moins chères). Pense au DSE + Lokaviz + Espace Info Jeunes pour des offres gratuites toute l'année."
                : city.toLowerCase() === "bordeaux"
                  ? "⚠️ Bordeaux : Studapart est partenaire officiel de l'Université de Bordeaux. Pense aussi au Centre Logement de la Ville (05 24 57 16 96) et à Visale (garant gratuit)."
-                 : undefined,
+                 : city.toLowerCase() === "marseille"
+                   ? "⚠️ Marseille : hébergement d'urgence étudiant disponible (logement temporaire sans loyer, avec suivi social). Contacte le CROUS Aix-Marseille."
+                   : city.toLowerCase() === "nantes"
+                     ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
+                     : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
