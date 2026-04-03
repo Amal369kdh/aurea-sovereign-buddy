@@ -177,6 +177,9 @@ const Index = () => {
             <SovereigntyWidget />
           </div>
           <div className="mb-4">
+            <AdminCalendar />
+          </div>
+          <div className="mb-4">
             <BudgetTracker />
           </div>
           <BentoGrid />
