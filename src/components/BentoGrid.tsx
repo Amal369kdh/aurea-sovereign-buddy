@@ -346,9 +346,11 @@ const defaultTiles = (city: string) => [
                ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Clermont Auvergne", sub: "Bourses, logements, restauration, aides financières", href: "https://www.crous-clermont.fr" }]
                 : city.toLowerCase() === "marseille"
                  ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Aix-Marseille Avignon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-aix-marseille.fr" }]
-                 : city.toLowerCase() === "bordeaux"
-                   ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Bordeaux-Aquitaine", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-bordeaux.fr" }]
-                   : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+                  : city.toLowerCase() === "bordeaux"
+                    ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Bordeaux-Aquitaine", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-bordeaux.fr" }]
+                    : city.toLowerCase() === "nantes"
+                      ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nantes - Pays de la Loire", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nantes.fr" }]
+                      : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
