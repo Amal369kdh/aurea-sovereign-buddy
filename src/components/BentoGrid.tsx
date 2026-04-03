@@ -308,14 +308,19 @@ const defaultTiles = (city: string) => [
                        { icon: MapPin as React.ElementType, label: "Préfecture des Bouches-du-Rhône", sub: "Place Félix Baret, 13282 Marseille", href: "https://maps.google.com/?q=Préfecture+Bouches-du-Rhône+Place+Félix+Baret+Marseille" },
                        { icon: MapPin as React.ElementType, label: "Maison de l'Étudiant", sub: "96 La Canebière, 13001 Marseille • Info, accompagnement, événements", href: "https://maps.google.com/?q=Maison+de+l+Étudiant+96+La+Canebière+Marseille" },
                      ]
-                   : city.toLowerCase() === "bordeaux"
-                     ? [
-                         { icon: MapPin as React.ElementType, label: "Préfecture de la Gironde", sub: "2 esplanade Charles de Gaulle, 33000 Bordeaux", href: "https://maps.google.com/?q=Préfecture+Gironde+2+esplanade+Charles+de+Gaulle+Bordeaux" },
-                         { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel d'accueil — forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
-                       ]
-                     : [
-                      { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                    ]
+                    : city.toLowerCase() === "bordeaux"
+                      ? [
+                          { icon: MapPin as React.ElementType, label: "Préfecture de la Gironde", sub: "2 esplanade Charles de Gaulle, 33000 Bordeaux", href: "https://maps.google.com/?q=Préfecture+Gironde+2+esplanade+Charles+de+Gaulle+Bordeaux" },
+                          { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel d'accueil — forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
+                        ]
+                      : city.toLowerCase() === "nantes"
+                        ? [
+                            { icon: MapPin as React.ElementType, label: "Préfecture de Loire-Atlantique", sub: "6 quai Ceineray, 44035 Nantes", href: "https://maps.google.com/?q=Préfecture+Loire-Atlantique+6+quai+Ceineray+Nantes" },
+                            { icon: Globe as React.ElementType, label: "Pépinières Jeunesse Nantes", sub: "Accompagnement projets 16-25 ans — info, orientation, réseau", href: "https://metropole.nantes.fr/jeunesse" },
+                          ]
+                        : [
+                       { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                     ]
       ),
     ] as QuickLink[],
   },
