@@ -150,12 +150,12 @@ const BudgetTracker = () => {
             <div className="flex items-center gap-2">
               <PiggyBank className="h-4 w-4 text-primary" />
               <span className="text-xs text-muted-foreground">Budget mensuel :</span>
-              <div className="flex gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                 {[400, 600, 800, 1000, 1200].map((v) => (
                   <button
                     key={v}
                     onClick={() => saveBudget(v)}
-                    className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-foreground hover:border-primary/40 cursor-pointer"
+                    className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs font-medium text-foreground hover:border-primary/40 cursor-pointer whitespace-nowrap"
                   >
                     {v}€
                   </button>

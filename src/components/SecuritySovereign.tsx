@@ -55,7 +55,7 @@ const SecuritySovereign = () => {
     <>
       {/* Floating button — left side, above thumb reach, won't overlap Amal or nav */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((v) => !v)}
         className="fixed bottom-28 left-4 z-[9998] flex h-10 w-10 items-center justify-center rounded-full bg-destructive/15 text-destructive shadow-md backdrop-blur-sm transition-colors hover:bg-destructive/25 active:scale-90 cursor-pointer"
         aria-label="Sécurité — Numéros d'urgence"
         title="Sécurité"
