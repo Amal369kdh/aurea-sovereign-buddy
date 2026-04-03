@@ -669,14 +669,19 @@ const defaultTiles = (city: string) => [
                      { icon: Globe as React.ElementType, label: "Nuit des Étudiants du Monde", sub: "Grand événement d'accueil à Marseille chaque rentrée", href: "https://www.marseille.fr/education/marseille-ville-universitaire" },
                      { icon: Globe as React.ElementType, label: "Cohabilis — Habitat solidaire", sub: "Cohabitation intergénérationnelle étudiants-seniors", href: "https://www.cohabilis.org" },
                    ]
-                 : city.toLowerCase() === "bordeaux"
-                   ? [
-                       { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel gratuit — Opéra, forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
-                       { icon: Globe as React.ElementType, label: "Carte Jeune Bordeaux", sub: "250+ réductions culture, sport, loisirs — gratuite 0-25 ans", href: "https://www.bordeaux.fr/carte-jeune-un-passeport-pour-des-reductions-et-bons-plans" },
+                  : city.toLowerCase() === "bordeaux"
+                    ? [
+                        { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel gratuit — Opéra, forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
+                        { icon: Globe as React.ElementType, label: "Carte Jeune Bordeaux", sub: "250+ réductions culture, sport, loisirs — gratuite 0-25 ans", href: "https://www.bordeaux.fr/carte-jeune-un-passeport-pour-des-reductions-et-bons-plans" },
+                      ]
+                    : city.toLowerCase() === "nantes"
+                      ? [
+                          { icon: Globe as React.ElementType, label: "Bouger en Europe — Nantes", sub: "Mobilité 16-22 ans, séjours et projets européens financés", href: "https://metropole.nantes.fr/actualites/un-dispositif-jeunesse-pour-bouger-en-europe" },
+                          { icon: Globe as React.ElementType, label: "CLAP — Comité Local Aide aux Projets", sub: "Soutien aux initiatives jeunesse à Nantes", href: "https://metropole.nantes.fr/jeunesse" },
+                        ]
+                    : [
+                       { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
                      ]
-                   : [
-                      { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                    ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
