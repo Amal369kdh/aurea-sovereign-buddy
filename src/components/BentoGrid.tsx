@@ -816,7 +816,6 @@ const COMING_SOON_CITIES = [
   { name: "Lille", emoji: "🏭", label: "Hauts-de-France" },
   { name: "Nice", emoji: "🌊", label: "Côte d'Azur" },
   { name: "Strasbourg", emoji: "🥨", label: "Grand Est" },
-  { name: "Nantes", emoji: "🐘", label: "Pays de la Loire" },
   { name: "Rennes", emoji: "🏰", label: "Bretagne" },
 ];
 
