@@ -5,6 +5,7 @@ import SovereigntyWidget from "@/components/SovereigntyWidget";
 import BentoGrid from "@/components/BentoGrid";
 import SocialPulse from "@/components/SocialPulse";
 import BudgetTracker from "@/components/BudgetTracker";
+import AdminCalendar from "@/components/AdminCalendar";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
@@ -174,6 +175,9 @@ const Index = () => {
           </div>
           <div className="mb-4">
             <SovereigntyWidget />
+          </div>
+          <div className="mb-4">
+            <AdminCalendar />
           </div>
           <div className="mb-4">
             <BudgetTracker />
