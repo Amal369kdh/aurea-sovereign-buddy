@@ -27,7 +27,7 @@ const CITIES = [
   { name: "Montpellier", pilot: true },
   { name: "Clermont-Ferrand", pilot: true },
   { name: "Strasbourg", pilot: false },
-  { name: "Nantes", pilot: false },
+  { name: "Nantes", pilot: true },
   { name: "Lille", pilot: false },
   { name: "Rennes", pilot: false },
   { name: "Marseille", pilot: true },
