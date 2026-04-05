@@ -582,12 +582,17 @@ const defaultTiles = (city: string) => [
                         { icon: MapPin as React.ElementType, label: "CRIJ Nouvelle-Aquitaine", sub: "125 cours Alsace-Lorraine • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Nouvelle-Aquitaine+125+cours+Alsace-Lorraine+Bordeaux" },
                         { icon: Globe as React.ElementType, label: "Fédération Aliénor", sub: "Associations étudiantes de Bordeaux et Aquitaine", href: "https://www.bordeaux.fr/les-18-25-ans" },
                       ]
-                    : city.toLowerCase() === "nantes"
-                      ? [
-                          { icon: MapPin as React.ElementType, label: "Jeunesse Nantaise en Action", sub: "Info, orientation, accès aux droits, solidarité — 15-30 ans", href: "https://metropole.nantes.fr/mes-services-mon-quotidien/espace-associations-nantaises/annuaire-des-associations-nantaises/jeunesse-nantaise-en-action" },
-                          { icon: Globe as React.ElementType, label: "Boussole des Jeunes Nantes", sub: "Outil numérique pour trouver emploi, formation, aides", href: "https://boussole-des-jeunes.com" },
-                        ]
-                   : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                     : city.toLowerCase() === "nantes"
+                       ? [
+                           { icon: MapPin as React.ElementType, label: "Jeunesse Nantaise en Action", sub: "Info, orientation, accès aux droits, solidarité — 15-30 ans", href: "https://metropole.nantes.fr/mes-services-mon-quotidien/espace-associations-nantaises/annuaire-des-associations-nantaises/jeunesse-nantaise-en-action" },
+                           { icon: Globe as React.ElementType, label: "Boussole des Jeunes Nantes", sub: "Outil numérique pour trouver emploi, formation, aides", href: "https://boussole-des-jeunes.com" },
+                         ]
+                       : city.toLowerCase() === "lille"
+                         ? [
+                             { icon: MapPin as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Hauts-de-France+2+rue+Édouard+Delesalle+Lille" },
+                             { icon: Globe as React.ElementType, label: "RIJ Vieux-Lille", sub: "Offres emploi, baby-sitting, animation — tous les jours 14h-17h", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
+                           ]
+                    : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
