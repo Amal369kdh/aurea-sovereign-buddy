@@ -315,14 +315,19 @@ const defaultTiles = (city: string) => [
                           { icon: MapPin as React.ElementType, label: "Préfecture de la Gironde", sub: "2 esplanade Charles de Gaulle, 33000 Bordeaux", href: "https://maps.google.com/?q=Préfecture+Gironde+2+esplanade+Charles+de+Gaulle+Bordeaux" },
                           { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel d'accueil — forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
                         ]
-                      : city.toLowerCase() === "nantes"
-                        ? [
-                            { icon: MapPin as React.ElementType, label: "Préfecture de Loire-Atlantique", sub: "6 quai Ceineray, 44035 Nantes", href: "https://maps.google.com/?q=Préfecture+Loire-Atlantique+6+quai+Ceineray+Nantes" },
-                            { icon: Globe as React.ElementType, label: "Pépinières Jeunesse Nantes", sub: "Accompagnement projets 16-25 ans — info, orientation, réseau", href: "https://metropole.nantes.fr/jeunesse" },
-                          ]
-                        : [
-                       { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                     ]
+                       : city.toLowerCase() === "nantes"
+                         ? [
+                             { icon: MapPin as React.ElementType, label: "Préfecture de Loire-Atlantique", sub: "6 quai Ceineray, 44035 Nantes", href: "https://maps.google.com/?q=Préfecture+Loire-Atlantique+6+quai+Ceineray+Nantes" },
+                             { icon: Globe as React.ElementType, label: "Pépinières Jeunesse Nantes", sub: "Accompagnement projets 16-25 ans — info, orientation, réseau", href: "https://metropole.nantes.fr/jeunesse" },
+                           ]
+                         : city.toLowerCase() === "lille"
+                           ? [
+                               { icon: MapPin as React.ElementType, label: "Préfecture du Nord", sub: "12 rue Jean sans Peur, 59039 Lille", href: "https://maps.google.com/?q=Préfecture+du+Nord+12+rue+Jean+sans+Peur+Lille" },
+                               { icon: Globe as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle — emploi, logement, orientation", href: "https://www.crij-hdf.fr" },
+                             ]
+                           : [
+                        { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                      ]
       ),
     ] as QuickLink[],
   },
