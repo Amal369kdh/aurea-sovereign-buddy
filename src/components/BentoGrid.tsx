@@ -472,12 +472,17 @@ const defaultTiles = (city: string) => [
                           { icon: Globe as React.ElementType, label: "TBM Vélos", sub: "Prêt et location longue durée vélos électriques", href: "https://www.infotbm.com/fr/se-deplacer/velo.html" },
                           { icon: Globe as React.ElementType, label: "Covoiturage Karos", sub: "Covoiturage domicile-campus via appli", href: "https://www.karos.fr" },
                         ]
-                      : city.toLowerCase() === "nantes"
-                        ? [
-                            { icon: Bus as React.ElementType, label: "TAN — Abo étudiant", sub: "~30€/mois • Tram, bus, Busway", href: "https://www.tan.fr" },
-                            { icon: Globe as React.ElementType, label: "Bicloo — Vélos en libre-service", sub: "Stations dans toute la métropole nantaise", href: "https://metropole.nantes.fr/deplacements/velo/bicloo" },
-                          ]
-                        : [
+                       : city.toLowerCase() === "nantes"
+                         ? [
+                             { icon: Bus as React.ElementType, label: "TAN — Abo étudiant", sub: "~30€/mois • Tram, bus, Busway", href: "https://www.tan.fr" },
+                             { icon: Globe as React.ElementType, label: "Bicloo — Vélos en libre-service", sub: "Stations dans toute la métropole nantaise", href: "https://metropole.nantes.fr/deplacements/velo/bicloo" },
+                           ]
+                         : city.toLowerCase() === "lille"
+                           ? [
+                               { icon: Bus as React.ElementType, label: "Ilévia — Abo étudiant", sub: "~30€/mois • Métro, tramway, bus", href: "https://www.ilevia.fr" },
+                               { icon: Globe as React.ElementType, label: "V'Lille — Vélos en libre-service", sub: "Stations dans toute la métropole lilloise", href: "https://www.ilevia.fr/vlille" },
+                             ]
+                           : [
                  { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
                  { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
                ]
