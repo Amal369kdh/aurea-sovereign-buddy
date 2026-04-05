@@ -257,9 +257,11 @@ const defaultTiles = (city: string) => [
                  ? "⚠️ Bordeaux : Studapart est partenaire officiel de l'Université de Bordeaux. Pense aussi au Centre Logement de la Ville (05 24 57 16 96) et à Visale (garant gratuit)."
                  : city.toLowerCase() === "marseille"
                    ? "⚠️ Marseille : hébergement d'urgence étudiant disponible (logement temporaire sans loyer, avec suivi social). Contacte le CROUS Aix-Marseille."
-                   : city.toLowerCase() === "nantes"
-                     ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
-                     : undefined,
+                    : city.toLowerCase() === "nantes"
+                      ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
+                      : city.toLowerCase() === "lille"
+                        ? "⚠️ Lille : 3e métropole étudiante de France (136 000 étudiants). Action Logement propose des aides au dépôt de garantie. Pense aussi à la Carte Blanche pour les réductions loisirs."
+                        : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
@@ -313,14 +315,19 @@ const defaultTiles = (city: string) => [
                           { icon: MapPin as React.ElementType, label: "Préfecture de la Gironde", sub: "2 esplanade Charles de Gaulle, 33000 Bordeaux", href: "https://maps.google.com/?q=Préfecture+Gironde+2+esplanade+Charles+de+Gaulle+Bordeaux" },
                           { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel d'accueil — forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
                         ]
-                      : city.toLowerCase() === "nantes"
-                        ? [
-                            { icon: MapPin as React.ElementType, label: "Préfecture de Loire-Atlantique", sub: "6 quai Ceineray, 44035 Nantes", href: "https://maps.google.com/?q=Préfecture+Loire-Atlantique+6+quai+Ceineray+Nantes" },
-                            { icon: Globe as React.ElementType, label: "Pépinières Jeunesse Nantes", sub: "Accompagnement projets 16-25 ans — info, orientation, réseau", href: "https://metropole.nantes.fr/jeunesse" },
-                          ]
-                        : [
-                       { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                     ]
+                       : city.toLowerCase() === "nantes"
+                         ? [
+                             { icon: MapPin as React.ElementType, label: "Préfecture de Loire-Atlantique", sub: "6 quai Ceineray, 44035 Nantes", href: "https://maps.google.com/?q=Préfecture+Loire-Atlantique+6+quai+Ceineray+Nantes" },
+                             { icon: Globe as React.ElementType, label: "Pépinières Jeunesse Nantes", sub: "Accompagnement projets 16-25 ans — info, orientation, réseau", href: "https://metropole.nantes.fr/jeunesse" },
+                           ]
+                         : city.toLowerCase() === "lille"
+                           ? [
+                               { icon: MapPin as React.ElementType, label: "Préfecture du Nord", sub: "12 rue Jean sans Peur, 59039 Lille", href: "https://maps.google.com/?q=Préfecture+du+Nord+12+rue+Jean+sans+Peur+Lille" },
+                               { icon: Globe as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle — emploi, logement, orientation", href: "https://www.crij-hdf.fr" },
+                             ]
+                           : [
+                        { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                      ]
       ),
     ] as QuickLink[],
   },
@@ -348,9 +355,11 @@ const defaultTiles = (city: string) => [
                  ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Aix-Marseille Avignon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-aix-marseille.fr" }]
                   : city.toLowerCase() === "bordeaux"
                     ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Bordeaux-Aquitaine", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-bordeaux.fr" }]
-                    : city.toLowerCase() === "nantes"
-                      ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nantes - Pays de la Loire", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nantes.fr" }]
-                      : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+                     : city.toLowerCase() === "nantes"
+                       ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nantes - Pays de la Loire", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nantes.fr" }]
+                       : city.toLowerCase() === "lille"
+                         ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Lille Nord-Pas-de-Calais", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-lille.fr" }]
+                         : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
@@ -397,9 +406,11 @@ const defaultTiles = (city: string) => [
                      ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante AMU", sub: "Campus Saint-Charles • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Saint-Charles+Marseille" }]
                       : city.toLowerCase() === "bordeaux"
                         ? [{ icon: MapPin as React.ElementType, label: "Espace Santé Étudiants Bordeaux", sub: "Campus Talence • Soins sans avance de frais, psychologues", href: "https://maps.google.com/?q=Espace+santé+étudiants+Talence+Bordeaux" }]
-                        : city.toLowerCase() === "nantes"
-                          ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Nantes", sub: "Campus Tertre • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Tertre+Nantes" }]
-                          : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                         : city.toLowerCase() === "nantes"
+                           ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Nantes", sub: "Campus Tertre • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Tertre+Nantes" }]
+                           : city.toLowerCase() === "lille"
+                             ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
+                             : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
@@ -414,9 +425,11 @@ const defaultTiles = (city: string) => [
                  ? [{ icon: Heart as React.ElementType, label: "Nightline Aix-Marseille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
                   : city.toLowerCase() === "bordeaux"
                     ? [{ icon: Heart as React.ElementType, label: "Nightline Bordeaux", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                    : city.toLowerCase() === "nantes"
-                      ? [{ icon: Heart as React.ElementType, label: "Nightline Nantes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                      : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+                     : city.toLowerCase() === "nantes"
+                       ? [{ icon: Heart as React.ElementType, label: "Nightline Nantes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                       : city.toLowerCase() === "lille"
+                         ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                         : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
@@ -459,12 +472,17 @@ const defaultTiles = (city: string) => [
                           { icon: Globe as React.ElementType, label: "TBM Vélos", sub: "Prêt et location longue durée vélos électriques", href: "https://www.infotbm.com/fr/se-deplacer/velo.html" },
                           { icon: Globe as React.ElementType, label: "Covoiturage Karos", sub: "Covoiturage domicile-campus via appli", href: "https://www.karos.fr" },
                         ]
-                      : city.toLowerCase() === "nantes"
-                        ? [
-                            { icon: Bus as React.ElementType, label: "TAN — Abo étudiant", sub: "~30€/mois • Tram, bus, Busway", href: "https://www.tan.fr" },
-                            { icon: Globe as React.ElementType, label: "Bicloo — Vélos en libre-service", sub: "Stations dans toute la métropole nantaise", href: "https://metropole.nantes.fr/deplacements/velo/bicloo" },
-                          ]
-                        : [
+                       : city.toLowerCase() === "nantes"
+                         ? [
+                             { icon: Bus as React.ElementType, label: "TAN — Abo étudiant", sub: "~30€/mois • Tram, bus, Busway", href: "https://www.tan.fr" },
+                             { icon: Globe as React.ElementType, label: "Bicloo — Vélos en libre-service", sub: "Stations dans toute la métropole nantaise", href: "https://metropole.nantes.fr/deplacements/velo/bicloo" },
+                           ]
+                         : city.toLowerCase() === "lille"
+                           ? [
+                               { icon: Bus as React.ElementType, label: "Ilévia — Abo étudiant", sub: "~30€/mois • Métro, tramway, bus", href: "https://www.ilevia.fr" },
+                               { icon: Globe as React.ElementType, label: "V'Lille — Vélos en libre-service", sub: "Stations dans toute la métropole lilloise", href: "https://www.ilevia.fr/vlille" },
+                             ]
+                           : [
                  { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
                  { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
                ]
@@ -509,13 +527,19 @@ const defaultTiles = (city: string) => [
                             { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                             { icon: Dumbbell as React.ElementType, label: "Sport universitaire Bordeaux", sub: "Activités sportives campus Pessac-Talence", href: "https://www.u-bordeaux.fr/campus/sport" },
                           ]
-                        : city.toLowerCase() === "nantes"
-                          ? [
-                              { icon: Globe as React.ElementType, label: "Cart'S Atelier des Initiatives", sub: "Réductions sorties culturelles pour étudiants nantais", href: "https://metropole.nantes.fr/jeunesse" },
-                              { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                              { icon: Globe as React.ElementType, label: "Pass Nantado", sub: "Propositions culturelles adaptées 11-15 ans", href: "https://metropole.nantes.fr/jeunesse" },
-                            ]
-                          : [
+                         : city.toLowerCase() === "nantes"
+                           ? [
+                               { icon: Globe as React.ElementType, label: "Cart'S Atelier des Initiatives", sub: "Réductions sorties culturelles pour étudiants nantais", href: "https://metropole.nantes.fr/jeunesse" },
+                               { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                               { icon: Globe as React.ElementType, label: "Pass Nantado", sub: "Propositions culturelles adaptées 11-15 ans", href: "https://metropole.nantes.fr/jeunesse" },
+                             ]
+                           : city.toLowerCase() === "lille"
+                             ? [
+                                 { icon: Globe as React.ElementType, label: "Carte Blanche — Loisirs & sport", sub: "Réductions cinémas, musées, piscines, théâtres dans la MEL", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
+                                 { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                 { icon: Dumbbell as React.ElementType, label: "Sport universitaire Lille", sub: "Activités sportives campus Cité Scientifique", href: "https://www.univ-lille.fr/vie-des-campus/sport" },
+                               ]
+                             : [
                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
                 ]
       ),
@@ -558,12 +582,17 @@ const defaultTiles = (city: string) => [
                         { icon: MapPin as React.ElementType, label: "CRIJ Nouvelle-Aquitaine", sub: "125 cours Alsace-Lorraine • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Nouvelle-Aquitaine+125+cours+Alsace-Lorraine+Bordeaux" },
                         { icon: Globe as React.ElementType, label: "Fédération Aliénor", sub: "Associations étudiantes de Bordeaux et Aquitaine", href: "https://www.bordeaux.fr/les-18-25-ans" },
                       ]
-                    : city.toLowerCase() === "nantes"
-                      ? [
-                          { icon: MapPin as React.ElementType, label: "Jeunesse Nantaise en Action", sub: "Info, orientation, accès aux droits, solidarité — 15-30 ans", href: "https://metropole.nantes.fr/mes-services-mon-quotidien/espace-associations-nantaises/annuaire-des-associations-nantaises/jeunesse-nantaise-en-action" },
-                          { icon: Globe as React.ElementType, label: "Boussole des Jeunes Nantes", sub: "Outil numérique pour trouver emploi, formation, aides", href: "https://boussole-des-jeunes.com" },
-                        ]
-                   : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                     : city.toLowerCase() === "nantes"
+                       ? [
+                           { icon: MapPin as React.ElementType, label: "Jeunesse Nantaise en Action", sub: "Info, orientation, accès aux droits, solidarité — 15-30 ans", href: "https://metropole.nantes.fr/mes-services-mon-quotidien/espace-associations-nantaises/annuaire-des-associations-nantaises/jeunesse-nantaise-en-action" },
+                           { icon: Globe as React.ElementType, label: "Boussole des Jeunes Nantes", sub: "Outil numérique pour trouver emploi, formation, aides", href: "https://boussole-des-jeunes.com" },
+                         ]
+                       : city.toLowerCase() === "lille"
+                         ? [
+                             { icon: MapPin as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Hauts-de-France+2+rue+Édouard+Delesalle+Lille" },
+                             { icon: Globe as React.ElementType, label: "RIJ Vieux-Lille", sub: "Offres emploi, baby-sitting, animation — tous les jours 14h-17h", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
+                           ]
+                    : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
@@ -630,15 +659,22 @@ const defaultTiles = (city: string) => [
                         { icon: Home as React.ElementType, label: "Vivre Avec — Habitat intergénérationnel", sub: "Logement solidaire étudiants-seniors à Bordeaux", href: "https://www.bordeaux.fr/jeunes-adultes-a-bordeaux-nos-conseils-pour-bien-commencer" },
                         { icon: Globe as React.ElementType, label: "Opération Angela", sub: "Refuge dans commerces partenaires en cas d'insécurité", href: "https://www.bordeaux.fr/jeunes-adultes-a-bordeaux-nos-conseils-pour-bien-commencer" },
                       ]
-                    : city.toLowerCase() === "nantes"
-                      ? [
-                          { icon: Utensils as React.ElementType, label: "Restos du Cœur Nantes", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                          { icon: HandCoins as React.ElementType, label: "Fonds d'Aide aux Jeunes (FAJ)", sub: "Jusqu'à 1 600€/an pour 16-25 ans — logement, santé, transport", href: "https://metropole.nantes.fr/mes-services-mon-quotidien/aides-et-bons-plans/le-fonds-d-aide-aux-jeunes" },
-                          { icon: HandCoins as React.ElementType, label: "Aides CROUS Nantes", sub: "Aides spécifiques & financières", href: "https://www.crous-nantes.fr" },
-                          { icon: Globe as React.ElementType, label: "Maison de l'Habitant", sub: "Point ressource logement et accompagnement", href: "https://metropole.nantes.fr/lieu/la-maison-de-l-habitant" },
-                          { icon: Globe as React.ElementType, label: "Aides vacances ANCV/Soléo", sub: "Bourse vacances pour 16-25 ans aux revenus limités", href: "https://metropole.nantes.fr/mes-services-mon-quotidien-aides-et-bons-plans/les-aides-au-depart-en-vacances-pour-les-16-25-ans" },
-                        ]
-                    : [
+                     : city.toLowerCase() === "nantes"
+                       ? [
+                           { icon: Utensils as React.ElementType, label: "Restos du Cœur Nantes", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                           { icon: HandCoins as React.ElementType, label: "Fonds d'Aide aux Jeunes (FAJ)", sub: "Jusqu'à 1 600€/an pour 16-25 ans — logement, santé, transport", href: "https://metropole.nantes.fr/mes-services-mon-quotidien/aides-et-bons-plans/le-fonds-d-aide-aux-jeunes" },
+                           { icon: HandCoins as React.ElementType, label: "Aides CROUS Nantes", sub: "Aides spécifiques & financières", href: "https://www.crous-nantes.fr" },
+                           { icon: Globe as React.ElementType, label: "Maison de l'Habitant", sub: "Point ressource logement et accompagnement", href: "https://metropole.nantes.fr/lieu/la-maison-de-l-habitant" },
+                           { icon: Globe as React.ElementType, label: "Aides vacances ANCV/Soléo", sub: "Bourse vacances pour 16-25 ans aux revenus limités", href: "https://metropole.nantes.fr/mes-services-mon-quotidien-aides-et-bons-plans/les-aides-au-depart-en-vacances-pour-les-16-25-ans" },
+                         ]
+                       : city.toLowerCase() === "lille"
+                         ? [
+                             { icon: Utensils as React.ElementType, label: "Restos du Cœur Lille", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                             { icon: HandCoins as React.ElementType, label: "Aides CROUS Lille", sub: "Aides spécifiques & financières", href: "https://www.crous-lille.fr" },
+                             { icon: Globe as React.ElementType, label: "MEL — Stratégie Jeunesse #JeM2.0", sub: "Solidarité, émancipation, engagement pour les jeunes", href: "https://www.lillemetropole.fr/votre-mel/competences/jeunesse" },
+                             { icon: Globe as React.ElementType, label: "Action Logement Lille", sub: "Aide au dépôt de garantie et prise en charge partielle du loyer", href: "https://www.actionlogement.fr" },
+                           ]
+                     : [
                        { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
                        { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
                        { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
@@ -674,13 +710,18 @@ const defaultTiles = (city: string) => [
                         { icon: Globe as React.ElementType, label: "Bordeaux accueille ses étudiants", sub: "Événement annuel gratuit — Opéra, forum, visites, spectacles", href: "https://www.bordeaux.fr/les-18-25-ans" },
                         { icon: Globe as React.ElementType, label: "Carte Jeune Bordeaux", sub: "250+ réductions culture, sport, loisirs — gratuite 0-25 ans", href: "https://www.bordeaux.fr/carte-jeune-un-passeport-pour-des-reductions-et-bons-plans" },
                       ]
-                    : city.toLowerCase() === "nantes"
-                      ? [
-                          { icon: Globe as React.ElementType, label: "Bouger en Europe — Nantes", sub: "Mobilité 16-22 ans, séjours et projets européens financés", href: "https://metropole.nantes.fr/actualites/un-dispositif-jeunesse-pour-bouger-en-europe" },
-                          { icon: Globe as React.ElementType, label: "CLAP — Comité Local Aide aux Projets", sub: "Soutien aux initiatives jeunesse à Nantes", href: "https://metropole.nantes.fr/jeunesse" },
-                        ]
-                    : [
-                       { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                     : city.toLowerCase() === "nantes"
+                       ? [
+                           { icon: Globe as React.ElementType, label: "Bouger en Europe — Nantes", sub: "Mobilité 16-22 ans, séjours et projets européens financés", href: "https://metropole.nantes.fr/actualites/un-dispositif-jeunesse-pour-bouger-en-europe" },
+                           { icon: Globe as React.ElementType, label: "CLAP — Comité Local Aide aux Projets", sub: "Soutien aux initiatives jeunesse à Nantes", href: "https://metropole.nantes.fr/jeunesse" },
+                         ]
+                       : city.toLowerCase() === "lille"
+                         ? [
+                             { icon: Globe as React.ElementType, label: "Agenda des Ados — Lille", sub: "Bons plans loisirs, culture, sport — médiathèques, musées, piscines", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
+                             { icon: Globe as React.ElementType, label: "Carte Blanche MEL", sub: "Réductions cinémas, musées, piscines, patinoires, théâtres", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
+                           ]
+                     : [
+                        { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
                      ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },

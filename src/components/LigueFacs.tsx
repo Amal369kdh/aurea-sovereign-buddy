@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Trophy, TrendingUp, ChevronDown, ChevronUp, MapPin } from "lucide-react";
+import { Trophy, TrendingUp, ChevronDown, ChevronUp, MapPin, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CityRank {
@@ -10,10 +10,18 @@ interface CityRank {
   member_count: number;
 }
 
+interface UserCityRank {
+  rank: number;
+  total: number;
+  points: number;
+  displayName: string | null;
+}
+
 const LigueFacs = () => {
   const { user } = useAuth();
   const [rankings, setRankings] = useState<CityRank[]>([]);
   const [userCity, setUserCity] = useState<string | null>(null);
+  const [userPersonalRank, setUserPersonalRank] = useState<UserCityRank | null>(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
@@ -22,7 +30,7 @@ const LigueFacs = () => {
       // Fetch all cities + points from public view (no PII exposed)
       const { data } = await supabase
         .from("profiles_public")
-        .select("city, points_social");
+        .select("city, points_social, user_id, display_name");
 
       if (data) {
         const map = new Map<string, { total: number; count: number }>();
@@ -45,16 +53,35 @@ const LigueFacs = () => {
           .sort((a, b) => b.total_points - a.total_points);
 
         setRankings(sorted);
-      }
 
-      // Get user's city from their own profile (RLS-safe)
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("city")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (profile?.city) setUserCity(profile.city.trim());
+        // Compute user's personal rank within their city
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("city, points_social, display_name")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          if (profile?.city) {
+            const cityName = profile.city.trim();
+            setUserCity(cityName);
+
+            // Get all users in that city sorted by points_social desc
+            const cityMembers = data
+              .filter((r) => r.city?.trim().toLowerCase() === cityName.toLowerCase())
+              .sort((a, b) => (b.points_social || 0) - (a.points_social || 0));
+
+            const myIndex = cityMembers.findIndex((r) => r.user_id === user.id);
+            if (myIndex >= 0) {
+              setUserPersonalRank({
+                rank: myIndex + 1,
+                total: cityMembers.length,
+                points: profile.points_social || 0,
+                displayName: profile.display_name,
+              });
+            }
+          }
+        }
       }
 
       setLoading(false);
@@ -122,8 +149,24 @@ const LigueFacs = () => {
               </div>
             )}
 
+            {/* User's personal rank within city */}
+            {userPersonalRank && (
+              <div className="mb-3 flex items-center gap-3 rounded-2xl border border-accent/30 bg-accent/5 px-4 py-3">
+                <User className="h-4 w-4 shrink-0 text-accent-foreground" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-accent-foreground">
+                    Ton rang dans {userCity}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    #{userPersonalRank.rank} sur {userPersonalRank.total} membre{userPersonalRank.total > 1 ? "s" : ""} · {userPersonalRank.points} pts perso
+                  </p>
+                </div>
+                {userPersonalRank.rank <= 3 && <span className="text-lg">{medals[userPersonalRank.rank - 1]}</span>}
+              </div>
+            )}
+
             {/* National Top 10 */}
-            <div className={`${!userCityData ? 'mt-4' : ''} space-y-2`}>
+            <div className={`${!userCityData && !userPersonalRank ? 'mt-4' : ''} space-y-2`}>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                 🇫🇷 Classement national
               </p>
