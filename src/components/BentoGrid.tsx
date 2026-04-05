@@ -527,13 +527,19 @@ const defaultTiles = (city: string) => [
                             { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                             { icon: Dumbbell as React.ElementType, label: "Sport universitaire Bordeaux", sub: "Activités sportives campus Pessac-Talence", href: "https://www.u-bordeaux.fr/campus/sport" },
                           ]
-                        : city.toLowerCase() === "nantes"
-                          ? [
-                              { icon: Globe as React.ElementType, label: "Cart'S Atelier des Initiatives", sub: "Réductions sorties culturelles pour étudiants nantais", href: "https://metropole.nantes.fr/jeunesse" },
-                              { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                              { icon: Globe as React.ElementType, label: "Pass Nantado", sub: "Propositions culturelles adaptées 11-15 ans", href: "https://metropole.nantes.fr/jeunesse" },
-                            ]
-                          : [
+                         : city.toLowerCase() === "nantes"
+                           ? [
+                               { icon: Globe as React.ElementType, label: "Cart'S Atelier des Initiatives", sub: "Réductions sorties culturelles pour étudiants nantais", href: "https://metropole.nantes.fr/jeunesse" },
+                               { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                               { icon: Globe as React.ElementType, label: "Pass Nantado", sub: "Propositions culturelles adaptées 11-15 ans", href: "https://metropole.nantes.fr/jeunesse" },
+                             ]
+                           : city.toLowerCase() === "lille"
+                             ? [
+                                 { icon: Globe as React.ElementType, label: "Carte Blanche — Loisirs & sport", sub: "Réductions cinémas, musées, piscines, théâtres dans la MEL", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
+                                 { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                 { icon: Dumbbell as React.ElementType, label: "Sport universitaire Lille", sub: "Activités sportives campus Cité Scientifique", href: "https://www.univ-lille.fr/vie-des-campus/sport" },
+                               ]
+                             : [
                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
                 ]
       ),
