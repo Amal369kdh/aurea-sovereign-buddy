@@ -415,9 +415,11 @@ const defaultTiles = (city: string) => [
                         ? [{ icon: MapPin as React.ElementType, label: "Espace Santé Étudiants Bordeaux", sub: "Campus Talence • Soins sans avance de frais, psychologues", href: "https://maps.google.com/?q=Espace+santé+étudiants+Talence+Bordeaux" }]
                          : city.toLowerCase() === "nantes"
                            ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Nantes", sub: "Campus Tertre • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Tertre+Nantes" }]
-                           : city.toLowerCase() === "lille"
-                             ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
-                             : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                            : city.toLowerCase() === "lille"
+                              ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
+                              : city.toLowerCase() === "strasbourg"
+                                ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Unistra", sub: "6 rue de Palerme • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+6+rue+de+Palerme+Strasbourg" }]
+                                : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
