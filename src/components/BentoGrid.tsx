@@ -259,9 +259,9 @@ const defaultTiles = (city: string) => [
                    ? "⚠️ Marseille : hébergement d'urgence étudiant disponible (logement temporaire sans loyer, avec suivi social). Contacte le CROUS Aix-Marseille."
                     : city.toLowerCase() === "nantes"
                       ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
-                      : city.toLowerCase() === "lille"
-                        ? "⚠️ Lille : 3e métropole étudiante de France (136 000 étudiants). Action Logement propose des aides au dépôt de garantie. Pense aussi à la Carte Blanche pour les réductions loisirs."
-                        : undefined,
+                        : city.toLowerCase() === "strasbourg"
+                          ? "⚠️ Strasbourg : le dispositif 'Strasbourg aime ses étudiants' centralise toutes les aides logement. Le FAJ peut accorder jusqu'à 1 800€/an. Profite aussi de Kehl (Allemagne) à 10 min en tram pour tes courses."
+                          : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
@@ -324,10 +324,15 @@ const defaultTiles = (city: string) => [
                            ? [
                                { icon: MapPin as React.ElementType, label: "Préfecture du Nord", sub: "12 rue Jean sans Peur, 59039 Lille", href: "https://maps.google.com/?q=Préfecture+du+Nord+12+rue+Jean+sans+Peur+Lille" },
                                { icon: Globe as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle — emploi, logement, orientation", href: "https://www.crij-hdf.fr" },
-                             ]
-                           : [
-                        { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                      ]
+                              ]
+                            : city.toLowerCase() === "strasbourg"
+                              ? [
+                                  { icon: MapPin as React.ElementType, label: "Préfecture du Bas-Rhin", sub: "5 place de la République, 67000 Strasbourg", href: "https://maps.google.com/?q=Préfecture+Bas-Rhin+5+place+de+la+République+Strasbourg" },
+                                  { icon: Globe as React.ElementType, label: "Strasbourg aime ses étudiants", sub: "Aides, logement, transport, santé, culture — tout en un", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
+                                ]
+                              : [
+                         { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                       ]
       ),
     ] as QuickLink[],
   },
@@ -357,9 +362,11 @@ const defaultTiles = (city: string) => [
                     ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Bordeaux-Aquitaine", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-bordeaux.fr" }]
                      : city.toLowerCase() === "nantes"
                        ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nantes - Pays de la Loire", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nantes.fr" }]
-                       : city.toLowerCase() === "lille"
-                         ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Lille Nord-Pas-de-Calais", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-lille.fr" }]
-                         : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+                        : city.toLowerCase() === "lille"
+                          ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Lille Nord-Pas-de-Calais", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-lille.fr" }]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Strasbourg", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-strasbourg.fr" }]
+                            : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
@@ -408,9 +415,11 @@ const defaultTiles = (city: string) => [
                         ? [{ icon: MapPin as React.ElementType, label: "Espace Santé Étudiants Bordeaux", sub: "Campus Talence • Soins sans avance de frais, psychologues", href: "https://maps.google.com/?q=Espace+santé+étudiants+Talence+Bordeaux" }]
                          : city.toLowerCase() === "nantes"
                            ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Nantes", sub: "Campus Tertre • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Tertre+Nantes" }]
-                           : city.toLowerCase() === "lille"
-                             ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
-                             : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                            : city.toLowerCase() === "lille"
+                              ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
+                              : city.toLowerCase() === "strasbourg"
+                                ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Unistra", sub: "6 rue de Palerme • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+6+rue+de+Palerme+Strasbourg" }]
+                                : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
@@ -427,9 +436,11 @@ const defaultTiles = (city: string) => [
                     ? [{ icon: Heart as React.ElementType, label: "Nightline Bordeaux", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
                      : city.toLowerCase() === "nantes"
                        ? [{ icon: Heart as React.ElementType, label: "Nightline Nantes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                       : city.toLowerCase() === "lille"
-                         ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                         : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+                        : city.toLowerCase() === "lille"
+                          ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [{ icon: Heart as React.ElementType, label: "Nightline Strasbourg", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                            : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
@@ -481,11 +492,16 @@ const defaultTiles = (city: string) => [
                            ? [
                                { icon: Bus as React.ElementType, label: "Ilévia — Abo étudiant", sub: "~30€/mois • Métro, tramway, bus", href: "https://www.ilevia.fr" },
                                { icon: Globe as React.ElementType, label: "V'Lille — Vélos en libre-service", sub: "Stations dans toute la métropole lilloise", href: "https://www.ilevia.fr/vlille" },
-                             ]
-                           : [
-                 { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-                 { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
-               ]
+                              ]
+                            : city.toLowerCase() === "strasbourg"
+                              ? [
+                                  { icon: Bus as React.ElementType, label: "CTS — Abo étudiant", sub: "~27€/mois • Tram + Bus", href: "https://www.cts-strasbourg.eu" },
+                                  { icon: Globe as React.ElementType, label: "Vélhop — Vélos en libre-service", sub: "Location courte et longue durée dans Strasbourg", href: "https://velhop.strasbourg.eu" },
+                                ]
+                              : [
+                  { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+                  { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+                ]
       ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
       ...(city.toLowerCase() === "grenoble"
@@ -538,10 +554,16 @@ const defaultTiles = (city: string) => [
                                  { icon: Globe as React.ElementType, label: "Carte Blanche — Loisirs & sport", sub: "Réductions cinémas, musées, piscines, théâtres dans la MEL", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
                                  { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                                  { icon: Dumbbell as React.ElementType, label: "Sport universitaire Lille", sub: "Activités sportives campus Cité Scientifique", href: "https://www.univ-lille.fr/vie-des-campus/sport" },
-                               ]
-                             : [
-                  { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
-                ]
+                                ]
+                              : city.toLowerCase() === "strasbourg"
+                                ? [
+                                    { icon: Globe as React.ElementType, label: "Carte Culture Strasbourg", sub: "Accès réduit musées, spectacles, cinémas pour étudiants", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
+                                    { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                    { icon: Dumbbell as React.ElementType, label: "Sport universitaire Unistra", sub: "Activités sportives campus Esplanade", href: "https://suaps.unistra.fr" },
+                                  ]
+                                : [
+                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+                 ]
       ),
     ] as QuickLink[],
   },
@@ -591,8 +613,13 @@ const defaultTiles = (city: string) => [
                          ? [
                              { icon: MapPin as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Hauts-de-France+2+rue+Édouard+Delesalle+Lille" },
                              { icon: Globe as React.ElementType, label: "RIJ Vieux-Lille", sub: "Offres emploi, baby-sitting, animation — tous les jours 14h-17h", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
-                           ]
-                    : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                            ]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [
+                                { icon: MapPin as React.ElementType, label: "Mission Locale Strasbourg", sub: "Accompagnement emploi, formation, insertion 16-25 ans", href: "https://www.mlpe.eu" },
+                                { icon: Globe as React.ElementType, label: "Unistra — Espace Avenir", sub: "Orientation, stages, emploi, réorientation", href: "https://www.unistra.fr/formation/orientation-et-insertion" },
+                              ]
+                     : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
@@ -673,13 +700,21 @@ const defaultTiles = (city: string) => [
                              { icon: HandCoins as React.ElementType, label: "Aides CROUS Lille", sub: "Aides spécifiques & financières", href: "https://www.crous-lille.fr" },
                              { icon: Globe as React.ElementType, label: "MEL — Stratégie Jeunesse #JeM2.0", sub: "Solidarité, émancipation, engagement pour les jeunes", href: "https://www.lillemetropole.fr/votre-mel/competences/jeunesse" },
                              { icon: Globe as React.ElementType, label: "Action Logement Lille", sub: "Aide au dépôt de garantie et prise en charge partielle du loyer", href: "https://www.actionlogement.fr" },
-                           ]
-                     : [
-                       { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-                       { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                       { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-                       { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-                     ]
+                            ]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [
+                                { icon: Utensils as React.ElementType, label: "Agoraé Strasbourg — Épicerie solidaire", sub: "Colis alimentaires étudiants en difficulté", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
+                                { icon: Utensils as React.ElementType, label: "Restos du Cœur Strasbourg", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                                { icon: HandCoins as React.ElementType, label: "FAJ Eurométropole — jusqu'à 1 800€", sub: "Fonds d'aide aux jeunes 16-25 ans en difficulté", href: "https://www.strasbourg.eu/fond-aide-jeunes" },
+                                { icon: HandCoins as React.ElementType, label: "Aides CROUS Strasbourg", sub: "Aides spécifiques & financières", href: "https://www.crous-strasbourg.fr" },
+                                { icon: Globe as React.ElementType, label: "Bourses Fondation Unistra", sub: "Bourses de donateurs pour logement, alimentation, santé", href: "https://www.unistra.fr/fr/campus/aide-sociale-et-solidaire/financements-et-aides-materielles" },
+                              ]
+                      : [
+                        { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+                        { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                        { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+                        { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+                      ]
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
@@ -719,10 +754,15 @@ const defaultTiles = (city: string) => [
                          ? [
                              { icon: Globe as React.ElementType, label: "Agenda des Ados — Lille", sub: "Bons plans loisirs, culture, sport — médiathèques, musées, piscines", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
                              { icon: Globe as React.ElementType, label: "Carte Blanche MEL", sub: "Réductions cinémas, musées, piscines, patinoires, théâtres", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
-                           ]
-                     : [
-                        { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                     ]
+                            ]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [
+                                { icon: Globe as React.ElementType, label: "Welcome Days Unistra", sub: "Événement de rentrée — stands info, sport, culture, bons plans", href: "https://www.strasbourg.eu/etudiants" },
+                                { icon: Globe as React.ElementType, label: "Kehl (Allemagne) à 10 min", sub: "Courses alimentaires moins chères juste de l'autre côté du Rhin", href: "https://maps.google.com/?q=Kehl+Allemagne" },
+                              ]
+                      : [
+                         { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                      ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
@@ -898,9 +938,7 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
 // Cities coming soon (purely decorative, no Perplexity call)
 const COMING_SOON_CITIES = [
   { name: "Paris", emoji: "🗼", label: "Île-de-France" },
-  { name: "Lille", emoji: "🏭", label: "Hauts-de-France" },
   { name: "Nice", emoji: "🌊", label: "Côte d'Azur" },
-  { name: "Strasbourg", emoji: "🥨", label: "Grand Est" },
   { name: "Rennes", emoji: "🏰", label: "Bretagne" },
 ];
 
