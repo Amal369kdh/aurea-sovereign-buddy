@@ -613,8 +613,13 @@ const defaultTiles = (city: string) => [
                          ? [
                              { icon: MapPin as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle • Emploi, orientation, mobilité", href: "https://maps.google.com/?q=CRIJ+Hauts-de-France+2+rue+Édouard+Delesalle+Lille" },
                              { icon: Globe as React.ElementType, label: "RIJ Vieux-Lille", sub: "Offres emploi, baby-sitting, animation — tous les jours 14h-17h", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
-                           ]
-                    : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                            ]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [
+                                { icon: MapPin as React.ElementType, label: "Mission Locale Strasbourg", sub: "Accompagnement emploi, formation, insertion 16-25 ans", href: "https://www.mlpe.eu" },
+                                { icon: Globe as React.ElementType, label: "Unistra — Espace Avenir", sub: "Orientation, stages, emploi, réorientation", href: "https://www.unistra.fr/formation/orientation-et-insertion" },
+                              ]
+                     : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
