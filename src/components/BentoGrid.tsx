@@ -436,9 +436,11 @@ const defaultTiles = (city: string) => [
                     ? [{ icon: Heart as React.ElementType, label: "Nightline Bordeaux", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
                      : city.toLowerCase() === "nantes"
                        ? [{ icon: Heart as React.ElementType, label: "Nightline Nantes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                       : city.toLowerCase() === "lille"
-                         ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                         : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+                        : city.toLowerCase() === "lille"
+                          ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [{ icon: Heart as React.ElementType, label: "Nightline Strasbourg", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                            : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
