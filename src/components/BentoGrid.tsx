@@ -700,13 +700,21 @@ const defaultTiles = (city: string) => [
                              { icon: HandCoins as React.ElementType, label: "Aides CROUS Lille", sub: "Aides spécifiques & financières", href: "https://www.crous-lille.fr" },
                              { icon: Globe as React.ElementType, label: "MEL — Stratégie Jeunesse #JeM2.0", sub: "Solidarité, émancipation, engagement pour les jeunes", href: "https://www.lillemetropole.fr/votre-mel/competences/jeunesse" },
                              { icon: Globe as React.ElementType, label: "Action Logement Lille", sub: "Aide au dépôt de garantie et prise en charge partielle du loyer", href: "https://www.actionlogement.fr" },
-                           ]
-                     : [
-                       { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-                       { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                       { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-                       { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-                     ]
+                            ]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [
+                                { icon: Utensils as React.ElementType, label: "Agoraé Strasbourg — Épicerie solidaire", sub: "Colis alimentaires étudiants en difficulté", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
+                                { icon: Utensils as React.ElementType, label: "Restos du Cœur Strasbourg", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                                { icon: HandCoins as React.ElementType, label: "FAJ Eurométropole — jusqu'à 1 800€", sub: "Fonds d'aide aux jeunes 16-25 ans en difficulté", href: "https://www.strasbourg.eu/fond-aide-jeunes" },
+                                { icon: HandCoins as React.ElementType, label: "Aides CROUS Strasbourg", sub: "Aides spécifiques & financières", href: "https://www.crous-strasbourg.fr" },
+                                { icon: Globe as React.ElementType, label: "Bourses Fondation Unistra", sub: "Bourses de donateurs pour logement, alimentation, santé", href: "https://www.unistra.fr/fr/campus/aide-sociale-et-solidaire/financements-et-aides-materielles" },
+                              ]
+                      : [
+                        { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+                        { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                        { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+                        { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+                      ]
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
