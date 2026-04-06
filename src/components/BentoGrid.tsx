@@ -324,10 +324,15 @@ const defaultTiles = (city: string) => [
                            ? [
                                { icon: MapPin as React.ElementType, label: "Préfecture du Nord", sub: "12 rue Jean sans Peur, 59039 Lille", href: "https://maps.google.com/?q=Préfecture+du+Nord+12+rue+Jean+sans+Peur+Lille" },
                                { icon: Globe as React.ElementType, label: "CRIJ Hauts-de-France", sub: "2 rue Édouard Delesalle — emploi, logement, orientation", href: "https://www.crij-hdf.fr" },
-                             ]
-                           : [
-                        { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
-                      ]
+                              ]
+                            : city.toLowerCase() === "strasbourg"
+                              ? [
+                                  { icon: MapPin as React.ElementType, label: "Préfecture du Bas-Rhin", sub: "5 place de la République, 67000 Strasbourg", href: "https://maps.google.com/?q=Préfecture+Bas-Rhin+5+place+de+la+République+Strasbourg" },
+                                  { icon: Globe as React.ElementType, label: "Strasbourg aime ses étudiants", sub: "Aides, logement, transport, santé, culture — tout en un", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
+                                ]
+                              : [
+                         { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
+                       ]
       ),
     ] as QuickLink[],
   },
