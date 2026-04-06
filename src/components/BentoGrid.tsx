@@ -554,10 +554,16 @@ const defaultTiles = (city: string) => [
                                  { icon: Globe as React.ElementType, label: "Carte Blanche — Loisirs & sport", sub: "Réductions cinémas, musées, piscines, théâtres dans la MEL", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
                                  { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                                  { icon: Dumbbell as React.ElementType, label: "Sport universitaire Lille", sub: "Activités sportives campus Cité Scientifique", href: "https://www.univ-lille.fr/vie-des-campus/sport" },
-                               ]
-                             : [
-                  { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
-                ]
+                                ]
+                              : city.toLowerCase() === "strasbourg"
+                                ? [
+                                    { icon: Globe as React.ElementType, label: "Carte Culture Strasbourg", sub: "Accès réduit musées, spectacles, cinémas pour étudiants", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
+                                    { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                    { icon: Dumbbell as React.ElementType, label: "Sport universitaire Unistra", sub: "Activités sportives campus Esplanade", href: "https://suaps.unistra.fr" },
+                                  ]
+                                : [
+                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+                 ]
       ),
     ] as QuickLink[],
   },
