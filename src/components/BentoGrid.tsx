@@ -754,10 +754,15 @@ const defaultTiles = (city: string) => [
                          ? [
                              { icon: Globe as React.ElementType, label: "Agenda des Ados — Lille", sub: "Bons plans loisirs, culture, sport — médiathèques, musées, piscines", href: "https://www.lille.fr/Vivre-a-Lille/Jeunesse" },
                              { icon: Globe as React.ElementType, label: "Carte Blanche MEL", sub: "Réductions cinémas, musées, piscines, patinoires, théâtres", href: "https://www.lillemetropole.fr/votre-quotidien/sport-et-loisirs" },
-                           ]
-                     : [
-                        { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                     ]
+                            ]
+                          : city.toLowerCase() === "strasbourg"
+                            ? [
+                                { icon: Globe as React.ElementType, label: "Welcome Days Unistra", sub: "Événement de rentrée — stands info, sport, culture, bons plans", href: "https://www.strasbourg.eu/etudiants" },
+                                { icon: Globe as React.ElementType, label: "Kehl (Allemagne) à 10 min", sub: "Courses alimentaires moins chères juste de l'autre côté du Rhin", href: "https://maps.google.com/?q=Kehl+Allemagne" },
+                              ]
+                      : [
+                         { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                      ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
