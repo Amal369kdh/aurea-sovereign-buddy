@@ -259,9 +259,9 @@ const defaultTiles = (city: string) => [
                    ? "⚠️ Marseille : hébergement d'urgence étudiant disponible (logement temporaire sans loyer, avec suivi social). Contacte le CROUS Aix-Marseille."
                     : city.toLowerCase() === "nantes"
                       ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
-                      : city.toLowerCase() === "lille"
-                        ? "⚠️ Lille : 3e métropole étudiante de France (136 000 étudiants). Action Logement propose des aides au dépôt de garantie. Pense aussi à la Carte Blanche pour les réductions loisirs."
-                        : undefined,
+                        : city.toLowerCase() === "strasbourg"
+                          ? "⚠️ Strasbourg : le dispositif 'Strasbourg aime ses étudiants' centralise toutes les aides logement. Le FAJ peut accorder jusqu'à 1 800€/an. Profite aussi de Kehl (Allemagne) à 10 min en tram pour tes courses."
+                          : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
