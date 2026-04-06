@@ -492,11 +492,16 @@ const defaultTiles = (city: string) => [
                            ? [
                                { icon: Bus as React.ElementType, label: "Ilévia — Abo étudiant", sub: "~30€/mois • Métro, tramway, bus", href: "https://www.ilevia.fr" },
                                { icon: Globe as React.ElementType, label: "V'Lille — Vélos en libre-service", sub: "Stations dans toute la métropole lilloise", href: "https://www.ilevia.fr/vlille" },
-                             ]
-                           : [
-                 { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-                 { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
-               ]
+                              ]
+                            : city.toLowerCase() === "strasbourg"
+                              ? [
+                                  { icon: Bus as React.ElementType, label: "CTS — Abo étudiant", sub: "~27€/mois • Tram + Bus", href: "https://www.cts-strasbourg.eu" },
+                                  { icon: Globe as React.ElementType, label: "Vélhop — Vélos en libre-service", sub: "Location courte et longue durée dans Strasbourg", href: "https://velhop.strasbourg.eu" },
+                                ]
+                              : [
+                  { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+                  { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+                ]
       ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
       ...(city.toLowerCase() === "grenoble"
