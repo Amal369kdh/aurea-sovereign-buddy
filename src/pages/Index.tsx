@@ -184,6 +184,9 @@ const Index = () => {
             <BudgetTracker />
           </div>
           <BentoGrid />
+          <div className="mt-4">
+            <BadgeShowcase />
+          </div>
           {hubSocialEnabled && (
             <div className="mt-4">
               <SocialPulse />
