@@ -427,8 +427,10 @@ const defaultTiles = (city: string) => [
                             : city.toLowerCase() === "lille"
                               ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
                               : city.toLowerCase() === "strasbourg"
-                                ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Unistra", sub: "6 rue de Palerme • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+6+rue+de+Palerme+Strasbourg" }]
-                                : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                               ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Unistra", sub: "6 rue de Palerme • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+6+rue+de+Palerme+Strasbourg" }]
+                               : city.toLowerCase() === "rennes"
+                                 ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Rennes", sub: "Campus Villejean & Beaulieu • Consultations gratuites + 8 séances psy", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Villejean+Rennes" }]
+                                 : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
