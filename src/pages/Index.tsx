@@ -6,6 +6,7 @@ import BentoGrid from "@/components/BentoGrid";
 import SocialPulse from "@/components/SocialPulse";
 import BudgetTracker from "@/components/BudgetTracker";
 import AdminCalendar from "@/components/AdminCalendar";
+import BadgeShowcase from "@/components/BadgeShowcase";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
@@ -183,6 +184,9 @@ const Index = () => {
             <BudgetTracker />
           </div>
           <BentoGrid />
+          <div className="mt-4">
+            <BadgeShowcase />
+          </div>
           {hubSocialEnabled && (
             <div className="mt-4">
               <SocialPulse />
