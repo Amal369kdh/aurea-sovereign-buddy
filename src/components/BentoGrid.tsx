@@ -737,13 +737,21 @@ const defaultTiles = (city: string) => [
                                 { icon: HandCoins as React.ElementType, label: "FAJ Eurométropole — jusqu'à 1 800€", sub: "Fonds d'aide aux jeunes 16-25 ans en difficulté", href: "https://www.strasbourg.eu/fond-aide-jeunes" },
                                 { icon: HandCoins as React.ElementType, label: "Aides CROUS Strasbourg", sub: "Aides spécifiques & financières", href: "https://www.crous-strasbourg.fr" },
                                 { icon: Globe as React.ElementType, label: "Bourses Fondation Unistra", sub: "Bourses de donateurs pour logement, alimentation, santé", href: "https://www.unistra.fr/fr/campus/aide-sociale-et-solidaire/financements-et-aides-materielles" },
-                              ]
-                      : [
-                        { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
-                        { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
-                        { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
-                        { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
-                      ]
+                               ]
+                             : city.toLowerCase() === "rennes"
+                               ? [
+                                   { icon: Utensils as React.ElementType, label: "Épiceries gratuites campus", sub: "Denrées et repas pour étudiants — Villejean et Beaulieu", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
+                                   { icon: Utensils as React.ElementType, label: "Restos du Cœur Rennes", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                                   { icon: HandCoins as React.ElementType, label: "Aides CROUS Rennes Bretagne", sub: "Bourses, aides spécifiques, prêt étudiant jusqu'à 20 000€", href: "https://www.crous-rennes.fr/bourses-et-aides-financieres/" },
+                                   { icon: Brain as React.ElementType, label: "Psychologue gratuit CROUS", sub: "Jusqu'à 8 séances renouvelables pour étudiants", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
+                                   { icon: Globe as React.ElementType, label: "Le 4 bis — Conseil gratuit", sub: "Permanences sans RDV pour les 16-30 ans", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                 ]
+                       : [
+                         { icon: Utensils as React.ElementType, label: "Agoraé — Épicerie solidaire campus", sub: "Colis alimentaires pour étudiants en difficulté", href: "https://colibri.univ-grenoble-alpes.fr/actualites/agorae-un-magasin-solidaire-pour-les-etudiants-707583.kjsp" },
+                         { icon: Utensils as React.ElementType, label: "Restos du Cœur", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                         { icon: HandCoins as React.ElementType, label: "Autres aides CROUS", sub: "Aides spécifiques & financières", href: "https://www.crous-grenoble.fr/bourses-et-aides-financieres/ai-je-droit-a-dautres-aides/" },
+                         { icon: Phone as React.ElementType, label: "CROUS — Assistante sociale", sub: "Aide sociale & financière d'urgence", href: "https://www.crous-grenoble.fr/vie-etudiante/sante-social/service-social/" },
+                       ]
       ),
       { icon: Brain, label: "Fil Santé Jeunes", sub: "0 800 235 236 — Anonyme & gratuit 24h/24", href: "tel:+33800235236" },
       { icon: Brain, label: "Nightline France — écoute étudiante", sub: "Ligne d'écoute tenue par des étudiants", href: "https://www.nightline.fr/" },
