@@ -939,7 +939,6 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
 const COMING_SOON_CITIES = [
   { name: "Paris", emoji: "🗼", label: "Île-de-France" },
   { name: "Nice", emoji: "🌊", label: "Côte d'Azur" },
-  { name: "Rennes", emoji: "🏰", label: "Bretagne" },
 ];
 
 /* ─── Main grid ─── */
