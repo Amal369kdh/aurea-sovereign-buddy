@@ -525,15 +525,20 @@ const defaultTiles = (city: string) => [
                                    { icon: Bus as React.ElementType, label: "CTS — Abo étudiant", sub: "~27€/mois • Tram + Bus", href: "https://www.cts-strasbourg.eu" },
                                    { icon: Globe as React.ElementType, label: "Vélhop — Vélos en libre-service", sub: "Location courte et longue durée dans Strasbourg", href: "https://velhop.strasbourg.eu" },
                                  ]
-                               : city.toLowerCase() === "rennes"
-                                 ? [
-                                     { icon: Bus as React.ElementType, label: "STAR — Abo Korrigo étudiant", sub: "~30€/mois • Métro, bus", href: "https://www.star.fr" },
-                                     { icon: Globe as React.ElementType, label: "Vélo STAR — Libre-service", sub: "Stations dans toute la métropole rennaise", href: "https://www.star.fr/se-deplacer/velo-star" },
-                                   ]
-                               : [
-                   { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-                   { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
-                 ]
+                                : city.toLowerCase() === "rennes"
+                                  ? [
+                                      { icon: Bus as React.ElementType, label: "STAR — Abo Korrigo étudiant", sub: "~30€/mois • Métro, bus", href: "https://www.star.fr" },
+                                      { icon: Globe as React.ElementType, label: "Vélo STAR — Libre-service", sub: "Stations dans toute la métropole rennaise", href: "https://www.star.fr/se-deplacer/velo-star" },
+                                    ]
+                                  : city.toLowerCase() === "nice"
+                                    ? [
+                                        { icon: Bus as React.ElementType, label: "Lignes d'Azur — Abo étudiant", sub: "~30€/mois • Tram, bus", href: "https://www.lignesdazur.com" },
+                                        { icon: Globe as React.ElementType, label: "Vélo Bleu — Libre-service", sub: "Stations dans toute la ville de Nice", href: "https://www.velobleu.org" },
+                                      ]
+                                : [
+                    { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+                    { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+                  ]
       ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
       ...(city.toLowerCase() === "grenoble"
