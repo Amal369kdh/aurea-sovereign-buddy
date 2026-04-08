@@ -261,9 +261,11 @@ const defaultTiles = (city: string) => [
                       ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
                         : city.toLowerCase() === "strasbourg"
                           ? "⚠️ Strasbourg : le dispositif 'Strasbourg aime ses étudiants' centralise toutes les aides logement. Le FAJ peut accorder jusqu'à 1 800€/an. Profite aussi de Kehl (Allemagne) à 10 min en tram pour tes courses."
-                          : city.toLowerCase() === "rennes"
-                            ? "⚠️ Rennes accueille 63 000 étudiants. Des épiceries gratuites fonctionnent sur les campus Villejean et Beaulieu. Le prêt étudiant garanti par l'État (jusqu'à 20 000€ sans caution) est accessible via le CROUS."
-                            : undefined,
+                           : city.toLowerCase() === "rennes"
+                             ? "⚠️ Rennes accueille 63 000 étudiants. Des épiceries gratuites fonctionnent sur les campus Villejean et Beaulieu. Le prêt étudiant garanti par l'État (jusqu'à 20 000€ sans caution) est accessible via le CROUS."
+                             : city.toLowerCase() === "nice"
+                               ? "⚠️ Nice : la Carte Jeune Nice (gratuite, 15-25 ans) donne accès à des réductions culture, sport et loisirs. Le FSL de la Métropole peut aider à accéder à un logement. Ligne d'écoute psy gratuite 24h/24 : 0800 730 815."
+                               : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
