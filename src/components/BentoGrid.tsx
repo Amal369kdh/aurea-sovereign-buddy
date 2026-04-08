@@ -380,9 +380,12 @@ const defaultTiles = (city: string) => [
                           ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Lille Nord-Pas-de-Calais", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-lille.fr" }]
                            : city.toLowerCase() === "strasbourg"
                              ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Strasbourg", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-strasbourg.fr" }]
-                             : city.toLowerCase() === "rennes"
-                               ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Rennes Bretagne", sub: "Bourses, logements, restauration, DSE", href: "https://www.crous-rennes.fr" }]
-                               : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+                              : city.toLowerCase() === "rennes"
+                                ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Rennes Bretagne", sub: "Bourses, logements, restauration, DSE", href: "https://www.crous-rennes.fr" }]
+                                : city.toLowerCase() === "nice"
+                                  ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nice-Toulon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nice.fr" },
+                                     { icon: HandCoins as React.ElementType, label: "Bourse Égalité des Chances UCA", sub: "1 000€ ponctuels pour étudiants en difficulté", href: "https://etudiants.nice.fr/vie-quotidienne/aides-sociales/" }]
+                                  : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
