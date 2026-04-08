@@ -31,7 +31,7 @@ const CITIES = [
   { name: "Lille", pilot: true },
   { name: "Rennes", pilot: true },
   { name: "Marseille", pilot: true },
-  { name: "Nice", pilot: false },
+  { name: "Nice", pilot: true },
   { name: "Autre", pilot: false },
 ];
 
