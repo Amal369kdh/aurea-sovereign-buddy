@@ -463,9 +463,11 @@ const defaultTiles = (city: string) => [
                           ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
                            : city.toLowerCase() === "strasbourg"
                              ? [{ icon: Heart as React.ElementType, label: "Nightline Strasbourg", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                             : city.toLowerCase() === "rennes"
-                               ? [{ icon: Heart as React.ElementType, label: "Nightline Rennes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                               : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+                              : city.toLowerCase() === "rennes"
+                                ? [{ icon: Heart as React.ElementType, label: "Nightline Rennes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                                : city.toLowerCase() === "nice"
+                                  ? [{ icon: Heart as React.ElementType, label: "Écoute psy Nice — 0800 730 815", sub: "Gratuit, anonyme, 24h/24 pour les étudiants", href: "tel:0800730815" }]
+                                  : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
