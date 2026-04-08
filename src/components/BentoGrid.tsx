@@ -827,14 +827,19 @@ const defaultTiles = (city: string) => [
                                  { icon: Globe as React.ElementType, label: "Welcome Days Unistra", sub: "Événement de rentrée — stands info, sport, culture, bons plans", href: "https://www.strasbourg.eu/etudiants" },
                                  { icon: Globe as React.ElementType, label: "Kehl (Allemagne) à 10 min", sub: "Courses alimentaires moins chères juste de l'autre côté du Rhin", href: "https://maps.google.com/?q=Kehl+Allemagne" },
                                ]
-                             : city.toLowerCase() === "rennes"
-                               ? [
-                                   { icon: Globe as React.ElementType, label: "Carte Sortir! Rennes", sub: "Culture à prix réduit — TNB, Comédie, scène nationale", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                   { icon: Globe as React.ElementType, label: "CVEC — Vie étudiante", sub: "Finance projets sport, santé, culture sur les campus", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
-                                 ]
-                       : [
-                          { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                       ]
+                              : city.toLowerCase() === "rennes"
+                                ? [
+                                    { icon: Globe as React.ElementType, label: "Carte Sortir! Rennes", sub: "Culture à prix réduit — TNB, Comédie, scène nationale", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                    { icon: Globe as React.ElementType, label: "CVEC — Vie étudiante", sub: "Finance projets sport, santé, culture sur les campus", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
+                                  ]
+                                : city.toLowerCase() === "nice"
+                                  ? [
+                                      { icon: Globe as React.ElementType, label: "Action sociale CROUS Nice", sub: "Accompagnement social, handicap, repas sociaux, VSS", href: "https://www.crous-nice.fr/social-et-accompagnement/" },
+                                      { icon: Heart as React.ElementType, label: "Écoute psy 24h/24", sub: "0800 730 815 — gratuit, anonyme, académie de Nice", href: "tel:0800730815" },
+                                    ]
+                        : [
+                           { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                        ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
