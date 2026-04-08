@@ -668,12 +668,17 @@ const defaultTiles = (city: string) => [
                                  { icon: MapPin as React.ElementType, label: "Mission Locale Strasbourg", sub: "Accompagnement emploi, formation, insertion 16-25 ans", href: "https://www.mlpe.eu" },
                                  { icon: Globe as React.ElementType, label: "Unistra — Espace Avenir", sub: "Orientation, stages, emploi, réorientation", href: "https://www.unistra.fr/formation/orientation-et-insertion" },
                                ]
-                             : city.toLowerCase() === "rennes"
-                               ? [
-                                   { icon: MapPin as React.ElementType, label: "Le 4 bis — Emploi & orientation", sub: "2 cours des Alliés • Permanences gratuites 16-30 ans", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                   { icon: Globe as React.ElementType, label: "Clair Détour — Orientation", sub: "Info métiers, orientation, formation, insertion", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
-                                 ]
-                      : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                              : city.toLowerCase() === "rennes"
+                                ? [
+                                    { icon: MapPin as React.ElementType, label: "Le 4 bis — Emploi & orientation", sub: "2 cours des Alliés • Permanences gratuites 16-30 ans", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                    { icon: Globe as React.ElementType, label: "Clair Détour — Orientation", sub: "Info métiers, orientation, formation, insertion", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
+                                  ]
+                                : city.toLowerCase() === "nice"
+                                  ? [
+                                      { icon: Globe as React.ElementType, label: "Portail Étudiants Nice — Emploi", sub: "Aides, stages, jobs étudiants à Nice", href: "https://www.nice.fr/jeune-etudiant/" },
+                                      { icon: Globe as React.ElementType, label: "Sortie d'Amphi Nice", sub: "Events, bons plans, jobs étudiants gratuits", href: "https://sortiedamphi-events.fr/nice-vie-etudiante-nice-ville-etudiante/" },
+                                    ]
+                       : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
