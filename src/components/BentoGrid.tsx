@@ -598,15 +598,21 @@ const defaultTiles = (city: string) => [
                                      { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                                      { icon: Dumbbell as React.ElementType, label: "Sport universitaire Unistra", sub: "Activités sportives campus Esplanade", href: "https://suaps.unistra.fr" },
                                    ]
-                                 : city.toLowerCase() === "rennes"
-                                   ? [
-                                       { icon: Globe as React.ElementType, label: "Carte Sortir! — Culture à petit prix", sub: "Théâtre national de Bretagne, Comédie, scène nationale…", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                       { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                                       { icon: Globe as React.ElementType, label: "Clair Détour — Info quotidien", sub: "Vie quotidienne, métiers, orientation, vacances", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
-                                     ]
-                                 : [
-                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
-                 ]
+                                  : city.toLowerCase() === "rennes"
+                                    ? [
+                                        { icon: Globe as React.ElementType, label: "Carte Sortir! — Culture à petit prix", sub: "Théâtre national de Bretagne, Comédie, scène nationale…", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                        { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                        { icon: Globe as React.ElementType, label: "Clair Détour — Info quotidien", sub: "Vie quotidienne, métiers, orientation, vacances", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
+                                      ]
+                                    : city.toLowerCase() === "nice"
+                                      ? [
+                                          { icon: Globe as React.ElementType, label: "Carte Jeune Nice — Gratuite", sub: "15-25 ans • Réductions culture, sport, loisirs, commerces", href: "https://etudiants.nice.fr/5-bons-plans-loisirs-culture-pour-les-jeunes-a-nice/" },
+                                          { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                          { icon: Dumbbell as React.ElementType, label: "Sport universitaire UCA", sub: "Activités sportives campus Valrose & SJA", href: "https://univ-cotedazur.fr/vie-de-campus/sport" },
+                                        ]
+                                  : [
+                    { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+                  ]
       ),
     ] as QuickLink[],
   },
