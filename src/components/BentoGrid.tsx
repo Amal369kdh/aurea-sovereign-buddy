@@ -261,9 +261,11 @@ const defaultTiles = (city: string) => [
                       ? "⚠️ Nantes : Le Fonds d'Aide aux Jeunes (FAJ) peut accorder jusqu'à 1 600€/an pour logement, santé, transport. Contacte la Métropole ou ton assistante sociale CROUS."
                         : city.toLowerCase() === "strasbourg"
                           ? "⚠️ Strasbourg : le dispositif 'Strasbourg aime ses étudiants' centralise toutes les aides logement. Le FAJ peut accorder jusqu'à 1 800€/an. Profite aussi de Kehl (Allemagne) à 10 min en tram pour tes courses."
-                          : city.toLowerCase() === "rennes"
-                            ? "⚠️ Rennes accueille 63 000 étudiants. Des épiceries gratuites fonctionnent sur les campus Villejean et Beaulieu. Le prêt étudiant garanti par l'État (jusqu'à 20 000€ sans caution) est accessible via le CROUS."
-                            : undefined,
+                           : city.toLowerCase() === "rennes"
+                             ? "⚠️ Rennes accueille 63 000 étudiants. Des épiceries gratuites fonctionnent sur les campus Villejean et Beaulieu. Le prêt étudiant garanti par l'État (jusqu'à 20 000€ sans caution) est accessible via le CROUS."
+                             : city.toLowerCase() === "nice"
+                               ? "⚠️ Nice : la Carte Jeune Nice (gratuite, 15-25 ans) donne accès à des réductions culture, sport et loisirs. Le FSL de la Métropole peut aider à accéder à un logement. Ligne d'écoute psy gratuite 24h/24 : 0800 730 815."
+                               : undefined,
     links: [
       { icon: Building2, label: "Résidences CROUS", sub: "Dossier social étudiant (DSE)", href: "https://www.messervices.etudiant.gouv.fr" },
       { icon: Globe, label: "Lokaviz CROUS", sub: "Logements chez l'habitant", href: "https://www.lokaviz.fr" },
@@ -332,12 +334,17 @@ const defaultTiles = (city: string) => [
                                   { icon: MapPin as React.ElementType, label: "Préfecture du Bas-Rhin", sub: "5 place de la République, 67000 Strasbourg", href: "https://maps.google.com/?q=Préfecture+Bas-Rhin+5+place+de+la+République+Strasbourg" },
                                    { icon: Globe as React.ElementType, label: "Strasbourg aime ses étudiants", sub: "Aides, logement, transport, santé, culture — tout en un", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
                                  ]
-                               : city.toLowerCase() === "rennes"
-                                 ? [
-                                     { icon: MapPin as React.ElementType, label: "Préfecture d'Ille-et-Vilaine", sub: "3 avenue de la Préfecture, 35000 Rennes", href: "https://maps.google.com/?q=Préfecture+Ille-et-Vilaine+3+avenue+Préfecture+Rennes" },
-                                     { icon: Globe as React.ElementType, label: "Le 4 bis — Info Jeunes Rennes", sub: "2 cours des Alliés • Info gratuite 16-30 ans, sans RDV", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                   ]
-                               : [
+                                : city.toLowerCase() === "rennes"
+                                  ? [
+                                      { icon: MapPin as React.ElementType, label: "Préfecture d'Ille-et-Vilaine", sub: "3 avenue de la Préfecture, 35000 Rennes", href: "https://maps.google.com/?q=Préfecture+Ille-et-Vilaine+3+avenue+Préfecture+Rennes" },
+                                      { icon: Globe as React.ElementType, label: "Le 4 bis — Info Jeunes Rennes", sub: "2 cours des Alliés • Info gratuite 16-30 ans, sans RDV", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                    ]
+                                  : city.toLowerCase() === "nice"
+                                    ? [
+                                        { icon: MapPin as React.ElementType, label: "Préfecture des Alpes-Maritimes", sub: "147 bd du Mercantour, 06286 Nice", href: "https://maps.google.com/?q=Préfecture+Alpes-Maritimes+147+boulevard+Mercantour+Nice" },
+                                        { icon: Globe as React.ElementType, label: "Portail Étudiants Nice", sub: "Toutes les aides, logement, loisirs — nice.fr", href: "https://etudiants.nice.fr" },
+                                      ]
+                                : [
                          { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
                        ]
       ),
@@ -373,9 +380,12 @@ const defaultTiles = (city: string) => [
                           ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Lille Nord-Pas-de-Calais", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-lille.fr" }]
                            : city.toLowerCase() === "strasbourg"
                              ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Strasbourg", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-strasbourg.fr" }]
-                             : city.toLowerCase() === "rennes"
-                               ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Rennes Bretagne", sub: "Bourses, logements, restauration, DSE", href: "https://www.crous-rennes.fr" }]
-                               : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+                              : city.toLowerCase() === "rennes"
+                                ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Rennes Bretagne", sub: "Bourses, logements, restauration, DSE", href: "https://www.crous-rennes.fr" }]
+                                : city.toLowerCase() === "nice"
+                                  ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nice-Toulon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nice.fr" },
+                                     { icon: HandCoins as React.ElementType, label: "Bourse Égalité des Chances UCA", sub: "1 000€ ponctuels pour étudiants en difficulté", href: "https://etudiants.nice.fr/vie-quotidienne/aides-sociales/" }]
+                                  : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
@@ -428,9 +438,11 @@ const defaultTiles = (city: string) => [
                               ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Lille", sub: "Campus Cité Scientifique • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Cité+Scientifique+Villeneuve+d+Ascq" }]
                               : city.toLowerCase() === "strasbourg"
                                ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Unistra", sub: "6 rue de Palerme • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+6+rue+de+Palerme+Strasbourg" }]
-                               : city.toLowerCase() === "rennes"
-                                 ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Rennes", sub: "Campus Villejean & Beaulieu • Consultations gratuites + 8 séances psy", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Villejean+Rennes" }]
-                                 : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                                : city.toLowerCase() === "rennes"
+                                  ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Rennes", sub: "Campus Villejean & Beaulieu • Consultations gratuites + 8 séances psy", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Villejean+Rennes" }]
+                                  : city.toLowerCase() === "nice"
+                                    ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus Valrose • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Valrose+Nice" }]
+                                    : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "lyon"
@@ -451,9 +463,11 @@ const defaultTiles = (city: string) => [
                           ? [{ icon: Heart as React.ElementType, label: "Nightline Lille", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
                            : city.toLowerCase() === "strasbourg"
                              ? [{ icon: Heart as React.ElementType, label: "Nightline Strasbourg", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                             : city.toLowerCase() === "rennes"
-                               ? [{ icon: Heart as React.ElementType, label: "Nightline Rennes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
-                               : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
+                              : city.toLowerCase() === "rennes"
+                                ? [{ icon: Heart as React.ElementType, label: "Nightline Rennes", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
+                                : city.toLowerCase() === "nice"
+                                  ? [{ icon: Heart as React.ElementType, label: "Écoute psy Nice — 0800 730 815", sub: "Gratuit, anonyme, 24h/24 pour les étudiants", href: "tel:0800730815" }]
+                                  : [{ icon: Heart as React.ElementType, label: "Nightline France", sub: "Écoute psy gratuite entre étudiants", href: "https://www.nightline.fr/" }]
       ),
     ] as QuickLink[],
   },
@@ -511,15 +525,20 @@ const defaultTiles = (city: string) => [
                                    { icon: Bus as React.ElementType, label: "CTS — Abo étudiant", sub: "~27€/mois • Tram + Bus", href: "https://www.cts-strasbourg.eu" },
                                    { icon: Globe as React.ElementType, label: "Vélhop — Vélos en libre-service", sub: "Location courte et longue durée dans Strasbourg", href: "https://velhop.strasbourg.eu" },
                                  ]
-                               : city.toLowerCase() === "rennes"
-                                 ? [
-                                     { icon: Bus as React.ElementType, label: "STAR — Abo Korrigo étudiant", sub: "~30€/mois • Métro, bus", href: "https://www.star.fr" },
-                                     { icon: Globe as React.ElementType, label: "Vélo STAR — Libre-service", sub: "Stations dans toute la métropole rennaise", href: "https://www.star.fr/se-deplacer/velo-star" },
-                                   ]
-                               : [
-                   { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
-                   { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
-                 ]
+                                : city.toLowerCase() === "rennes"
+                                  ? [
+                                      { icon: Bus as React.ElementType, label: "STAR — Abo Korrigo étudiant", sub: "~30€/mois • Métro, bus", href: "https://www.star.fr" },
+                                      { icon: Globe as React.ElementType, label: "Vélo STAR — Libre-service", sub: "Stations dans toute la métropole rennaise", href: "https://www.star.fr/se-deplacer/velo-star" },
+                                    ]
+                                  : city.toLowerCase() === "nice"
+                                    ? [
+                                        { icon: Bus as React.ElementType, label: "Lignes d'Azur — Abo étudiant", sub: "~30€/mois • Tram, bus", href: "https://www.lignesdazur.com" },
+                                        { icon: Globe as React.ElementType, label: "Vélo Bleu — Libre-service", sub: "Stations dans toute la ville de Nice", href: "https://www.velobleu.org" },
+                                      ]
+                                : [
+                    { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
+                    { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
+                  ]
       ),
       { icon: Utensils, label: "Repas à 1€ CROUS", sub: "Tous les restos U à tarif solidaire", href: "https://www.lescrous.fr/2025/09/comment-beneficier-du-repas-crous-a-1e/" },
       ...(city.toLowerCase() === "grenoble"
@@ -579,15 +598,21 @@ const defaultTiles = (city: string) => [
                                      { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                                      { icon: Dumbbell as React.ElementType, label: "Sport universitaire Unistra", sub: "Activités sportives campus Esplanade", href: "https://suaps.unistra.fr" },
                                    ]
-                                 : city.toLowerCase() === "rennes"
-                                   ? [
-                                       { icon: Globe as React.ElementType, label: "Carte Sortir! — Culture à petit prix", sub: "Théâtre national de Bretagne, Comédie, scène nationale…", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                       { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                                       { icon: Globe as React.ElementType, label: "Clair Détour — Info quotidien", sub: "Vie quotidienne, métiers, orientation, vacances", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
-                                     ]
-                                 : [
-                   { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
-                 ]
+                                  : city.toLowerCase() === "rennes"
+                                    ? [
+                                        { icon: Globe as React.ElementType, label: "Carte Sortir! — Culture à petit prix", sub: "Théâtre national de Bretagne, Comédie, scène nationale…", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                        { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                        { icon: Globe as React.ElementType, label: "Clair Détour — Info quotidien", sub: "Vie quotidienne, métiers, orientation, vacances", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
+                                      ]
+                                    : city.toLowerCase() === "nice"
+                                      ? [
+                                          { icon: Globe as React.ElementType, label: "Carte Jeune Nice — Gratuite", sub: "15-25 ans • Réductions culture, sport, loisirs, commerces", href: "https://etudiants.nice.fr/5-bons-plans-loisirs-culture-pour-les-jeunes-a-nice/" },
+                                          { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                          { icon: Dumbbell as React.ElementType, label: "Sport universitaire UCA", sub: "Activités sportives campus Valrose & SJA", href: "https://univ-cotedazur.fr/vie-de-campus/sport" },
+                                        ]
+                                  : [
+                    { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
+                  ]
       ),
     ] as QuickLink[],
   },
@@ -643,12 +668,17 @@ const defaultTiles = (city: string) => [
                                  { icon: MapPin as React.ElementType, label: "Mission Locale Strasbourg", sub: "Accompagnement emploi, formation, insertion 16-25 ans", href: "https://www.mlpe.eu" },
                                  { icon: Globe as React.ElementType, label: "Unistra — Espace Avenir", sub: "Orientation, stages, emploi, réorientation", href: "https://www.unistra.fr/formation/orientation-et-insertion" },
                                ]
-                             : city.toLowerCase() === "rennes"
-                               ? [
-                                   { icon: MapPin as React.ElementType, label: "Le 4 bis — Emploi & orientation", sub: "2 cours des Alliés • Permanences gratuites 16-30 ans", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                   { icon: Globe as React.ElementType, label: "Clair Détour — Orientation", sub: "Info métiers, orientation, formation, insertion", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
-                                 ]
-                      : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
+                              : city.toLowerCase() === "rennes"
+                                ? [
+                                    { icon: MapPin as React.ElementType, label: "Le 4 bis — Emploi & orientation", sub: "2 cours des Alliés • Permanences gratuites 16-30 ans", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                    { icon: Globe as React.ElementType, label: "Clair Détour — Orientation", sub: "Info métiers, orientation, formation, insertion", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
+                                  ]
+                                : city.toLowerCase() === "nice"
+                                  ? [
+                                      { icon: Globe as React.ElementType, label: "Portail Étudiants Nice — Emploi", sub: "Aides, stages, jobs étudiants à Nice", href: "https://www.nice.fr/jeune-etudiant/" },
+                                      { icon: Globe as React.ElementType, label: "Sortie d'Amphi Nice", sub: "Events, bons plans, jobs étudiants gratuits", href: "https://sortiedamphi-events.fr/nice-vie-etudiante-nice-ville-etudiante/" },
+                                    ]
+                       : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
       { icon: GraduationCap, label: "Stages & alternance", sub: "1jeune1solution — offres nationales", href: "https://www.1jeune1solution.gouv.fr/" },
@@ -797,14 +827,19 @@ const defaultTiles = (city: string) => [
                                  { icon: Globe as React.ElementType, label: "Welcome Days Unistra", sub: "Événement de rentrée — stands info, sport, culture, bons plans", href: "https://www.strasbourg.eu/etudiants" },
                                  { icon: Globe as React.ElementType, label: "Kehl (Allemagne) à 10 min", sub: "Courses alimentaires moins chères juste de l'autre côté du Rhin", href: "https://maps.google.com/?q=Kehl+Allemagne" },
                                ]
-                             : city.toLowerCase() === "rennes"
-                               ? [
-                                   { icon: Globe as React.ElementType, label: "Carte Sortir! Rennes", sub: "Culture à prix réduit — TNB, Comédie, scène nationale", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                   { icon: Globe as React.ElementType, label: "CVEC — Vie étudiante", sub: "Finance projets sport, santé, culture sur les campus", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
-                                 ]
-                       : [
-                          { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
-                       ]
+                              : city.toLowerCase() === "rennes"
+                                ? [
+                                    { icon: Globe as React.ElementType, label: "Carte Sortir! Rennes", sub: "Culture à prix réduit — TNB, Comédie, scène nationale", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                    { icon: Globe as React.ElementType, label: "CVEC — Vie étudiante", sub: "Finance projets sport, santé, culture sur les campus", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
+                                  ]
+                                : city.toLowerCase() === "nice"
+                                  ? [
+                                      { icon: Globe as React.ElementType, label: "Action sociale CROUS Nice", sub: "Accompagnement social, handicap, repas sociaux, VSS", href: "https://www.crous-nice.fr/social-et-accompagnement/" },
+                                      { icon: Heart as React.ElementType, label: "Écoute psy 24h/24", sub: "0800 730 815 — gratuit, anonyme, académie de Nice", href: "tel:0800730815" },
+                                    ]
+                        : [
+                           { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
+                        ]
       ),
       { icon: Globe, label: "Pass'Culture", sub: "300€ de budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
     ] as QuickLink[],
@@ -980,7 +1015,6 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
 // Cities coming soon (purely decorative, no Perplexity call)
 const COMING_SOON_CITIES = [
   { name: "Paris", emoji: "🗼", label: "Île-de-France" },
-  { name: "Nice", emoji: "🌊", label: "Côte d'Azur" },
 ];
 
 /* ─── Main grid ─── */
