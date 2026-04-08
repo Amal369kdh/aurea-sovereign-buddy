@@ -334,12 +334,17 @@ const defaultTiles = (city: string) => [
                                   { icon: MapPin as React.ElementType, label: "Préfecture du Bas-Rhin", sub: "5 place de la République, 67000 Strasbourg", href: "https://maps.google.com/?q=Préfecture+Bas-Rhin+5+place+de+la+République+Strasbourg" },
                                    { icon: Globe as React.ElementType, label: "Strasbourg aime ses étudiants", sub: "Aides, logement, transport, santé, culture — tout en un", href: "https://www.strasbourgaimesesetudiants.eu/les-aides" },
                                  ]
-                               : city.toLowerCase() === "rennes"
-                                 ? [
-                                     { icon: MapPin as React.ElementType, label: "Préfecture d'Ille-et-Vilaine", sub: "3 avenue de la Préfecture, 35000 Rennes", href: "https://maps.google.com/?q=Préfecture+Ille-et-Vilaine+3+avenue+Préfecture+Rennes" },
-                                     { icon: Globe as React.ElementType, label: "Le 4 bis — Info Jeunes Rennes", sub: "2 cours des Alliés • Info gratuite 16-30 ans, sans RDV", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
-                                   ]
-                               : [
+                                : city.toLowerCase() === "rennes"
+                                  ? [
+                                      { icon: MapPin as React.ElementType, label: "Préfecture d'Ille-et-Vilaine", sub: "3 avenue de la Préfecture, 35000 Rennes", href: "https://maps.google.com/?q=Préfecture+Ille-et-Vilaine+3+avenue+Préfecture+Rennes" },
+                                      { icon: Globe as React.ElementType, label: "Le 4 bis — Info Jeunes Rennes", sub: "2 cours des Alliés • Info gratuite 16-30 ans, sans RDV", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
+                                    ]
+                                  : city.toLowerCase() === "nice"
+                                    ? [
+                                        { icon: MapPin as React.ElementType, label: "Préfecture des Alpes-Maritimes", sub: "147 bd du Mercantour, 06286 Nice", href: "https://maps.google.com/?q=Préfecture+Alpes-Maritimes+147+boulevard+Mercantour+Nice" },
+                                        { icon: Globe as React.ElementType, label: "Portail Étudiants Nice", sub: "Toutes les aides, logement, loisirs — nice.fr", href: "https://etudiants.nice.fr" },
+                                      ]
+                                : [
                          { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
                        ]
       ),
