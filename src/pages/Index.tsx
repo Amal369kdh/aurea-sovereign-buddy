@@ -7,6 +7,7 @@ import SocialPulse from "@/components/SocialPulse";
 import BudgetTracker from "@/components/BudgetTracker";
 import AdminCalendar from "@/components/AdminCalendar";
 import BadgeShowcase from "@/components/BadgeShowcase";
+import MentoringWidget from "@/components/MentoringWidget";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
