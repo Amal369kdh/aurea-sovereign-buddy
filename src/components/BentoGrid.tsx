@@ -247,6 +247,8 @@ const defaultTiles = (city: string) => [
       ? "⚠️ Renouvellement CROUS 2026 : du 10 mars au 4 mai. Sur messervices.etudiant.gouv.fr → Cité'U → Grenoble → « Mon logement actuel » → « Demander mon renouvellement ». Passé le 4 mai = perte de ta chambre pour la rentrée."
       : city.toLowerCase() === "lyon"
         ? "⚠️ Lyon est en zone tendue. DSE à faire entre mars et le 31 mai (même sans confirmation d'admission). Pense à la Caution Visale (garant gratuit de l'État)."
+        : city.toLowerCase() === "paris"
+          ? "⚠️ Paris : l'aide A.I.L.E. (500-1000€) finance ta première installation en logement privé. L'encadrement des loyers est en vigueur — vérifie le plafond légal avant de signer. Maison étudiante de Paris : guichet unique pour toutes les aides."
         : city.toLowerCase() === "montpellier"
           ? "⚠️ Montpellier : transports gratuits pour les résidents de la Métropole ! Fais ton Pass Gratuité dès ton arrivée (pièce d'identité + justificatif de domicile)."
           : city.toLowerCase() === "toulouse"
