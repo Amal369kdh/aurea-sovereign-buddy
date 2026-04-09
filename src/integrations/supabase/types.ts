@@ -443,6 +443,39 @@ export type Database = {
         }
         Relationships: []
       }
+      mentor_offers: {
+        Row: {
+          contact_count: number
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          mentor_id: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          contact_count?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          mentor_id: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          contact_count?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          mentor_id?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string

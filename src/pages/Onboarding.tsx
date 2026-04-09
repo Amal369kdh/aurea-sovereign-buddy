@@ -21,7 +21,7 @@ const NATIONALITIES = [
 const CITIES = [
   { name: "Grenoble", pilot: true },
   { name: "Lyon", pilot: true },
-  { name: "Paris", pilot: false },
+  { name: "Paris", pilot: true },
   { name: "Bordeaux", pilot: true },
   { name: "Toulouse", pilot: true },
   { name: "Montpellier", pilot: true },
