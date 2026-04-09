@@ -457,10 +457,12 @@ const defaultTiles = (city: string) => [
                                   ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Rennes", sub: "Campus Villejean & Beaulieu • Consultations gratuites + 8 séances psy", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Villejean+Rennes" }]
                                   : city.toLowerCase() === "nice"
                                     ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus Valrose • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Valrose+Nice" }]
-                                    : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                                     : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
-      ...(city.toLowerCase() === "lyon"
+      ...(city.toLowerCase() === "paris"
+        ? [{ icon: Heart as React.ElementType, label: "Nightline Paris — 01 88 32 12 32", sub: "Écoute étudiante gratuite le soir", href: "tel:0188321232" }]
+        : city.toLowerCase() === "lyon"
         ? [{ icon: Heart as React.ElementType, label: "Nightline Lyon", sub: "Écoute étudiante gratuite 21h-2h", href: "https://www.nightline.fr/" }]
         : city.toLowerCase() === "montpellier"
           ? [{ icon: Heart as React.ElementType, label: "Nightline Montpellier", sub: "Écoute étudiante gratuite le soir", href: "https://www.nightline.fr/" }]
