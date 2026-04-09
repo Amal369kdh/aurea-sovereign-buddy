@@ -550,11 +550,16 @@ const defaultTiles = (city: string) => [
                                       { icon: Bus as React.ElementType, label: "STAR — Abo Korrigo étudiant", sub: "~30€/mois • Métro, bus", href: "https://www.star.fr" },
                                       { icon: Globe as React.ElementType, label: "Vélo STAR — Libre-service", sub: "Stations dans toute la métropole rennaise", href: "https://www.star.fr/se-deplacer/velo-star" },
                                     ]
-                                  : city.toLowerCase() === "nice"
-                                    ? [
-                                        { icon: Bus as React.ElementType, label: "Lignes d'Azur — Abo étudiant", sub: "~30€/mois • Tram, bus", href: "https://www.lignesdazur.com" },
-                                        { icon: Globe as React.ElementType, label: "Vélo Bleu — Libre-service", sub: "Stations dans toute la ville de Nice", href: "https://www.velobleu.org" },
-                                      ]
+                                   : city.toLowerCase() === "nice"
+                                     ? [
+                                         { icon: Bus as React.ElementType, label: "Lignes d'Azur — Abo étudiant", sub: "~30€/mois • Tram, bus", href: "https://www.lignesdazur.com" },
+                                         { icon: Globe as React.ElementType, label: "Vélo Bleu — Libre-service", sub: "Stations dans toute la ville de Nice", href: "https://www.velobleu.org" },
+                                       ]
+                                     : city.toLowerCase() === "paris"
+                                       ? [
+                                           { icon: Bus as React.ElementType, label: "Carte Imagine R — Abo étudiant", sub: "~350€/an • Métro, RER, bus, tram illimités en Île-de-France", href: "https://www.iledefrance-mobilites.fr/titres-et-tarifs/detail/imagine-r-etudiant" },
+                                           { icon: Globe as React.ElementType, label: "Vélib' — Vélos en libre-service", sub: "Stations dans tout Paris et proche banlieue", href: "https://www.velib-metropole.fr" },
+                                         ]
                                 : [
                     { icon: Bus as React.ElementType, label: "M réso — Abo étudiant solidaire", sub: "Tarif réduit selon QF CAF • Agences Gare & Grand'Place", href: "https://www.reso-m.fr/68-tarification-solidaire.htm" },
                     { icon: Globe as React.ElementType, label: "M vélo+ — Vélos en location", sub: "Tarif réduit sur présentation QF CAF • Agences Gare & MUSE", href: "https://www.veloplus-m.fr" },
