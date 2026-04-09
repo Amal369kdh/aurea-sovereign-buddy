@@ -1012,10 +1012,8 @@ function enrichTilesWithCityData(tiles: ReturnType<typeof defaultTiles>, cityDat
   });
 }
 
-// Cities coming soon (purely decorative, no Perplexity call)
-const COMING_SOON_CITIES = [
-  { name: "Paris", emoji: "🗼", label: "Île-de-France" },
-];
+// Toutes les villes sont maintenant activées — plus de "coming soon"
+const COMING_SOON_CITIES: { name: string; emoji: string; label: string }[] = [];
 
 /* ─── Main grid ─── */
 const BentoGrid = () => {
