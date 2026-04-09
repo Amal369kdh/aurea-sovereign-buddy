@@ -629,12 +629,18 @@ const defaultTiles = (city: string) => [
                                         { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
                                         { icon: Globe as React.ElementType, label: "Clair Détour — Info quotidien", sub: "Vie quotidienne, métiers, orientation, vacances", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
                                       ]
-                                    : city.toLowerCase() === "nice"
-                                      ? [
-                                          { icon: Globe as React.ElementType, label: "Carte Jeune Nice — Gratuite", sub: "15-25 ans • Réductions culture, sport, loisirs, commerces", href: "https://etudiants.nice.fr/5-bons-plans-loisirs-culture-pour-les-jeunes-a-nice/" },
-                                          { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
-                                          { icon: Dumbbell as React.ElementType, label: "Sport universitaire UCA", sub: "Activités sportives campus Valrose & SJA", href: "https://univ-cotedazur.fr/vie-de-campus/sport" },
-                                        ]
+                                     : city.toLowerCase() === "nice"
+                                       ? [
+                                           { icon: Globe as React.ElementType, label: "Carte Jeune Nice — Gratuite", sub: "15-25 ans • Réductions culture, sport, loisirs, commerces", href: "https://etudiants.nice.fr/5-bons-plans-loisirs-culture-pour-les-jeunes-a-nice/" },
+                                           { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                           { icon: Dumbbell as React.ElementType, label: "Sport universitaire UCA", sub: "Activités sportives campus Valrose & SJA", href: "https://univ-cotedazur.fr/vie-de-campus/sport" },
+                                         ]
+                                       : city.toLowerCase() === "paris"
+                                         ? [
+                                             { icon: Globe as React.ElementType, label: "Musées gratuits -26 ans UE", sub: "Louvre, Orsay, Centre Pompidou… gratuits pour les résidents UE", href: "https://www.paris.fr/pages/un-guide-etudiant-pour-se-loger-et-bien-vivre-a-paris-28192" },
+                                             { icon: Globe as React.ElementType, label: "Pass'Culture — 300€", sub: "Budget culture pour les 18 ans et +", href: "https://pass.culture.fr/" },
+                                             { icon: Globe as React.ElementType, label: "App Izly", sub: "Indispensable pour payer au RU et repas à 1€", href: "https://www.izly.fr/" },
+                                           ]
                                   : [
                     { icon: Dumbbell as React.ElementType, label: "Sport universitaire", sub: "Activités sportives campus", href: `https://maps.google.com/?q=sport+universitaire+${encodeURIComponent(city)}` },
                   ]
@@ -698,11 +704,16 @@ const defaultTiles = (city: string) => [
                                     { icon: MapPin as React.ElementType, label: "Le 4 bis — Emploi & orientation", sub: "2 cours des Alliés • Permanences gratuites 16-30 ans", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
                                     { icon: Globe as React.ElementType, label: "Clair Détour — Orientation", sub: "Info métiers, orientation, formation, insertion", href: "https://education-jeunesse.metropole.rennes.fr/jeunesse/" },
                                   ]
-                                : city.toLowerCase() === "nice"
-                                  ? [
-                                      { icon: Globe as React.ElementType, label: "Portail Étudiants Nice — Emploi", sub: "Aides, stages, jobs étudiants à Nice", href: "https://www.nice.fr/jeune-etudiant/" },
-                                      { icon: Globe as React.ElementType, label: "Sortie d'Amphi Nice", sub: "Events, bons plans, jobs étudiants gratuits", href: "https://sortiedamphi-events.fr/nice-vie-etudiante-nice-ville-etudiante/" },
-                                    ]
+                                 : city.toLowerCase() === "nice"
+                                   ? [
+                                       { icon: Globe as React.ElementType, label: "Portail Étudiants Nice — Emploi", sub: "Aides, stages, jobs étudiants à Nice", href: "https://www.nice.fr/jeune-etudiant/" },
+                                       { icon: Globe as React.ElementType, label: "Sortie d'Amphi Nice", sub: "Events, bons plans, jobs étudiants gratuits", href: "https://sortiedamphi-events.fr/nice-vie-etudiante-nice-ville-etudiante/" },
+                                     ]
+                                   : city.toLowerCase() === "paris"
+                                     ? [
+                                         { icon: Globe as React.ElementType, label: "EtudiantdeParis.fr", sub: "Portail officiel — emploi, stages, bons plans Paris", href: "https://etudiantdeparis.fr" },
+                                         { icon: Globe as React.ElementType, label: "Maison étudiante — Orientation", sub: "Accompagnement, ateliers CV, aide à l'insertion", href: "https://maison-etudiante.paris" },
+                                       ]
                        : [{ icon: MapPin as React.ElementType, label: "Espace OIP — Orientation & Insertion", sub: "Campus UGA • Réorientation, CV, emploi", href: "https://etudiant.univ-grenoble-alpes.fr/l-espace-orientation-et-insertion-professionnelle-de-l-universite-grenoble-alpes-1379827.kjsp" }]
       ),
       { icon: Briefcase, label: "Jobs étudiants — Jobaviz", sub: "Offres vérifiées CROUS • 20h/sem max", href: "https://www.jobaviz.fr/" },
@@ -857,11 +868,20 @@ const defaultTiles = (city: string) => [
                                     { icon: Globe as React.ElementType, label: "Carte Sortir! Rennes", sub: "Culture à prix réduit — TNB, Comédie, scène nationale", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
                                     { icon: Globe as React.ElementType, label: "CVEC — Vie étudiante", sub: "Finance projets sport, santé, culture sur les campus", href: "https://www.crous-rennes.fr/social-et-accompagnement/" },
                                   ]
-                                : city.toLowerCase() === "nice"
-                                  ? [
-                                      { icon: Globe as React.ElementType, label: "Action sociale CROUS Nice", sub: "Accompagnement social, handicap, repas sociaux, VSS", href: "https://www.crous-nice.fr/social-et-accompagnement/" },
-                                      { icon: Heart as React.ElementType, label: "Écoute psy 24h/24", sub: "0800 730 815 — gratuit, anonyme, académie de Nice", href: "tel:0800730815" },
-                                    ]
+                                 : city.toLowerCase() === "nice"
+                                   ? [
+                                       { icon: Globe as React.ElementType, label: "Action sociale CROUS Nice", sub: "Accompagnement social, handicap, repas sociaux, VSS", href: "https://www.crous-nice.fr/social-et-accompagnement/" },
+                                       { icon: Heart as React.ElementType, label: "Écoute psy 24h/24", sub: "0800 730 815 — gratuit, anonyme, académie de Nice", href: "tel:0800730815" },
+                                     ]
+                                   : city.toLowerCase() === "paris"
+                                     ? [
+                                         { icon: Utensils as React.ElementType, label: "Restos du Cœur Paris", sub: "Aide alimentaire gratuite sur dossier", href: "https://www.restosducoeur.org/trouver-centre/" },
+                                         { icon: HandCoins as React.ElementType, label: "FNAU — Aide d'urgence", sub: "Aide ponctuelle ou annuelle Crous pour -35 ans", href: "https://www.crous-paris.fr/social-et-accompagnement/le-service-social-du-crous-de-paris/" },
+                                         { icon: HandCoins as React.ElementType, label: "Aide Paris Logement", sub: "Jusqu'à 84€/mois en plus de l'APL", href: "https://www.paris.fr/pages/les-logements-etudiants-2440" },
+                                         { icon: HandCoins as React.ElementType, label: "Aides AFPS (AP-HP)", sub: "Aides alimentaire, loyer, santé pour étudiants franciliens", href: "https://cfdc.aphp.fr/aides-sociales-et-financieres-des-etudiants/" },
+                                         { icon: Home as React.ElementType, label: "Cité Universitaire Internationale", sub: "17 bd Jourdan — logements étudiants internationaux", href: "https://www.ciup.fr" },
+                                         { icon: Globe as React.ElementType, label: "Guide Ville de Paris", sub: "Santé, économies, culture, espaces de travail gratuits", href: "https://www.paris.fr/pages/un-guide-etudiant-pour-se-loger-et-bien-vivre-a-paris-28192" },
+                                       ]
                         : [
                            { icon: Scale as React.ElementType, label: "Aide juridique gratuite", sub: "Consultations gratuites d'avocat — Cour d'appel Grenoble", href: "https://www.cours-appel.justice.fr/grenoble/consultations-gratuites-davocat" },
                         ]
