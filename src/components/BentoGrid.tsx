@@ -456,8 +456,11 @@ const defaultTiles = (city: string) => [
                                 : city.toLowerCase() === "rennes"
                                   ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante Rennes", sub: "Campus Villejean & Beaulieu • Consultations gratuites + 8 séances psy", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Villejean+Rennes" }]
                                   : city.toLowerCase() === "nice"
-                                    ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus Valrose • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Valrose+Nice" }]
-                                     : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
+                                     ? [{ icon: MapPin as React.ElementType, label: "SSE — Santé Étudiante UCA", sub: "Campus Valrose • Consultations gratuites", href: "https://maps.google.com/?q=Service+santé+étudiante+Campus+Valrose+Nice" }]
+                                     : city.toLowerCase() === "paris"
+                                       ? [{ icon: MapPin as React.ElementType, label: "SSE — Services de Santé Paris", sub: "Centres sur chaque campus parisien • Consultations gratuites", href: "https://www.crous-paris.fr/social-et-accompagnement/" },
+                                          { icon: Phone as React.ElementType, label: "SOS Médecins Paris", sub: "01 47 07 77 77 — visites à domicile 24h/24", href: "tel:0147077777" }]
+                                      : [{ icon: MapPin as React.ElementType, label: "Centre de santé universitaire", sub: `Campus de ${city} — Service de santé étudiante`, href: `https://maps.google.com/?q=Service+sant%C3%A9+%C3%A9tudiants+${encodeURIComponent(city)}` }]
       ),
       { icon: Phone, label: "SAMU — 15", sub: "Urgences médicales 24h/24", href: "tel:15" },
       ...(city.toLowerCase() === "paris"
