@@ -341,11 +341,17 @@ const defaultTiles = (city: string) => [
                                       { icon: MapPin as React.ElementType, label: "Préfecture d'Ille-et-Vilaine", sub: "3 avenue de la Préfecture, 35000 Rennes", href: "https://maps.google.com/?q=Préfecture+Ille-et-Vilaine+3+avenue+Préfecture+Rennes" },
                                       { icon: Globe as React.ElementType, label: "Le 4 bis — Info Jeunes Rennes", sub: "2 cours des Alliés • Info gratuite 16-30 ans, sans RDV", href: "https://education-jeunesse.metropole.rennes.fr/jeunes-ou-trouver-de-laide/" },
                                     ]
-                                  : city.toLowerCase() === "nice"
+                                   : city.toLowerCase() === "nice"
                                     ? [
                                         { icon: MapPin as React.ElementType, label: "Préfecture des Alpes-Maritimes", sub: "147 bd du Mercantour, 06286 Nice", href: "https://maps.google.com/?q=Préfecture+Alpes-Maritimes+147+boulevard+Mercantour+Nice" },
                                         { icon: Globe as React.ElementType, label: "Portail Étudiants Nice", sub: "Toutes les aides, logement, loisirs — nice.fr", href: "https://etudiants.nice.fr" },
                                       ]
+                                    : city.toLowerCase() === "paris"
+                                      ? [
+                                          { icon: MapPin as React.ElementType, label: "Préfecture de Police de Paris", sub: "1 rue de Lutèce, 75004 Paris (Cité)", href: "https://maps.google.com/?q=Préfecture+de+Police+1+rue+de+Lutèce+Paris" },
+                                          { icon: Globe as React.ElementType, label: "Portail ANEF — RDV Préfecture", sub: "Prise de RDV en ligne titre de séjour", href: "https://www.prefecturedepolice.interieur.gouv.fr/demarches/prendre-rendez-vous" },
+                                          { icon: Globe as React.ElementType, label: "Maison étudiante de Paris", sub: "Guichet unique aides, logement, insertion", href: "https://maison-etudiante.paris" },
+                                        ]
                                 : [
                          { icon: MapPin as React.ElementType, label: `Préfecture de ${city}`, sub: `Retrait carte de séjour — ${city}`, href: `https://maps.google.com/?q=Préfecture+${encodeURIComponent(city)}` },
                        ]
@@ -384,10 +390,17 @@ const defaultTiles = (city: string) => [
                              ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Strasbourg", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-strasbourg.fr" }]
                               : city.toLowerCase() === "rennes"
                                 ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Rennes Bretagne", sub: "Bourses, logements, restauration, DSE", href: "https://www.crous-rennes.fr" }]
-                                : city.toLowerCase() === "nice"
-                                  ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nice-Toulon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nice.fr" },
-                                     { icon: HandCoins as React.ElementType, label: "Bourse Égalité des Chances UCA", sub: "1 000€ ponctuels pour étudiants en difficulté", href: "https://etudiants.nice.fr/vie-quotidienne/aides-sociales/" }]
-                                  : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
+                                 : city.toLowerCase() === "nice"
+                                   ? [{ icon: GraduationCap as React.ElementType, label: "CROUS Nice-Toulon", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-nice.fr" },
+                                      { icon: HandCoins as React.ElementType, label: "Bourse Égalité des Chances UCA", sub: "1 000€ ponctuels pour étudiants en difficulté", href: "https://etudiants.nice.fr/vie-quotidienne/aides-sociales/" }]
+                                   : city.toLowerCase() === "paris"
+                                     ? [
+                                         { icon: GraduationCap as React.ElementType, label: "CROUS de Paris", sub: "Bourses, logements, restauration, aides", href: "https://www.crous-paris.fr" },
+                                         { icon: HandCoins as React.ElementType, label: "Aide ponctuelle Crous Paris", sub: "Jusqu'à 1 000€ — loyer, santé, mobilité", href: "https://www.crous-paris.fr/social-et-accompagnement/le-service-social-du-crous-de-paris/" },
+                                         { icon: HandCoins as React.ElementType, label: "A.I.L.E. — Aide installation", sub: "500-1 000€ pour 1ère installation logement privé", href: "https://www.crous-paris.fr/2025/09/15/aile/" },
+                                         { icon: HandCoins as React.ElementType, label: "Allocation Ville de Paris", sub: "Aide exceptionnelle pour difficultés financières", href: "https://maison-etudiante.paris/toutes-les-aides-sociales/" },
+                                       ]
+                                   : [{ icon: GraduationCap as React.ElementType, label: "Inscription universitaire", sub: "Portail d'arrivée à l'UGA", href: "https://etudiant.univ-grenoble-alpes.fr/quotidien/arriver-a-l-uga/votre-arrivee-a-l-universite-grenoble-alpes-1458048.kjsp" }]
       ),
     ] as QuickLink[],
   },
