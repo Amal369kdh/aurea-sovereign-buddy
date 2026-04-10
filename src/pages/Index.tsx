@@ -187,6 +187,7 @@ const Index = () => {
           </div>
           <BentoGrid />
           <div className="mt-4 space-y-4">
+            <RadarEtudiant />
             <BadgeShowcase />
             <MentoringWidget />
           </div>
