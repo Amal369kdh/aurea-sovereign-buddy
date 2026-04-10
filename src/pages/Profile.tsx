@@ -8,6 +8,7 @@ import { ArrowLeft, Loader2, ShieldCheck, Save, Heart, Sparkles } from "lucide-r
 import DeleteAccountButton from "@/components/DeleteAccountButton";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
 import UserStats from "@/components/UserStats";
+import BadgeShowcase from "@/components/BadgeShowcase";
 
 const NATIONALITIES = [
   "🇫🇷 Française",
@@ -499,6 +500,11 @@ const Profile = () => {
               })}
             </div>
           </Section>
+        </motion.div>
+
+        {/* ── Badges ── */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.23 }}>
+          <BadgeShowcase />
         </motion.div>
 
         {/* ── Save button ── */}
