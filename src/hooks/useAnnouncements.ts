@@ -186,29 +186,8 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
 
   const toggleLike = async (announcementId: string, currentlyLiked: boolean) => {
     if (!user) return;
-    if (currentlyLiked) {
-      await supabase
-        .from("announcement_likes")
-        .delete()
-        .eq("announcement_id", announcementId)
-        .eq("user_id", user.id);
 
-      await supabase
-        .from("announcements")
-        .update({ likes_count: Math.max(0, (announcements.find(a => a.id === announcementId)?.likes_count || 1) - 1) })
-        .eq("id", announcementId);
-    } else {
-      await supabase
-        .from("announcement_likes")
-        .insert({ announcement_id: announcementId, user_id: user.id });
-
-      await supabase
-        .from("announcements")
-        .update({ likes_count: (announcements.find(a => a.id === announcementId)?.likes_count || 0) + 1 })
-        .eq("id", announcementId);
-    }
-
-    // Optimistic update
+    // Optimistic update first
     setAnnouncements((prev) =>
       prev.map((a) =>
         a.id === announcementId
@@ -222,6 +201,19 @@ export function useAnnouncements(filterCategory: AnnouncementCategory | "all") {
           : a
       )
     );
+
+    // DB trigger auto-updates likes_count on announcements
+    if (currentlyLiked) {
+      await supabase
+        .from("announcement_likes")
+        .delete()
+        .eq("announcement_id", announcementId)
+        .eq("user_id", user.id);
+    } else {
+      await supabase
+        .from("announcement_likes")
+        .insert({ announcement_id: announcementId, user_id: user.id });
+    }
   };
 
   return { announcements, loading, createPost, deletePost, toggleLike, refetch: fetchAnnouncements };

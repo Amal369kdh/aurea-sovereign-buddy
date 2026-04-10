@@ -8,6 +8,7 @@ import BudgetTracker from "@/components/BudgetTracker";
 import AdminCalendar from "@/components/AdminCalendar";
 import BadgeShowcase from "@/components/BadgeShowcase";
 import MentoringWidget from "@/components/MentoringWidget";
+import RadarEtudiant from "@/components/RadarEtudiant";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
@@ -186,6 +187,7 @@ const Index = () => {
           </div>
           <BentoGrid />
           <div className="mt-4 space-y-4">
+            <RadarEtudiant />
             <BadgeShowcase />
             <MentoringWidget />
           </div>
