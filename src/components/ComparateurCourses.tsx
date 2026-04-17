@@ -283,8 +283,8 @@ const ComparateurCourses = () => {
         </button>
       )}
 
-      <p className="mt-3 text-[10px] text-muted-foreground text-center">
-        💡 Prix indicatifs — mis à jour régulièrement
+      <p className="mt-3 text-[10px] text-muted-foreground text-center leading-relaxed">
+        💡 Sélection éditoriale non contractuelle. Prix relevés à titre informatif, susceptibles de varier en magasin.
       </p>
     </motion.div>
   );
