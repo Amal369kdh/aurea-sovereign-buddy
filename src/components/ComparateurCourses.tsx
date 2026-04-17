@@ -200,10 +200,10 @@ const ComparateurCourses = () => {
           <ShoppingCart className="h-5 w-5 text-success" />
         </div>
         <div className="flex-1">
-          <h3 className="text-sm font-bold text-foreground">Comparateur Courses 🛒</h3>
+          <h3 className="text-sm font-bold text-foreground">Bons plans Courses 🛒</h3>
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
             <MapPin className="h-3 w-3" />
-            <span>Produits essentiels à {displayCity}</span>
+            <span>Sélection éditoriale à {displayCity} · prix indicatifs</span>
           </div>
         </div>
       </div>
@@ -283,8 +283,8 @@ const ComparateurCourses = () => {
         </button>
       )}
 
-      <p className="mt-3 text-[10px] text-muted-foreground text-center">
-        💡 Prix indicatifs — mis à jour régulièrement
+      <p className="mt-3 text-[10px] text-muted-foreground text-center leading-relaxed">
+        💡 Sélection éditoriale non contractuelle. Prix relevés à titre informatif, susceptibles de varier en magasin.
       </p>
     </motion.div>
   );
