@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          description: string | null
+          id: string
+          is_resolved: boolean
+          metadata: Json | null
+          related_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_resolved?: boolean
+          metadata?: Json | null
+          related_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_resolved?: boolean
+          metadata?: Json | null
+          related_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
       allowed_domains: {
         Row: {
           created_at: string
@@ -440,6 +482,39 @@ export type Database = {
           key?: string
           label?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      feedbacks: {
+        Row: {
+          admin_note: string | null
+          category: string
+          created_at: string
+          id: string
+          message: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          category: string
+          created_at?: string
+          id?: string
+          message: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1198,6 +1273,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_signup_spike: { Args: never; Returns: undefined }
       cleanup_expired_announcements: { Args: never; Returns: undefined }
       delete_email: {
         Args: { message_id: number; queue_name: string }
