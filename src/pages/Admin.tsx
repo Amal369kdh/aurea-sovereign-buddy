@@ -7,8 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin, Globe,
+  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin, Globe, MessageSquare, BellRing, UserCog,
 } from "lucide-react";
+import { AdminFeedbacks } from "@/components/admin/AdminFeedbacks";
+import { AdminAlerts } from "@/components/admin/AdminAlerts";
+import { AdminUserActions } from "@/components/admin/AdminUserActions";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -16,6 +19,9 @@ import {
 type TabKey =
   | "overview"
   | "users"
+  | "user_actions"
+  | "feedbacks"
+  | "alerts"
   | "premium"
   | "partners"
   | "resources"
@@ -36,6 +42,7 @@ type UserRow = {
   is_verified: boolean;
   points_social: number;
   created_at: string;
+  suspended_until?: string | null;
 };
 
 type FeatureFlag = {
@@ -134,7 +141,10 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "overview", label: "Vue générale", icon: LayoutDashboard },
+  { key: "alerts", label: "Alertes", icon: BellRing },
+  { key: "feedbacks", label: "Feedbacks", icon: MessageSquare },
   { key: "users", label: "Utilisateurs", icon: Users },
+  { key: "user_actions", label: "Gestion users", icon: UserCog },
   { key: "moderation", label: "Modération", icon: Shield },
   { key: "premium", label: "Premium", icon: Crown },
   { key: "partners", label: "Partenaires", icon: Handshake },
@@ -211,7 +221,7 @@ const Admin = () => {
 
     const [profilesRes, newUsersRes, verifiedRes, premiumRes, featuresRes, partnersRes, domainsRes, resourcesRes, reportsRes, pinnedRes, ayaTodayRes, postsTodayRes, clicksRes] =
       await Promise.all([
-        supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at").order("created_at", { ascending: false }).limit(100),
+        supabase.from("profiles").select("user_id, display_name, city, university, status, is_premium, is_verified, points_social, created_at, suspended_until").order("created_at", { ascending: false }).limit(200),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).gte("created_at", oneWeekAgo),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).eq("is_verified", true),
         supabase.from("profiles").select("user_id", { count: "exact", head: true }).eq("is_premium", true),
@@ -1045,7 +1055,10 @@ const Admin = () => {
 
   const RENDERERS: Record<TabKey, () => React.ReactNode> = {
     overview: renderOverview,
+    alerts: () => <AdminAlerts />,
+    feedbacks: () => <AdminFeedbacks />,
     users: renderUsers,
+    user_actions: () => <AdminUserActions users={users} onChanged={fetchAll} />,
     moderation: renderModeration,
     premium: renderPremium,
     partners: renderPartners,
