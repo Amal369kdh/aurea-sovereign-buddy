@@ -5,6 +5,7 @@ import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { FeedbackButton } from "@/components/FeedbackButton";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 import { useIntegration } from "@/contexts/IntegrationContext";
 import { MapPin, ArrowRight, Lock, Clock } from "lucide-react";
@@ -154,6 +155,7 @@ const MonDossier = () => {
       </main>
       <SecuritySovereign />
       <AmalTrigger />
+      <FeedbackButton />
       <MobileBottomNav />
     </div>
   );

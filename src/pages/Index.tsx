@@ -12,6 +12,7 @@ import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { FeedbackButton } from "@/components/FeedbackButton";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -199,6 +200,7 @@ const Index = () => {
 
       <SecuritySovereign />
       <AmalTrigger />
+      <FeedbackButton />
       <MobileBottomNav />
 
       {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} city={profileCity} />}
