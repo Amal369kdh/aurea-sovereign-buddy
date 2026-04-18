@@ -7,8 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, Users, Crown, Handshake, Link2, Trophy, Zap, GraduationCap,
   ArrowLeft, Loader2, Trash2, Plus, ShieldCheck, ToggleLeft, ToggleRight,
-  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin, Globe,
+  RefreshCw, Save, AlertTriangle, Shield, Pin, MapPin, Globe, MessageSquare, BellRing, UserCog,
 } from "lucide-react";
+import { AdminFeedbacks } from "@/components/admin/AdminFeedbacks";
+import { AdminAlerts } from "@/components/admin/AdminAlerts";
+import { AdminUserActions } from "@/components/admin/AdminUserActions";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -16,6 +19,9 @@ import {
 type TabKey =
   | "overview"
   | "users"
+  | "user_actions"
+  | "feedbacks"
+  | "alerts"
   | "premium"
   | "partners"
   | "resources"
@@ -36,6 +42,7 @@ type UserRow = {
   is_verified: boolean;
   points_social: number;
   created_at: string;
+  suspended_until?: string | null;
 };
 
 type FeatureFlag = {
