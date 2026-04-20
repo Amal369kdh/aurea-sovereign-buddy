@@ -1283,6 +1283,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_admin_snapshot: { Args: never; Returns: Json }
       get_own_profile_status: { Args: { _user_id: string }; Returns: string }
       has_dating_profile: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
