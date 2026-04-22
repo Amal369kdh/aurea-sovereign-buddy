@@ -26,6 +26,7 @@ export interface DatingCandidate {
   looking_for: string;
   liked_by_me: boolean;
   objectifs: string[];
+  same_city: boolean;
 }
 
 export interface DatingMatch {
@@ -38,6 +39,13 @@ export interface DatingMatch {
   created_at: string;
 }
 
+export interface DatingQuota {
+  is_premium: boolean;
+  used: number;
+  limit: number; // -1 = unlimited
+  remaining: number; // -1 = unlimited
+}
+
 export function useDating() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -48,6 +56,7 @@ export function useDating() {
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [quota, setQuota] = useState<DatingQuota | null>(null);
 
   const fetchMyProfile = useCallback(async () => {
     if (!user) return;
