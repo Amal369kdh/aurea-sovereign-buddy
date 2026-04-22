@@ -304,6 +304,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          expires_at: string
           id: string
           match_id: string
           sender_id: string
@@ -311,6 +312,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          expires_at?: string
           id?: string
           match_id: string
           sender_id: string
@@ -318,6 +320,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          expires_at?: string
           id?: string
           match_id?: string
           sender_id?: string
@@ -1275,15 +1278,34 @@ export type Database = {
       }
       check_signup_spike: { Args: never; Returns: undefined }
       cleanup_expired_announcements: { Args: never; Returns: undefined }
+      cleanup_expired_dating_messages: { Args: never; Returns: undefined }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      delete_my_dating_profile: { Args: never; Returns: boolean }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
       get_admin_snapshot: { Args: never; Returns: Json }
+      get_dating_candidates: {
+        Args: { p_limit?: number }
+        Returns: {
+          avatar_initials: string
+          bio: string
+          city: string
+          display_name: string
+          interests: string[]
+          is_verified: boolean
+          liked_by_me: boolean
+          looking_for: string
+          same_city: boolean
+          university: string
+          user_id: string
+        }[]
+      }
+      get_dating_daily_quota: { Args: never; Returns: Json }
       get_own_profile_status: { Args: { _user_id: string }; Returns: string }
       has_dating_profile: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
@@ -1307,6 +1329,20 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      toggle_dating_like: {
+        Args: { p_currently_liked: boolean; p_target_id: string }
+        Returns: Json
+      }
+      unmatch_dating: { Args: { p_match_id: string }; Returns: boolean }
+      update_my_dating_profile: {
+        Args: {
+          p_bio: string
+          p_is_active: boolean
+          p_looking_for: string
+          p_show_me: string
+        }
+        Returns: boolean
       }
     }
     Enums: {
