@@ -7,7 +7,7 @@ import SocialPulse from "@/components/SocialPulse";
 import BudgetTracker from "@/components/BudgetTracker";
 import AdminCalendar from "@/components/AdminCalendar";
 import MentoringWidget from "@/components/MentoringWidget";
-import ComparateurCourses from "@/components/ComparateurCourses";
+import BonsPlansSection from "@/components/bons-plans/BonsPlansSection";
 import AmalTrigger from "@/components/AyaTrigger";
 import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
@@ -187,7 +187,7 @@ const Index = () => {
           </div>
           <BentoGrid />
           <div className="mt-4 space-y-4">
-            <ComparateurCourses />
+            <BonsPlansSection />
             <MentoringWidget />
           </div>
           {hubSocialEnabled && (
