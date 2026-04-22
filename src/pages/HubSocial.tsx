@@ -28,7 +28,7 @@ const HubSocial = () => {
   const [category, setCategory] = useState<"all" | "entraide" | "sorties" | "logement" | "general">("all");
   const [goldOpen, setGoldOpen] = useState(false);
   const [verifyOpen, setVerifyOpen] = useState(false);
-  const { matches, isPremium } = useDating();
+  const { matches, isPremium, unmatch } = useDating();
   const { flags } = useFeatureFlags();
   const hubSocialEnabled = flags["hub_social"] !== false;
   const datingEnabled = flags["dating"] !== false;
@@ -193,7 +193,7 @@ const HubSocial = () => {
               </div>
             )
           ) : (
-            <DatingMatches matches={matches} isPremium={isPremium} onGoldClick={() => setGoldOpen(true)} />
+            <DatingMatches matches={matches} isPremium={isPremium} onGoldClick={() => setGoldOpen(true)} onUnmatch={unmatch} />
           )}
         </div>
           </>

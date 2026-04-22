@@ -26,6 +26,7 @@ export interface DatingCandidate {
   looking_for: string;
   liked_by_me: boolean;
   objectifs: string[];
+  same_city: boolean;
 }
 
 export interface DatingMatch {
@@ -38,6 +39,13 @@ export interface DatingMatch {
   created_at: string;
 }
 
+export interface DatingQuota {
+  is_premium: boolean;
+  used: number;
+  limit: number; // -1 = unlimited
+  remaining: number; // -1 = unlimited
+}
+
 export function useDating() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -48,6 +56,7 @@ export function useDating() {
   const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [quota, setQuota] = useState<DatingQuota | null>(null);
 
   const fetchMyProfile = useCallback(async () => {
     if (!user) return;
@@ -67,51 +76,58 @@ export function useDating() {
     if (!user || !myProfile) return;
     setLoading(true);
 
-    const { data: datingProfiles } = await supabase
-      .from("dating_profiles")
-      .select("user_id, bio, looking_for")
-      .eq("is_active", true)
-      .neq("user_id", user.id)
-      .limit(50);
+    const [candidatesRes, receivedRes, quotaRes] = await Promise.all([
+      supabase.rpc("get_dating_candidates", { p_limit: 30 }),
+      supabase.from("dating_likes").select("id").eq("liked_id", user.id),
+      supabase.rpc("get_dating_daily_quota"),
+    ]);
 
-    if (!datingProfiles || datingProfiles.length === 0) {
+    if (candidatesRes.error) {
+      const code = candidatesRes.error.message || "";
+      if (code.includes("birth_date_required")) {
+        toast({ title: "Date de naissance requise", description: "Renseigne-la dans Mon Profil pour les Rencontres.", variant: "destructive" });
+      } else if (code.includes("minor_not_allowed")) {
+        toast({ title: "Réservé aux 18+", description: "Les Rencontres sont réservées aux majeur·e·s.", variant: "destructive" });
+      }
       setCandidates([]);
       setLoading(false);
       return;
     }
 
-    const userIds = datingProfiles.map((dp) => dp.user_id);
+    const rows = (candidatesRes.data || []) as Array<{
+      user_id: string;
+      display_name: string | null;
+      avatar_initials: string | null;
+      university: string | null;
+      city: string | null;
+      interests: string[] | null;
+      is_verified: boolean | null;
+      bio: string | null;
+      looking_for: string;
+      liked_by_me: boolean;
+      same_city: boolean;
+    }>;
 
-    const [{ data: profiles }, { data: myLikes }, { data: receivedLikes }] = await Promise.all([
-      supabase.from("profiles_public").select("user_id, display_name, avatar_initials, university, city, interests, is_verified").in("user_id", userIds),
-      supabase.from("dating_likes").select("liked_id").eq("liker_id", user.id),
-      supabase.from("dating_likes").select("id").eq("liked_id", user.id),
-    ]);
+    const mapped: DatingCandidate[] = rows.map((r) => ({
+      user_id: r.user_id,
+      display_name: r.display_name || "Anonyme",
+      avatar_initials: r.avatar_initials || "??",
+      university: r.university,
+      city: r.city,
+      interests: r.interests || [],
+      is_verified: r.is_verified || false,
+      bio: r.bio,
+      looking_for: r.looking_for,
+      liked_by_me: r.liked_by_me,
+      objectifs: [],
+      same_city: r.same_city,
+    }));
 
-    const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
-    const likedSet = new Set((myLikes || []).map((l) => l.liked_id));
-    setLikesReceived((receivedLikes || []).length);
-
-    const mapped: DatingCandidate[] = datingProfiles.map((dp) => {
-      const prof = profileMap.get(dp.user_id);
-      return {
-        user_id: dp.user_id,
-        display_name: prof?.display_name || "Anonyme",
-        avatar_initials: prof?.avatar_initials || "??",
-        university: prof?.university || null,
-        city: prof?.city || null,
-        interests: prof?.interests || [],
-        is_verified: prof?.is_verified || false,
-        bio: dp.bio,
-        looking_for: dp.looking_for,
-        liked_by_me: likedSet.has(dp.user_id),
-        objectifs: [],
-      };
-    });
-
+    setLikesReceived((receivedRes.data || []).length);
+    if (quotaRes.data) setQuota(quotaRes.data as unknown as DatingQuota);
     setCandidates(mapped);
     setLoading(false);
-  }, [user, myProfile]);
+  }, [user, myProfile, toast]);
 
   // Fetch matches
   const fetchMatches = useCallback(async () => {
@@ -194,16 +210,69 @@ export function useDating() {
 
   const toggleLike = async (targetUserId: string, currentlyLiked: boolean) => {
     if (!user) return;
-    if (currentlyLiked) {
-      await supabase.from("dating_likes").delete().eq("liker_id", user.id).eq("liked_id", targetUserId);
-    } else {
-      const { error } = await supabase.from("dating_likes").insert({ liker_id: user.id, liked_id: targetUserId });
-      if (error) {
-        toast({ title: "Erreur", description: error.message.includes("dating_profile") ? "Profil rencontre requis." : "Impossible de liker.", variant: "destructive" });
-        return;
-      }
+    const { data, error } = await supabase.rpc("toggle_dating_like", {
+      p_target_id: targetUserId,
+      p_currently_liked: currentlyLiked,
+    });
+
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de mettre à jour ton like.", variant: "destructive" });
+      return;
     }
+
+    const result = data as { action: string; quota_blocked: boolean; used?: number; limit?: number } | null;
+    if (result?.quota_blocked) {
+      toast({
+        title: "Limite atteinte 💛",
+        description: `Tu as utilisé tes ${result.limit ?? 20} likes du jour. Passe Gold pour liker sans limite.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setCandidates((prev) => prev.map((c) => c.user_id === targetUserId ? { ...c, liked_by_me: !currentlyLiked } : c));
+    // Refresh quota
+    const { data: q } = await supabase.rpc("get_dating_daily_quota");
+    if (q) setQuota(q as unknown as DatingQuota);
+  };
+
+  const updateProfile = async (data: { bio: string; looking_for: string; show_me: string; is_active: boolean }) => {
+    const { error } = await supabase.rpc("update_my_dating_profile", {
+      p_bio: data.bio,
+      p_looking_for: data.looking_for,
+      p_show_me: data.show_me,
+      p_is_active: data.is_active,
+    });
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de mettre à jour ton profil.", variant: "destructive" });
+      return false;
+    }
+    toast({ title: "Profil mis à jour ✓" });
+    fetchMyProfile();
+    return true;
+  };
+
+  const deleteProfile = async () => {
+    const { error } = await supabase.rpc("delete_my_dating_profile");
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de supprimer ton profil.", variant: "destructive" });
+      return false;
+    }
+    toast({ title: "Profil Rencontres supprimé", description: "Toutes tes données dating ont été effacées." });
+    setMyProfile(null);
+    setCandidates([]);
+    setMatches([]);
+    return true;
+  };
+
+  const unmatch = async (matchId: string) => {
+    const { error } = await supabase.rpc("unmatch_dating", { p_match_id: matchId });
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de défaire le match.", variant: "destructive" });
+      return false;
+    }
+    setMatches((prev) => prev.filter((m) => m.match_id !== matchId));
+    return true;
   };
 
   return {
@@ -214,8 +283,12 @@ export function useDating() {
     isPremium,
     loading,
     profileLoading,
+    quota,
     createDatingProfile,
     toggleLike,
+    updateProfile,
+    deleteProfile,
+    unmatch,
     refetch: fetchCandidates,
   };
 }
