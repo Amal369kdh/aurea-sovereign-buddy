@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Crown, Heart, Lock, MessageCircle, Send, ArrowLeft, MapPin, Loader2 } from "lucide-react";
+import { Crown, Heart, Lock, MessageCircle, Send, ArrowLeft, MapPin, Loader2, Flag, UserMinus, MoreVertical } from "lucide-react";
 import { DatingMatch } from "@/hooks/useDating";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import ReportDialog from "@/components/ReportDialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface DatingMatchesProps {
   matches: DatingMatch[];
   isPremium: boolean;
   onGoldClick: () => void;
+  onUnmatch?: (matchId: string) => Promise<boolean>;
 }
 
 interface ChatMessage {
@@ -18,12 +21,16 @@ interface ChatMessage {
   created_at: string;
 }
 
-const DatingMatches = ({ matches, isPremium, onGoldClick }: DatingMatchesProps) => {
+const DatingMatches = ({ matches, isPremium, onGoldClick, onUnmatch }: DatingMatchesProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [activeChat, setActiveChat] = useState<DatingMatch | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMsg, setNewMsg] = useState("");
   const [sending, setSending] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [confirmUnmatch, setConfirmUnmatch] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Fetch messages for active chat
@@ -65,13 +72,25 @@ const DatingMatches = ({ matches, isPremium, onGoldClick }: DatingMatchesProps) 
   const sendMessage = async () => {
     if (!user || !activeChat || !newMsg.trim()) return;
     setSending(true);
+    const trimmed = newMsg.trim().slice(0, 1000);
     await supabase.from("dating_messages").insert({
       match_id: activeChat.match_id,
       sender_id: user.id,
-      content: newMsg.trim(),
+      content: trimmed,
     });
     setNewMsg("");
     setSending(false);
+  };
+
+  const handleUnmatch = async () => {
+    if (!activeChat || !onUnmatch) return;
+    const ok = await onUnmatch(activeChat.match_id);
+    if (ok) {
+      toast({ title: "Match défait", description: "La conversation a été supprimée." });
+      setActiveChat(null);
+      setConfirmUnmatch(false);
+      setMenuOpen(false);
+    }
   };
 
   // Gold gate
@@ -104,19 +123,42 @@ const DatingMatches = ({ matches, isPremium, onGoldClick }: DatingMatchesProps) 
     return (
       <div className="flex h-[calc(100vh-220px)] flex-col rounded-3xl border border-border bg-card">
         {/* Header */}
-        <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+        <div className="relative flex items-center gap-3 border-b border-border px-5 py-4">
           <button onClick={() => setActiveChat(null)} className="cursor-pointer text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-bold text-foreground">
             {activeChat.partner_initials}
           </div>
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-bold text-foreground">{activeChat.partner_name}</p>
             <p className="text-[11px] text-muted-foreground">
               <MapPin className="mr-0.5 inline h-3 w-3" />{activeChat.partner_city || "—"}
             </p>
           </div>
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary cursor-pointer"
+            title="Options"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-3 top-14 z-20 w-52 rounded-2xl border border-border bg-card shadow-xl py-1.5">
+              <button
+                onClick={() => { setReportOpen(true); setMenuOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-xs font-semibold text-foreground hover:bg-secondary cursor-pointer"
+              >
+                <Flag className="h-3.5 w-3.5 text-destructive" /> Signaler
+              </button>
+              <button
+                onClick={() => { setConfirmUnmatch(true); setMenuOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-xs font-semibold text-destructive hover:bg-destructive/10 cursor-pointer"
+              >
+                <UserMinus className="h-3.5 w-3.5" /> Défaire le match
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Messages */}
@@ -148,7 +190,7 @@ const DatingMatches = ({ matches, isPremium, onGoldClick }: DatingMatchesProps) 
         <div className="flex items-center gap-2 border-t border-border px-4 py-3">
           <input
             value={newMsg}
-            onChange={(e) => setNewMsg(e.target.value)}
+            onChange={(e) => setNewMsg(e.target.value.slice(0, 1000))}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
             placeholder="Écris un message…"
             className="flex-1 rounded-2xl border border-border bg-secondary/50 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
@@ -161,6 +203,38 @@ const DatingMatches = ({ matches, isPremium, onGoldClick }: DatingMatchesProps) 
             <Send className="h-4 w-4" />
           </button>
         </div>
+
+        {/* Confirm unmatch dialog */}
+        {confirmUnmatch && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-3xl">
+            <div className="w-[90%] max-w-sm rounded-3xl border border-destructive/30 bg-card p-6">
+              <h3 className="mb-2 text-base font-bold text-foreground">Défaire ce match ?</h3>
+              <p className="mb-4 text-xs text-muted-foreground leading-relaxed">
+                Cette action efface le match, vos messages, et empêche un nouveau match instantané. Action irréversible.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setConfirmUnmatch(false)}
+                  className="flex-1 rounded-2xl border border-border bg-secondary py-2.5 text-xs font-bold text-foreground cursor-pointer"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleUnmatch}
+                  className="flex-1 rounded-2xl bg-destructive py-2.5 text-xs font-bold text-destructive-foreground cursor-pointer"
+                >
+                  Confirmer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ReportDialog
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          targetUserId={activeChat.partner_id}
+        />
       </div>
     );
   }

@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, MapPin, Crown, Heart, Lock, Loader2 } from "lucide-react";
+import { ShieldCheck, MapPin, Crown, Heart, Loader2, Settings, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useDating } from "@/hooks/useDating";
 import DatingProfileForm from "@/components/DatingProfileForm";
+import DatingProfileSettings from "@/components/DatingProfileSettings";
+import { useState } from "react";
 
 interface DatingGridProps {
   onConnectClick: () => void;
@@ -22,9 +24,13 @@ const DatingGrid = ({ onConnectClick }: DatingGridProps) => {
     isPremium,
     loading,
     profileLoading,
+    quota,
     createDatingProfile,
     toggleLike,
+    updateProfile,
+    deleteProfile,
   } = useDating();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   if (profileLoading) {
     return (
@@ -54,15 +60,55 @@ const DatingGrid = ({ onConnectClick }: DatingGridProps) => {
             </p>
           </div>
         </div>
-        {!isPremium && (
+        <div className="flex items-center gap-2">
+          {!isPremium && (
+            <button
+              onClick={onConnectClick}
+              className="flex items-center gap-1.5 rounded-xl gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground cursor-pointer"
+            >
+              <Crown className="h-3.5 w-3.5" /> Gold
+            </button>
+          )}
           <button
-            onClick={onConnectClick}
-            className="flex items-center gap-1.5 rounded-xl gold-gradient px-4 py-2 text-xs font-bold text-primary-foreground cursor-pointer"
+            onClick={() => setSettingsOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground cursor-pointer"
+            title="Paramètres de mon profil Rencontres"
           >
-            <Crown className="h-3.5 w-3.5" /> Gold
+            <Settings className="h-4 w-4" />
           </button>
-        )}
+        </div>
       </div>
+
+      {/* Quota likes du jour */}
+      {quota && !quota.is_premium && (
+        <div className="mb-4 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-2.5">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <p className="text-xs text-foreground">
+              <span className="font-bold">{quota.remaining}</span>
+              <span className="text-muted-foreground"> / {quota.limit} likes restants aujourd'hui</span>
+            </p>
+          </div>
+          {quota.remaining <= 5 && (
+            <button
+              onClick={onConnectClick}
+              className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
+            >
+              Illimité avec Gold →
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Pause banner si profil désactivé */}
+      {!myProfile.is_active && (
+        <div className="mb-4 rounded-2xl border border-warning/30 bg-warning/10 px-4 py-3">
+          <p className="text-xs font-bold text-foreground">⏸ Ton profil est en pause</p>
+          <p className="text-[11px] text-muted-foreground">
+            Personne ne te voit. Réactive-le dans les paramètres pour réapparaître.
+          </p>
+        </div>
+      )}
 
       {/* Header */}
       <div className="mb-4">
@@ -106,6 +152,9 @@ const DatingGrid = ({ onConnectClick }: DatingGridProps) => {
                   {c.city || "—"} · {c.university || "—"}
                 </div>
                 <div className="mt-1.5 flex items-center gap-2">
+                  {c.same_city && (
+                    <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Ta ville</Badge>
+                  )}
                   {c.is_verified && (
                     <Badge className="h-5 border-0 bg-primary/15 text-[10px] text-primary">Témoin</Badge>
                   )}
@@ -149,6 +198,16 @@ const DatingGrid = ({ onConnectClick }: DatingGridProps) => {
             </motion.div>
           ))}
         </div>
+      )}
+
+      {settingsOpen && myProfile && (
+        <DatingProfileSettings
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          profile={myProfile}
+          onUpdate={updateProfile}
+          onDelete={deleteProfile}
+        />
       )}
     </div>
   );
