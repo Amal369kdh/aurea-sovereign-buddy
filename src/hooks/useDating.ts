@@ -210,16 +210,69 @@ export function useDating() {
 
   const toggleLike = async (targetUserId: string, currentlyLiked: boolean) => {
     if (!user) return;
-    if (currentlyLiked) {
-      await supabase.from("dating_likes").delete().eq("liker_id", user.id).eq("liked_id", targetUserId);
-    } else {
-      const { error } = await supabase.from("dating_likes").insert({ liker_id: user.id, liked_id: targetUserId });
-      if (error) {
-        toast({ title: "Erreur", description: error.message.includes("dating_profile") ? "Profil rencontre requis." : "Impossible de liker.", variant: "destructive" });
-        return;
-      }
+    const { data, error } = await supabase.rpc("toggle_dating_like", {
+      p_target_id: targetUserId,
+      p_currently_liked: currentlyLiked,
+    });
+
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de mettre à jour ton like.", variant: "destructive" });
+      return;
     }
+
+    const result = data as { action: string; quota_blocked: boolean; used?: number; limit?: number } | null;
+    if (result?.quota_blocked) {
+      toast({
+        title: "Limite atteinte 💛",
+        description: `Tu as utilisé tes ${result.limit ?? 20} likes du jour. Passe Gold pour liker sans limite.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setCandidates((prev) => prev.map((c) => c.user_id === targetUserId ? { ...c, liked_by_me: !currentlyLiked } : c));
+    // Refresh quota
+    const { data: q } = await supabase.rpc("get_dating_daily_quota");
+    if (q) setQuota(q as unknown as DatingQuota);
+  };
+
+  const updateProfile = async (data: { bio: string; looking_for: string; show_me: string; is_active: boolean }) => {
+    const { error } = await supabase.rpc("update_my_dating_profile", {
+      p_bio: data.bio,
+      p_looking_for: data.looking_for,
+      p_show_me: data.show_me,
+      p_is_active: data.is_active,
+    });
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de mettre à jour ton profil.", variant: "destructive" });
+      return false;
+    }
+    toast({ title: "Profil mis à jour ✓" });
+    fetchMyProfile();
+    return true;
+  };
+
+  const deleteProfile = async () => {
+    const { error } = await supabase.rpc("delete_my_dating_profile");
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de supprimer ton profil.", variant: "destructive" });
+      return false;
+    }
+    toast({ title: "Profil Rencontres supprimé", description: "Toutes tes données dating ont été effacées." });
+    setMyProfile(null);
+    setCandidates([]);
+    setMatches([]);
+    return true;
+  };
+
+  const unmatch = async (matchId: string) => {
+    const { error } = await supabase.rpc("unmatch_dating", { p_match_id: matchId });
+    if (error) {
+      toast({ title: "Erreur", description: "Impossible de défaire le match.", variant: "destructive" });
+      return false;
+    }
+    setMatches((prev) => prev.filter((m) => m.match_id !== matchId));
+    return true;
   };
 
   return {
@@ -230,8 +283,12 @@ export function useDating() {
     isPremium,
     loading,
     profileLoading,
+    quota,
     createDatingProfile,
     toggleLike,
+    updateProfile,
+    deleteProfile,
+    unmatch,
     refetch: fetchCandidates,
   };
 }
