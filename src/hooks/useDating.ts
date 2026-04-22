@@ -76,51 +76,58 @@ export function useDating() {
     if (!user || !myProfile) return;
     setLoading(true);
 
-    const { data: datingProfiles } = await supabase
-      .from("dating_profiles")
-      .select("user_id, bio, looking_for")
-      .eq("is_active", true)
-      .neq("user_id", user.id)
-      .limit(50);
+    const [candidatesRes, receivedRes, quotaRes] = await Promise.all([
+      supabase.rpc("get_dating_candidates", { p_limit: 30 }),
+      supabase.from("dating_likes").select("id").eq("liked_id", user.id),
+      supabase.rpc("get_dating_daily_quota"),
+    ]);
 
-    if (!datingProfiles || datingProfiles.length === 0) {
+    if (candidatesRes.error) {
+      const code = candidatesRes.error.message || "";
+      if (code.includes("birth_date_required")) {
+        toast({ title: "Date de naissance requise", description: "Renseigne-la dans Mon Profil pour les Rencontres.", variant: "destructive" });
+      } else if (code.includes("minor_not_allowed")) {
+        toast({ title: "Réservé aux 18+", description: "Les Rencontres sont réservées aux majeur·e·s.", variant: "destructive" });
+      }
       setCandidates([]);
       setLoading(false);
       return;
     }
 
-    const userIds = datingProfiles.map((dp) => dp.user_id);
+    const rows = (candidatesRes.data || []) as Array<{
+      user_id: string;
+      display_name: string | null;
+      avatar_initials: string | null;
+      university: string | null;
+      city: string | null;
+      interests: string[] | null;
+      is_verified: boolean | null;
+      bio: string | null;
+      looking_for: string;
+      liked_by_me: boolean;
+      same_city: boolean;
+    }>;
 
-    const [{ data: profiles }, { data: myLikes }, { data: receivedLikes }] = await Promise.all([
-      supabase.from("profiles_public").select("user_id, display_name, avatar_initials, university, city, interests, is_verified").in("user_id", userIds),
-      supabase.from("dating_likes").select("liked_id").eq("liker_id", user.id),
-      supabase.from("dating_likes").select("id").eq("liked_id", user.id),
-    ]);
+    const mapped: DatingCandidate[] = rows.map((r) => ({
+      user_id: r.user_id,
+      display_name: r.display_name || "Anonyme",
+      avatar_initials: r.avatar_initials || "??",
+      university: r.university,
+      city: r.city,
+      interests: r.interests || [],
+      is_verified: r.is_verified || false,
+      bio: r.bio,
+      looking_for: r.looking_for,
+      liked_by_me: r.liked_by_me,
+      objectifs: [],
+      same_city: r.same_city,
+    }));
 
-    const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
-    const likedSet = new Set((myLikes || []).map((l) => l.liked_id));
-    setLikesReceived((receivedLikes || []).length);
-
-    const mapped: DatingCandidate[] = datingProfiles.map((dp) => {
-      const prof = profileMap.get(dp.user_id);
-      return {
-        user_id: dp.user_id,
-        display_name: prof?.display_name || "Anonyme",
-        avatar_initials: prof?.avatar_initials || "??",
-        university: prof?.university || null,
-        city: prof?.city || null,
-        interests: prof?.interests || [],
-        is_verified: prof?.is_verified || false,
-        bio: dp.bio,
-        looking_for: dp.looking_for,
-        liked_by_me: likedSet.has(dp.user_id),
-        objectifs: [],
-      };
-    });
-
+    setLikesReceived((receivedRes.data || []).length);
+    if (quotaRes.data) setQuota(quotaRes.data as unknown as DatingQuota);
     setCandidates(mapped);
     setLoading(false);
-  }, [user, myProfile]);
+  }, [user, myProfile, toast]);
 
   // Fetch matches
   const fetchMatches = useCallback(async () => {
