@@ -2,8 +2,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, accept",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
 Deno.serve(async (req) => {
@@ -11,7 +12,8 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  if (req.method !== "GET") {
+  // GET et POST acceptés (POST utile pour Master App qui agrège plusieurs projets)
+  if (req.method !== "GET" && req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Méthode non autorisée" }), {
       status: 405,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
