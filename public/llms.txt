@@ -1,0 +1,18 @@
+# Aurea Student
+
+> Le hub tout-en-un pour étudiants en France : logement, démarches administratives (CAF, CROUS, préfecture), emploi, communauté locale et rencontres. Pensé pour les étudiants internationaux et français, avec une couverture initiale sur Grenoble.
+
+Aurea Student aide les étudiants à s'installer, gérer leurs démarches, trouver des bons plans locaux, échanger avec une communauté vérifiée et faire des rencontres dans un environnement de confiance.
+
+## Pages
+
+- [Accueil](/): Présentation de la plateforme et accès aux principales fonctionnalités.
+- [Aperçu](/apercu): Aperçu public de l'expérience Aurea Student avant inscription.
+- [Connexion / Inscription](/auth): Création de compte et connexion sécurisée.
+- [Mentions légales](/legal): Mentions légales, CGU et politique de confidentialité (RGPD).
+
+## Optional
+
+- [Hub Social](/hub-social): Fil d'annonces et entraide entre étudiants vérifiés (accès connecté).
+- [Mon Dossier](/mon-dossier): Suivi personnel des démarches administratives (accès connecté).
+- [Partenaires](/partners): Offres partenaires sélectionnées pour les étudiants (accès connecté).
