@@ -282,6 +282,6 @@ export default function Apercu() {
           </button>
         </motion.div>
       </div>
-    </div>
+    </main>
   );
 }
