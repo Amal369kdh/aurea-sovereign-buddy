@@ -86,7 +86,7 @@ export default function Apercu() {
   const goAuth = () => navigate("/auth");
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Seo
         title="Aperçu Aurea Student | Découvre la plateforme"
         description="Aperçu public d'Aurea Student : entraide étudiante vérifiée, logement, démarches admin et vie sociale à Grenoble. Sans inscription."
