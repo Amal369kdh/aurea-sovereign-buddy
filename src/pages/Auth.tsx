@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Seo } from "@/components/seo/Seo";
 
 // ── Traduction des erreurs Supabase → Français ──────────────────────────────
 function translateAuthError(error: string): string {
@@ -354,6 +355,11 @@ const Auth = () => {
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row bg-background">
+      <Seo
+        title="Connexion & inscription | Aurea Student"
+        description="Crée ton compte ou connecte-toi à Aurea Student. Rejoins la communauté étudiante vérifiée et accède à toutes les fonctionnalités."
+        path="/auth"
+      />
       {/* ── Mobile-only top marketing banner ── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}

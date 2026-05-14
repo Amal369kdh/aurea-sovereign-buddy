@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, Heart, Sparkles, Zap, ShieldCheck, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Seo } from "@/components/seo/Seo";
 
 type Tab = "hub" | "rencontres" | "matchs";
 
@@ -83,6 +84,11 @@ const HubSocial = () => {
       <AppSidebar />
 
       <main className="flex-1 overflow-y-auto">
+        <Seo
+          title="Hub Social étudiant | Aurea Student"
+          description="Le fil d'entraide, sorties et logement entre étudiants vérifiés. Discute, partage et fais des rencontres dans ta ville."
+          path="/hub-social"
+        />
         {/* Hub Social disabled gate */}
         {!hubSocialEnabled ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-6">
