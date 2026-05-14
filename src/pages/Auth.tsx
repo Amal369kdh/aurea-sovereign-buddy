@@ -354,7 +354,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row bg-background">
+    <main className="flex min-h-screen flex-col lg:flex-row bg-background">
       <Seo
         title="Connexion & inscription | Aurea Student"
         description="Crée ton compte ou connecte-toi à Aurea Student. Rejoins la communauté étudiante vérifiée et accède à toutes les fonctionnalités."
