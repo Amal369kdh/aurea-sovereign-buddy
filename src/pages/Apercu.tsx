@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Seo } from "@/components/seo/Seo";
 import {
   Crown, Users, MessageCircle, ShieldCheck, ArrowRight,
   Home, Landmark, Stethoscope, Bus, Briefcase, HeartHandshake,
