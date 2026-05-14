@@ -13,6 +13,7 @@ import SecuritySovereign from "@/components/SecuritySovereign";
 import AppSidebar from "@/components/AppSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { FeedbackButton } from "@/components/FeedbackButton";
+import { Seo } from "@/components/seo/Seo";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -117,6 +118,11 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen bg-background">
+      <Seo
+        title="Aurea Student | Dashboard étudiant en France"
+        description="Ton tableau de bord étudiant : démarches admin, logement, budget, communauté locale et bons plans. Simplifie ton installation en France."
+        path="/"
+      />
       <AppSidebar />
 
       <main className="flex-1 overflow-y-auto">
