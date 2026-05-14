@@ -1,5 +1,6 @@
 import { Crown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Seo } from "@/components/seo/Seo";
 
 const Section = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
   <section id={id} className="mb-12">
@@ -23,6 +24,11 @@ const H3 = ({ children }: { children: React.ReactNode }) => (
 const Legal = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <Seo
+        title="Mentions légales, CGU & RGPD | Aurea Student"
+        description="Mentions légales, conditions générales d'utilisation et politique de confidentialité (RGPD) d'Aurea Student."
+        path="/legal"
+      />
       {/* Header */}
       <header className="border-b border-border px-6 py-4 flex items-center gap-3">
         <Link to="/auth" className="flex items-center gap-2 hover:opacity-80 transition-opacity">

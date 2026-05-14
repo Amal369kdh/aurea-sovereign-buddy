@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AppSidebar from "@/components/AppSidebar";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { Seo } from "@/components/seo/Seo";
 
 type Partner = {
   id: string;
@@ -70,6 +71,11 @@ const Partners = () => {
     <div className="flex min-h-screen bg-background">
       <AppSidebar />
       <main className="flex-1 overflow-y-auto pb-24 lg:pb-8">
+        <Seo
+          title="Partenaires étudiants | Aurea Student"
+          description="Offres partenaires sélectionnées pour les étudiants : banques, assurances, logement, jobs et alternance — vérifiées et transparentes."
+          path="/partners"
+        />
         <div className="mx-auto max-w-2xl px-4 pt-6 lg:pt-8">
 
           {/* Header */}

@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useActiveCities } from "@/hooks/useActiveCities";
+import { Seo } from "@/components/seo/Seo";
 
 const MonDossier = () => {
   const { flags } = useFeatureFlags();
@@ -45,6 +46,11 @@ const MonDossier = () => {
     <div className="flex min-h-screen bg-background">
       <AppSidebar />
       <main className="flex-1 overflow-y-auto">
+        <Seo
+          title="Mon dossier étudiant | Aurea Student"
+          description="Suis tes démarches administratives en France : pré-arrivée, logement, CAF, préfecture, santé. Checklist personnalisée par phase."
+          path="/mon-dossier"
+        />
         <DashboardHeader />
         <div className="px-6 pb-28">
           {dossierEnabled ? (

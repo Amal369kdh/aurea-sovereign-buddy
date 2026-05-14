@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Seo } from "@/components/seo/Seo";
 import {
   Crown, Users, MessageCircle, ShieldCheck, ArrowRight,
   Home, Landmark, Stethoscope, Bus, Briefcase, HeartHandshake,
@@ -85,7 +86,12 @@ export default function Apercu() {
   const goAuth = () => navigate("/auth");
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
+      <Seo
+        title="Aperçu Aurea Student | Découvre la plateforme"
+        description="Aperçu public d'Aurea Student : entraide étudiante vérifiée, logement, démarches admin et vie sociale à Grenoble. Sans inscription."
+        path="/apercu"
+      />
       {/* ── Top bar ── */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/90 backdrop-blur-sm px-4 py-3">
         <div className="flex items-center gap-2.5">
@@ -276,6 +282,6 @@ export default function Apercu() {
           </button>
         </motion.div>
       </div>
-    </div>
+    </main>
   );
 }
